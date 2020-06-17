@@ -1,408 +1,572 @@
----
+﻿---
 lab:
-    title: 'Lab 20: Build with IoT Central'
-    module: 'Module 11: Build with IoT Central'
+    title: '랩 20: IoT Central로 구축'
+    module: '모듈 11: IoT Central로 구축'
 ---
 
-# Create your first Azure IoT Central App
+# 첫 번째 Azure IoT Central 앱 만들기
 
-## Lab Scenario
+Azure IoT 서비스 및 기술은 사용자 팀이 있을 때 훌륭한 역량을 발휘하고 쉽게 관리할 수 있지만, 소규모의 비전문가팀이 구현하고 지원하기에는 전체 IoT 솔루션 아키텍처는 너무 많을 수 있습니다. Azure IoT Central은 Azure IoT Hub, Azure DPS(디바이스 프로비저닝 시스템), Azure Maps, Azure Time Series Insights, Azure IoT Edge 등을 비롯하여 기본 IoT 기술의 전체 범위를 포괄하는 SaaS 애플리케이션입니다. IoT Central은 이러한 기술을 직접 구현할 때 얻게 되는 세분성 수준을 제공하지는 않지만, 이를 통해 소규모 팀은 일련의 원격 디바이스를 쉽게 관리하고 모니터링할 수 있습니다.
 
-Azure IoT Central enables the easy monitoring and management of a fleet of remote devices.
+특히, 이 랩에서는 IoT Central이 특정 시나리오를 지원하는 올바른 도구가 되는 시기를 결정하는 데 도움이 됩니다. 그러므로 IoT Central이 수행할 수 있는 작업을 탐색할 준비를 하.
 
-Azure IoT Central encompasses a range of underlying technologies that work great, but can be complicated to implement when many technologies are needed. These technologies include Azure IoT Hub, the Azure Device Provisioning System (DPS), Azure Maps, Azure Time Series Insights, Azure IoT Edge, and others. It's only necessary to use these technologies directly, if more granularity is needed than available through IoT Central.
+## 랩 시나리오
 
-One of the purposes of this lab is to help you decide if there's enough features in IoT Central to support the scenarios you are likely to need. So, let's investigate what IoT Central can do with a fun and involved scenario.
+Contoso는 도시와 주변 지역에서 치즈를 배달하는 데 사용되는 냉장 트럭을 운영합니다. 이 지역에는 많은 고객이 있으며 도시에서는 중앙 집중식 위치를 사용하여 차량을 운영합니다. 매일 트럭에는 제품이 실려 있으며, 운행 관리원이 운전자에게 배달 경로를 알려줍니다. 이 시스템은 훌륭하게 작동하며 거의 문제가 없습니다. 그러나 트럭의 냉각 시스템이 고장나면 운전자와 운행 관리원은 최선의 진행 방법을 논의해야 합니다. 운행 관리원은 창고로 반납하여 검사할 제품을 갖거나 차량의 현재 위치와 가까운 고객 위치로 배달할 제품을 갖습니다. 트럭에 배달되지 않고 남은 제품의 양뿐만 아니라 냉장 구역의 온도 모두 결정 요인입니다.
 
-Contoso operates a fleet of refrigerated trucks. You've a number of customers within a city, and a base that you operate from. You command each truck to take its contents and deliver it to any one customer. However, the cooling system may fail on any one of your trucks, and if the contents does start to melt, you'll need the option of instructing the truck to return to base, and then dump the contents. Alternatively, you can deliver the contents to another customer who might be nearer to the truck when you become aware the contents are melting.
+정보에 입각한 결정을 내리기 위해 운전자와 발송자는 트럭과 트럭이 나르는 제품에 대한 최신 정보를 필요로 합니다. 지도에서 각 트럭의 위치, 트럭의 냉장 시스템 상태 및 트럭 화물 상태를 알아야 합니다.
 
-In order to make these decisions, you'll need an up-to-date picture of all that is going on with your trucks. You'll need to know the location of each truck on a map, the state of the cooling system, and the state of the contents.
+IoT Central은 이 시나리오를 처리하는 데 필요한 모든 것을 제공합니다. 
 
-IoT Central provides all you need to handle this scenario. 
+다음의 리소스가 만들어집니다.
 
-# In This Lab
+![랩 20 아키텍처](media/LAB_AK_20-architecture.png)
 
-In this lab you will:
+## 이 랩에서
 
-* Create an Azure IoT Central custom app, using the IoT Central * portal
-* Create a device template for a custom device, using the IoT * Central portal
-* Create a programming project to simulate a refrigerated truck, with routes selected by Azure Maps, using Visual Studio Code, or Visual Studio
-* Monitor and command the simulated device, from an IoT Central dashboard
+이 랩에서는 다음 활동을 완료할 예정입니다.
 
-## Exercise 1: Create a Custom IoT Central app
+* IoT Central 포털을 사용하여 Azure IoT Central 사용자 지정 앱 만들기
+* IoT Central 포털을 사용하여 사용자 지정 디바이스용 디바이스 템플릿 만들기
+* Azure Maps에서 경로를 선택한 상태에서 Visual Studio Code 또는 Visual Studio를 사용하여 냉장 트럭을 시뮬레이션하는 프로그래밍 프로젝트 만들기
+* IoT Central 대시보드에서 시뮬레이션된 디바이스 모니터링 및 조정
 
-1. Navigate to [Azure IoT Central](https://apps.azureiotcentral.com/?azure-portal=true). It's a good idea to bookmark this URL, as it's the home for all your IoT Central apps.
+## 랩 지침
 
-1. Click on **Build**, then **Custom apps**.
+### 연습 1: Azure IoT Central 만들기 및 구성
 
-1. Your **Application name** can be any friendly name, such as "Refrigerated Trucks". However, the **URL** _must_ be unique, which is why you'll add a unique ID to the end of the URL for the app. For example, `refrigerated-trucks-<your id>`, replacing `<your id>` with some unique ID.
+#### 작업 1: 초기 IoT Central 앱 만들기
 
-1. Leave the **Application template** as **Preview application**.
+1. [Azure IoT Central](https://apps.azureiotcentral.com/?azure-portal=true)로 이동합니다.
 
-1. Select the free **7 day free trial** option. Seven days is plenty of time to complete the scenario.
+    이 URL은 모든 IoT Central 앱의 홈이므로 책갈피에 추가하는 것이 좋습니다.
 
-1. Fill out your contact info, and click **Create**. Wait a few seconds whilst the app resource is built.
+1. 잠시 아래로 스크롤하면서 이 홈페이지의 내용을 읽으세요.
 
-1. You should now see a **Dashboard** with a few default links.
+1. 왼쪽 탐색 메뉴에서 **빌드**를 클릭합니다.
 
-The next time you visit your Azure central home page, select **My apps** in the left-hand menu, and an icon for your  **Refrigerated Trucks** app should appear.
+    특정 시나리오에 대해 고급 시작 지점을 제공하는 몇 가지 옵션이 있습니다.
 
-You've now created the app. The next step is to specify a _device template_.
+1. **추천**에서 **사용자 지정 앱**을 클릭합니다.
 
-## Exercise 2: Create Device Template
+1. **새 애플리케이션** 페이지에서 **애플리케이션 이름**에 **Refrigerated-Trucks-{YOUR-ID}**를 입력합니다.
 
-The data communicated between a remote device, and IoT Central, is specified in a _device template_. The device template encapsulates all the details of the data, so that both the device and IoT Central have all they need to make sense of the communication.
+    입력한 애플리케이션 이름이 애플리케이션 URL의 루트로 사용되고 있습니다(소문자로 변환됨).
 
-In this Lab, you'll create a device template for a refrigerated truck.
+    애플리케이션 이름은 어떤 이름이든 사용할 수 있지만 **URL**은 _반드시_ 고유해야 합니다. 이 둘이 정확히 일치할 필요는 없지만 일치하면 혼동을 줄일 수 있습니다.
 
-## Create a device template
+    애플리케이션 이름에 `{YOUR-ID}`를 사용하면 고유한 URL을 사용하는 데 도움이 됩니다.
 
-1. Within the [Azure IoT Central](https://apps.azureiotcentral.com/?azure-portal=true) portal (which you may still have open), select **Device Templates** from the menu on the left-hand side.
+1. **애플리케이션 템플릿**에서 기본 **사용자 지정 애플리케이션** 값을 유지합니다.
 
-1. Click **+ New** to create a new template.
+1. 잠시 **청구 정보** 아래의 필드를 검토합니다.
 
-1. You'll next see a range  of template options, select **IoT device**. We are going to build the template from scratch.
+    **디렉터리** 필드는 Azure Active Directory 테넌트를 지정하는 데 사용됩니다. 조직에서 AAD 테넌트를 사용하는 경우 여기에 지정합니다. 이 과정에서는 기본값을 그대로 두겠습니다.
 
-    > [!TIP]
-    > Take note of the other options. You may want to use those prebuilt template options in a future project!
+    비용이 포함된 가격 책정 옵션을 선택하는 경우 Azure 구독을 지정해야 합니다.
 
-1. Click **Next: Customize**, then **Next: Review**. Do not select the **Gateway device** box. Then click **Create**.
+1. **가격 책정 계획**에서 **무료**를 클릭합니다.
 
-1. Enter the name for your device template: "RefrigeratedTruck", and click Enter.
+    무료 옵션은 7일 평가판을 제공하며 5개의 무료 디바이스가 포함되어 있습니다. **청구 정보** 섹션도 **연락처 정보**에 업데이트되었습니다.
 
-1. For **Create a capability model**, click **Custom**. You should now see a screen similar to the following image.
+1. **연락처 정보**의 각 필수 필드 내에 연락처 정보를 제공합니다.
 
-    > [!NOTE]
-    > Take note of a few important elements that you have created. Including that the template is in Draft form, and the locations of the **+ Add interface**, **Views**, and **Publish** controls.
+    > **참고**: 플랜과 관련된 약정 또는 해지 수수료는 없습니다. IoT Central 가격 책정에 대한 자세한 내용을 위해 **빌드** 페이지에 [가격 정보 가져오기](https://aka.ms/iotcentral-pricing-kor) 링크가 포함되어 있습니다.
 
-1. You are now ready to add the specifics of the device template. Click **Add interface**, then **Custom**, to start building from a blank interface.
+1. 페이지 하단에서 **만들기**를 클릭합니다.
 
-An interface defines a set of _capabilities_. We have quite a few to create, to define a refrigerated truck.
+    앱 리소스가 빌드되는 동안 몇 초 정도 기다리면 몇 가지 기본 링크와 함께 **대시보드**가 표시됩니다.
 
-### Add sensor telemetry
+1. Azure IoT Central 브라우저 탭을 닫습니다.
 
-Telemetry is the data values transmitted by sensors. The most important sensor in our refrigerated truck, monitors the temperature of the contents.
+    다음에 Azure IoT Central 홈페이지를 열 때 왼쪽 탐색 메뉴에서 **내 앱**을 선택하면 **Refrigerated-Trucks-{YOUR-ID}** 앱이 나열됩니다.
 
-1. Click **+ Add capability**, and enter the following values:
+1. 브라우저를 사용하여 [Azure IoT Central](https://apps.azureiotcentral.com/?azure-portal=true)을 엽니다.
 
-    | Entry summary | Value |
+1. 왼쪽 탐색 메뉴에서 **내 앱**을 클릭한 다음 **Refrigerated-Trucks-{YOUR-ID}**를 클릭합니다.
+
+    다음 단계는 _디바이스 템플릿_을 지정하는 것입니다.
+
+#### 작업 2: 디바이스 템플릿 만들기
+
+원격 디바이스와 IoT Central 간에 통신할 데이터는 _디바이스 템플릿_에 지정됩니다. 디바이스 템플릿은 데이터의 모든 세부 정보를 캡슐화하므로 디바이스와 IoT Central이 통신을 이해하는 데 필요한 모든 것을 가지고 있습니다.
+
+1. Azure IoT Central 앱의 **대시보드** 페이지에서 **앱 설정** 아래 왼쪽 탐색 메뉴에서 **디바이스 템플릿**을 클릭합니다.
+
+1. **디바이스 템플릿**에서 **새로 만들기**를 클릭합니다.
+
+    다양한 사용자 지정 및 미리 구성된 디바이스 템플릿이 표시됩니다.
+
+    > 팁:
+    > 미리 구성된 옵션을 기록해 두세요. 연결된 하드웨어가 있는 경우 향후 프로젝트에 미리 구성된 디바이스 템플릿 중 하나를 사용해야 할 수 있습니다.
+
+1. **사용자 지정 디바이스 템플릿 만들기**에서 **IoT 디바이스**를 클릭합니다.
+
+1. 페이지 하단에서 **다음:**을 클릭합니다.** 사용자 지정** 후 **다음:**을 클릭합니다.** 검토**.
+
+    이전 화면에서 **게이트웨이 디바이스**를 선택한 경우 돌아가서 선택을 취소합니다.
+    
+1. **검토** 페이지 하단에서 **만들기**를 클릭합니다.
+
+1. **디바이스 템플릿 이름 입력** 텍스트 상자에 **RefrigeratedTruck**을 입력한 다음 **Enter** 키를 누릅니다.
+
+1. **RefrigeratedTruck** 페이지의 **기능 모델 만들기**에서 **사용자 지정**을 클릭합니다.
+
+    이제 디바이스 템플릿의 세부 사항을 추가할 준비가 되었습니다. 
+
+#### 작업 3: 센서 원격 분석 추가
+
+원격 분석은 센서가 전송하는 데이터 값입니다. 냉장 트럭에서 가장 중요한 센서가 내용물의 온도를 모니터링합니다.
+
+1. **RefrigeratedTruck** 디바이스 템플릿 페이지에서 **인터페이스 추가**를 클릭한 다음 **사용자 지정**을 클릭합니다.
+
+    인터페이스는 _기능_ 집합을 정의합니다. 냉장 트럭의 기능을 정의하기 위해 상당히 많은 인터페이스를 추가하게 될 것입니다.
+
+    사용자 지정 인터페이스를 사용하면 빈 인터페이스에서 빌드를 시작할 수 있습니다.
+
+1. **기능**에서 **기능 추가**를 클릭합니다.
+
+1. 사용 가능한 필드 유형을 잠시 검토합니다.
+
+1. 트럭의 온도 센서 기능을 정의하려면 다음 필드 값을 입력합니다.
+
+    | 필드 | 값 |
     | --- | --- |
-    | Display Name | Contents temperature |
-    | Name | ContentsTemperature |
-    | Capability Type | Telemetry |
-    | Semantic type | Temperature |
-    | Schema | Double |
-    | Unit | <sup>o</sup>C |
+    | 표시 이름 | 내용물 온도 |
+    | 이름 | ContentsTemperature |
+    | 기능 형식 | 원격 분석 |
+    | 의미 형식 | 온도 |
+    | 스키마 | 더블 |
+    | 단위 | <sup>o</sup> C |
 
-1. Your screen should now look like the following image.
+1. 잠시 시간을 내어 입력한 정보를 다시 확인합니다.
 
-    > [!IMPORTANT]
-    > The names entered for the interface must be entered _exactly_ as shown in this unit. This is because an exact match is needed between these names, and entries in the code you'll be adding later in this lab.
+    > **중요**:
+    > 이 랩에 나중에 추가할 코드는 위에 나열된 이름을 사용하므로 인터페이스에 입력한 이름은 표시된 대로 _정확하게_ 입력해야 합니다.
 
-Let's add the rest of the template.
+#### 작업 4: 상태 및 이벤트 원격 분석 추가
 
-### Add state telemetry
+상태는 중요하며, 상태를 통해 운영자는 상황을 파악할 수 있습니다. IoT Central의 상태는 값 범위와 연관된 이름입니다. 이 랩의 후반부에서는 각 상태 값과 연결할 색상을 선택하므로 쉽게 식별할 수 있습니다.
 
-States are important, they let the operator know what is going on. A state in IoT Central is a name associated with a range of values. In addition, you later get to choose a color to associate with each value.
+1.  **기능**에서 **기능 추가**를 클릭합니다.
 
-1. Use the **+ Add capability** control to add a state for the truck's refrigerated contents: one of _empty_, _full_, or _melting_.
+1. 트럭의 화물 상태에 대한 기능을 정의하려면 다음 필드 값을 입력하세요.
 
-    | Entry summary | Value |
+    | 필드 | 값 |
     | --- | --- |
-    | Display Name | Contents state |
-    | Name | ContentsState |
-    | Capability Type | Telemetry |
-    | Semantic type | State |
-    | Value schema | String |
+    | 표시 이름 | 내용물 상태 |
+    | 이름 | ContentsState |
+    | 기능 형식 | 원격 분석 |
+    | 의미 형식 | 상태 |
+    | 값 스키마 | 문자열 |
 
-1. Now, click **+**, and enter "empty" for the **Display name**, and **Value**. The **Name** field should automatically be populated with "empty". So, all three fields are identical, containing "empty".
+1. **값 스키마**에서 **복합 형식을 정의해야 합니다** 메시지가 표시됩니다.
 
-1. Add two more state values: "full" and "melting". Again, the same text should appear in the **Display name**, **Name**, and **Value**.
+    랩 시나리오를 단순화하기 위해 트럭의 화물 상태를 _비어 있음_, _가득 참_ 또는 _녹는 중_ 중 하나로 정의합니다. 
 
-1. Carefully check each capability before moving on. 
+1. **복합 형식을 정의해야 합니다** 메시지에서 +를 클릭합니다.
 
-1. Now, to add some uncertainty to our simulation, let's add a failure state for the cooling system. If the cooling system fails, as you'll see in the following units, the chances of the contents melting increase considerably! Add _on_, _off_ and _failed_ entries for a cooling system. Start by clicking **+ Add capability**, and add another state.
+1. **표시 이름**에 **비어 있음**을 입력합니다.
 
-    | Entry summary | Value |
+    **이름** 필드는 자동으로 **비어 있음**으로 채워져야 합니다.
+
+1. **값**에 **비어 있음**을 입력합니다.
+
+    세 필드 모두 **비어 있음**이어야 합니다.
+
+1. 방금 입력한 필드 바로 아래에 +를 클릭합니다.
+
+1. 위의 프로세스를 사용하여 **가득 참** 및 **녹는 중** 상태 값도 추가합니다.
+
+    다시 말하지만, 각 추가 상태 값 옵션의 **표시 이름**, **이름** 및 **값** 필드에 동일한 텍스트가 표시되어야 합니다.
+
+1. 계속하기 전에 각 기능을 주의 깊게 확인하세요.
+
+    이제 시뮬레이션에 불확실성을 더하기 위해 트럭 냉장 시스템의 고장 상태를 추가해 보겠습니다. 이 랩에서 나중에 볼 수 있듯이 냉장 시스템이 고장나면 내용물이 "녹을" 가능성이 상당히 높아집니다! 트럭 냉장 시스템에 _켜짐_, _꺼짐_ 및 _고장_ 항목을 추가합니다.    
+
+1. **RefrigeratedTruck** 디바이스 템플릿 페이지의 **기능**에서 **기능 추가**를 클릭합니다.
+
+1. 트럭의 냉장 시스템 상태에 기능을 정의하려면 다음 필드 값을 입력합니다.
+
+    | 필드 | 값 |
     | --- | --- |
-    | Display Name | Cooling system state |
-    | Name | CoolingSystemState |
-    | Capability Type | Telemetry |
-    | Semantic type | State |
-    | Value schema | String |
+    | 표시 이름 | 냉장 시스템 상태 |
+    | 이름 | CoolingSystemState |
+    | 기능 형식 | 원격 분석 |
+    | 의미 형식 | 상태 |
+    | 값 스키마 | 문자열 |
 
-1. Now add three values: on, off, and failed. Make sure that each word appears in the **Display name**, **Name**, and **Value** fields.
+1. **복합 형식을 정의해야 합니다** 메시지에서 +를 클릭한 후 위에서 사용한 프로세스에 따라 다음 상태 값 옵션을 추가합니다.
 
-1. A more complex state is the state of the truck itself. If all goes well, a truck's normal routing might be: _ready_, _enroute_, _delivering_, _returning_, _loading_, and back to _ready_ again.  However, you should add the _dumping_ state to cater for when melted contents need to be disposed of! Using the same process as for the last two steps, create this new state.
+    * 켜짐
+    * 꺼짐
+    * 실패
 
-    | Entry summary | Value |
+    세 가지 상태 값 옵션(켜짐, 꺼짐, 고장)이 세 가지(**표시 이름**, **이름**, **값**) 필드에 모두 반복되었는지 확인합니다.
+
+    트럭 자체에는 훨씬 더 복잡한 상태가 정의되어야 합니다. 모든 것이 잘 진행되면 트럭의 정상적인 경로는 다음과 같습니다. _준비_, _이동 중_, _배송 중_, _복귀 중_, _적재 중_, 그리고 다시 _준비_ 상태가 됩니다. 그러나, 녹은 내용물을 검사(및 필요한 경우 폐기)하기 위해 창고로 반송하는 경우에 대비하여 _덤핑 중_ 상태를 포함합니다. 
+
+1. 이전 상태 기능을 정의하는 데 사용한 것과 동일한 프로세스를 사용하여 다음과 같이 새 기능을 만듭니다.
+
+    | 필드 | 값 |
     | --- | --- |
-    | Display Name | Truck state |
-    | Name | TruckState |
-    | Capability Type | Telemetry |
-    | Semantic type | State |
-    | Value schema | String |
+    | 표시 이름 | 트럭 상태 |
+    | 이름 | TruckState |
+    | 기능 형식 | 원격 분석 |
+    | 의미 형식 | 상태 |
+    | 값 스키마 | 문자열 |
 
-### Add event telemetry
+    상태 값 옵션에는 다음을 사용합니다.
 
-Events are issues triggered by the device, and communicated to the IoT Central app. Events can be one of three types: _Error_, _Warning_, or _Informational_.
+    * 준비
+    * 보내기
+    * 배송 중
+    * 복귀 중
+    * 적재 중
+    * 덤핑 중
 
-One possible event a device might trigger is a conflicting command. An example might be a truck is returning empty from a customer, but receives a command to deliver its contents to another customer. If a conflict occurs, it's a good idea for the device to trigger an event to warn the operator of the IoT Central app.
+    지정해야 하는 다음 기능 유형은 이벤트입니다. 이벤트는 디바이스에서 트리거되는 문제이며 IoT Central 앱에 전달됩니다. 이벤트는 다음 세 가지 유형 중 하나일 수 있습니다. _오류_, _경고_ 또는 _정보_.
 
-Another event might be just to acknowledge, and record, the customer ID that a truck is to deliver to.
+1. 이벤트 기능을 만들려면 **기능 추가**를 클릭한 후 다음과 같이 새 기능을 만듭니다.
 
-1. Use **+ Add capability**, then create an event as follows.
-
-    | Entry summary | Value |
+    | 필드 | 값 |
     | --- | --- |
-    | Display Name | Event |
-    | Name | Event |
-    | Capability Type | Telemetry |
-    | Semantic type | Event |
-    | Schema | String |
+    | 표시 이름 | 이벤트 |
+    | 이름 | 이벤트 |
+    | 기능 형식 | 원격 분석 |
+    | 의미 형식 | 이벤트 |
+    | 스키마 | 문자열 |
 
-### Add location telemetry
+    디바이스가 트리거할 수 있는 한 가지 가능한 이벤트는 충돌하는 명령입니다. 예를 들어 트럭이 고객으로부터 빈 상태로 복귀하고 있지만 내용물을 다른 고객에게 전달하라는 명령을 받을 수 있습니다. 충돌이 발생하면 디바이스가 IoT Central 앱 운영자에게 경고하기 위해 이벤트를 트리거하는 것이 좋습니다.
 
-A location is probably the most important, and yet one of the easiest measurements to add to a device template. Under the hood, it consists of a latitude, longitude, and an optional altitude, for the device.
+    트럭이 배달할 고객 ID를 확인하고 기록하기만 하면 되는 이벤트가 발생할 수도 있습니다.
 
-1. Use **+ Add capability**, and add a location for our truck as follows.
+#### 작업 5: 위치 원격 분석 추가
 
-    | Entry summary | Value |
+위치는 아마도 가장 중요하면서도 디바이스 템플릿에 추가하는 가장 쉬운 측정 값 중 하나일 것입니다. 구체적으로는 디바이스의 위도 및 경도로 구성되며 선택적으로 고도가 포함될 수 있습니다.
+
+1. 위치 기능을 만들려면 **기능 추가**를 클릭한 다음 다음과 같이 새 기능을 만듭니다.
+
+    | 필드 | 값 |
     | --- | --- |
-    | Display Name | Location |
-    | Name | Location |
-    | Capability Type | Telemetry |
-    | Semantic type | Location |
-    | Schema | Geopoint |
+    | 표시 이름 | 위치 |
+    | 이름 | 위치 |
+    | 기능 형식 | 원격 분석 |
+    | 의미 형식 | 위치 |
+    | 스키마 | 지오포인트 |
 
-### Add properties
+#### 작업 6: 속성 추가
 
-A property of a device is typically a constant value, that is communicated to the IoT Central app when communication is first initiated. In our refrigerated truck scenario, a good example of a property is the license plate of the truck, or some similar unique truck ID.
+디바이스의 속성은 일반적으로 통신이 처음 시작될 때 IoT Central 앱에 전달되는 상수 값입니다. 냉장 트럭 시나리오에서 속성의 좋은 예는 트럭의 번호판 또는 일부 유사한 고유 트럭 ID입니다.
 
-Properties can also be device configuration data. We will define an _optimal temperature_ for the truck contents as a property. This optimal temperature might change with different types of content, different weather conditions, or whatever might be appropriate. A setting has an initial default value, which may not need to be changed, but the ability to change it easily and quickly is there, if needed. This kind of property is called a _writable property_.
+속성은 디바이스 구성 데이터에도 사용할 수 있습니다. 트럭 내용물의 _최적 온도_를 속성으로 정의합니다. 이 최적의 온도는 내용물 종류, 다양한 기상 조건 또는 필요한 것에 따라 변경될 수 있습니다. 설정에는 초기 기본값이 있으며, 변경할 필요가 없지만 필요한 경우 쉽고 빠르게 변경할 수 있습니다. 이러한 종류의 속성을 _쓰기 가능한 속성_이라고 합니다.
 
-A property is a single value. If more complex sets of data need to be transmitted to a device, a Command (see below) is the more appropriate way of handling it.
+속성은 단일 값입니다. 더 복잡한 데이터 집합을 디바이스로 전송해야 하는 경우 명령(아래 참조)이 처리에 더 적합할 수 있습니다.
 
-1. Use **+ Add capability**, and add the truck ID property.
+1. 트럭 ID에 대한 속성 기능을 만들려면 **기능 추가**를 클릭한 후 다음과 같이 새 기능을 만듭니다.
 
-    | Entry summary | Value |
+    | 필드 | 값 |
     | --- | --- |
-    | Display Name | Truck ID |
-    | Name | TruckID |
-    | Capability Type | Property |
-    | Semantic type | None |
-    | Schema | String |
-    | Writable | Off |
-    | Unit | None |
+    | 표시 이름 | 트럭 ID |
+    | 이름 | TruckID |
+    | 기능 형식 | 속성 |
+    | 의미 형식 | 없음 |
+    | 스키마 | 문자열 |
+    | 쓰기 가능 | 꺼짐 |
+    | 단위 | 없음 |
 
-1. Next, add the optimal temperature property.
+1. 최적의 온도에 속성 기능을 만들려면 **기능 추가**를 클릭한 후 다음과 같이 새 기능을 만듭니다.
 
-    | Entry summary | Value |
+    | 필드 | 값 |
     | --- | --- |
-    | Display Name | Optimal Temperature |
-    | Name | OptimalTemperature |
-    | Capability Type | Property |
-    | Semantic type | None |
-    | Schema | Double |
-    | Writable | On |
-    | Unit |  <sup>o</sup>C  |
+    | 표시 이름 | 최적 온도 |
+    | 이름 | OptimalTemperature |
+    | 기능 형식 | 속성 |
+    | 의미 형식 | 없음 |
+    | 스키마 | 더블 |
+    | 쓰기 가능 | 켜기 |
+    | 단위 |  <sup>o</sup> C  |
 
-### Add commands
+#### 작업 7: 명령 추가
 
-Commands are sent by the operator of the IoT Central app to the remote devices. Commands are similar to writable properties, but a command can contain any number of input fields, whereas a writable property is limited to a single value.
+명령은 IoT Central 앱 운영자가 원격 디바이스로 전송합니다. 명령은 쓰기 가능한 속성과 유사하지만 명령에는 입력 필드가 여러 개 포함될 수 있지만 쓰기 가능한 속성은 단일 값으로 제한됩니다.
 
-For refrigerated trucks, there are two commands you should add: a command to deliver the contents to a customer, and a command to recall the truck to base.
+냉장 트럭의 경우 고객에게 내용물을 배송하는 명령과 트럭을 집하장으로 리콜하는 명령, 이렇게 두 가지 명령을 추가해야 합니다.
 
-1. Use **+ Add capability**, and add the first command.
+1. 고객에게 내용물을 전달하는 명령 기능을 만들려면 **기능 추가**를 클릭한 후 다음과 같이 새 기능을 만듭니다.
 
-    | Entry summary | Value |
+    | 필드 | 값 |
     | --- | --- |
-    | Display Name | Go to customer |
-    | Name | GoToCustomer |
-    | Capability Type | Command |
-    | Command | Synchronous |
+    | 표시 이름 | 고객으로 이동 |
+    | 이름 | GoToCustomer |
+    | 기능 형식 | 명령 |
+    | 명령 | 동기 |
 
-1. When you turn on the **Request** option, you'll be able to enter more details of the command.
+1. **명령**에서 **요청**을 클릭합니다.
 
-    | Entry summary | Value |
+    **요청** 옵션을 켜면 명령에 대한 자세한 내용을 입력할 수 있습니다.
+
+1. 명령 기능의 **요청** 부분을 완료하려면 다음과 같이 필드 값을 입력합니다.
+
+    | 필드 | 값 |
     | --- | --- |
-    | Request | On |
-    | Display name | Customer ID |
-    | Name | CustomerID |
-    | Schema | Integer |
-    | Unit | None |
+    | 요청 | 켜기 |
+    | 표시 이름 | 고객 ID |
+    | 이름 | CustomerID |
+    | 스키마 | 정수 |
+    | 단위 | 없음 |
 
-1. Enter another new command, for recalling the truck.
+1. 트럭 리콜을 위한 명령 기능을 만들려면 **기능 추가**를 클릭한 후 다음과 같이 새 기능을 만듭니다.
 
-    | Entry summary | Value |
+    | 필드 | 값 |
     | --- | --- |
-    | Display Name | Recall |
-    | Name | Recall |
-    | Capability Type | Command |
-    | Command | Synchronous |
+    | 표시 이름 | 리콜 |
+    | 이름 | 리콜 |
+    | 기능 형식 | 명령 |
+    | 명령 | 동기 |
 
-1. This time there are no additional parameters for the command, so leave **Request** off.
+    이 명령에 추가 매개 변수가 없으므로 **요청**을 해제 상태로 둡니다.
 
-1. Click **Save**.
+1. 페이지 상단 근처에서 **저장**을 클릭합니다.
 
-Before going any further carefully double check your interface. After an interface has been published, there are very limited editing options. It's important to get it right before publishing. If you click on the name of the device template, in the menu that ends with the **Views** option, you'll get a summary of the capabilities.
+    진행하기 전에 좀 더 신중하게 인터페이스를 다시 확인합니다. 인터페이스가 게시된 후에는 편집 옵션이 매우 제한되어 있습니다. 게시하기 전에 바로 잡는 것이 중요합니다. 
 
-## Publish the template
+    디바이스 템플릿의 이름을 클릭하면 **보기** 옵션으로 끝나는 메뉴에서 기능 요약을 확인할 수 있습니다.
 
-1. Click **Save** again, if you've made any changes since the last time you saved.
+#### 작업 8: 템플릿 게시
 
-1. Click **Publish**. You should see that the annotation changes from **Draft** to **Published**.
+1. 마지막으로 저장한 후 변경했다면 **저장**을 클릭합니다.
 
-Preparing a device template does take some care and some time.
+1. **RefrigeratedTruck** 디바이스 템플릿의 오른쪽 상단 모서리에서 **게시**를 클릭합니다.
 
-In the next task, you use the capabilities of the device template to prepare a controllers dashboard. Preparing views can be done before, or after, a device template is published.
+    > **참고**: 확인을 요청하는 팝업 대화 상자가 나타나면 **게시**를 클릭합니다.
 
-## Exercise 3: Monitor Simulated Device
+    **초안**에서 **게시됨**으로 주석이 바뀐 것을 알 수 있습니다.
 
-You'll first create a dashboard showing all the capabilities of the device template. Next, you'll create a real device, and record the connection settings needed for the remote device app.
+디바이스 템플릿을 준비하기 위해서는 잠깐동안 약간의 주의를 기울여야 합니다.
 
-## Create a rich dashboard
+다음 연습에서는 디바이스 템플릿의 기능을 사용하여 컨트롤러 대시보드를 준비합니다. 디바이스 템플릿이 게시되기 전/후에 보기를 준비할 수 있습니다.
 
-1. Click on the **Views** menu option, then on **Visualizing the device**.
+### 연습 3: 시뮬레이션된 디바이스 모니터링
 
-1. You should now see a list of all the **Telemetry**, **Properties**, and **Commands** you created, each with a check box.
+이 연습을 시작하려면 디바이스 템플릿의 모든 기능을 보여주는 대시보드를 만듭니다. 그런 다음, 디바이스 템플릿을 사용하여 디바이스를 만들고 원격 디바이스 앱에 필요한 연결 설정을 기록합니다.
 
-1. Click the **Location** check box, then **Add tile**. Dashboards are made up of tiles. The reason we choose the location tile first, is that we want to expand it from its default size. Drag the lower right-hard corner of the tile, so that the tile is at least twice the default size. This tile is the most fun, it will show the location of the truck on a map of the world.
+#### 작업 1: 풍부한 대시보드 만들기
 
-1. Before adding more tiles, change the **View name** to something more specific, "Truck view", or something similar.
+1. **RefrigeratedTruck** 디바이스 템플릿의 왼쪽 메뉴에서 **보기**를 클릭한 다음 **디바이스 시각화**를 클릭합니다.
 
-1. Now, click each of the rest of the telemetry and properties capabilities in turn, starting at the top, and **Add tile**. We are going for function over form here, we can prettify the dashboard later. For now, we just want a dashboard that will confirm all the telemetry being sent from our remote device. There's no need to add the commands to the dashboard, though that option does exist.
+1. 사용 가능한 **원격 분석**, **속성** 및 **명령** 목록을 잠시 검토합니다.
 
-1. When you've added all the tiles, scroll around a bit on your dashboard, and check out the wording in the tiles.
+    이것은 학생들이 만든 기능으로서, 각각 선택 확인란이 있습니다.
 
-1. You can drag tiles around, and the portal will try to rearrange them neatly.
+1. **원격 분석**에서 **위치**, **타일 추가**를 순서대로 클릭합니다.
 
-1. When you are satisfied with your dashboard, click **Save**, then click **Publish**. You'll now notice that in the dialog that appears, that the **Views** entry is **Yes**. Click **Publish** in the dialog.
+    대시보드는 타일을 사용하여 생성되며, 선택한 타일의 크기를 정렬하고 크기를 조정할 수 있습니다. 위치 타일은 세계 지도에서 트럭 위치를 표시하며, 먼저 만듬으로써 지도 크기를 조정할 수있는 충분한 공간이 있습니다. 
 
-You can create as many views as you want to, giving each a friendly name. For this lab though, one dashboard will work well.
+1. 마우스 포인터를 타일의 오른쪽 아래 모서리 위로 가져간 다음 모서리를 드래그하여 타일 높이와 너비가 기본 크기의 약 두 배가 되도록 합니다.
 
-The next step is to create a device.
+1. **보기 이름**에 **트럭 보기**를 입력합니다.
 
-## Create a real device
+1. **원격 분석**에서 **콘텐츠 상태**를 클릭한 다음 **타일 추가**를 클릭합니다.
 
-By "real" IoT Central understands that there's a remote app running. The app can be in a real device, taking input from real sensors, or running a simulation. Both options are treated as a connection to a _real_ device.
+1. 위에서 아래로 작업하면서 나머지 각 원격 분석 기능에 대한 이전 단계를 반복합니다.
 
-1. Click **Devices** in the left-hand menu.
+    위치 타일을 이미 추가했다는 점을 명심하세요.
 
-1. Click **RefrigeratedTruck** in the **Devices** menu, to ensure the device we create uses this device template. The device template you select will be shown in bold text.
+1. 동일한 하향식 프로세스를 사용하여 속성 기능을 추가합니다.
 
-1. Click **+ New**. Verify in the dialog that the device name includes the **RefrigeratedTruck** text. If it doesn't, you've not selected the right device template.
+    랩 후반부에서 대시보드의 타일을 정렬할 수 있습니다. 지금은 원격 디바이스에서 전송되는 모든 원격 분석을 확인하는 대시보드만 필요합니다.
 
-1. Change the **Device ID** to a friendlier name, say "RefrigeratedTruck1".
+    이 옵션이 있지만 대시보드에 명령을 추가할 필요는 없습니다.
 
-1. Change the **Device name** to a friendlier name, say "RefrigeratedTruck - 1".
+1. 잠시 대시보드를 확인합니다.
 
-1. Leave the **Simulated** setting at **Off**. We are going to be building a real truck here. Well, a simulated _real_ truck! Setting this value to **On** instructs IoT Central to pump out random values for our telemetry. These random values can be useful in validating a device template.
+    스크롤하여 대시보드를 봅니다. 타일 내용을 확인하고 해당 정보를 어떻게 사용할지를 생각합니다.
 
-1. Click **Create**. Wait a few seconds, then your device list should be populated with a single entry. Note the **Device status** is **Registered**. Not until the device status is **Provisioned** will the IoT Central app accept a connection to the device. The coding task that follows shows how to provision a device.
+1. 신속하게 타일의 위치를 정렬합니다. 
 
-1. Click on the **RefrigeratedTruck - 1** name, and you'll see the live dashboard, with lots of **Waiting for data** messages.
+    지금은 여기에 너무 많은 시간을 할애하지 않습니다. 타일을 드래그할 수 있으며 Portal에서 타일을 깔끔하게 다시 정렬합니다.
 
-1. Click on the **Commands** entry in the bar that includes **Truck view**. Notice that the two commands you entered are ready to be run.
+1. **저장**을 클릭하고 **게시**를 클릭합니다.
 
-The next step is to create the keys that will allow a remote device to communicate with this app.
+    이제 게시 대화 상자의 **보기** 옆에 **예**가 표시됩니다. 
 
-### Record the connection keys
+1. 게시 대화 상자에서 **게시**를 클릭합니다.
 
-1. Click **Connect** in the top-right menu. Do _not_ click **Connect to gateway**.
+필요한 만큼 보기를 만들어 각자 식별 이름을 지정할 수 있습니다.
 
-1. In the **Device connection** dialog that follows, carefully copy the **ID scope**, **Device ID**, and **Primary key** to a text file. Typically, use a tool like Notepad, and save the file with a meaningful name, say "Truck connections.txt".
+다음 작업에서는 디바이스 템플릿에서 디바이스를 만듭니다.
 
-1. Leave the **Connect method** as **Shared access signature (SAS)**.
+#### 작업 2: 실제 디바이스 만들기
 
-1. When you've saved off the IDs and key, click **Close** on the dialog.
+IoT Central은 실제 센서가 있는 물리적 디바이스나 알고리즘을 기반으로 데이터를 생성하는 시뮬레이션된 디바이스에 연결할 수 있습니다. 두 경우 모두 IoT Central은 원격 앱이 원격 분석 데이터를 생성하고 있으며 연결된 디바이스를 "실제" 디바이스로 취급한다는 것을 알고 있습니다.
 
-Leave the IoT portal open in your browser, waiting as it is.
+1. 왼쪽 탐색 메뉴에서 **디바이스**를 클릭합니다.
 
-## Exercise 4: Create a free Azure Maps account
+1. **디바이스** 메뉴의 **모든 디바이스**에서 **RefrigeratedTruck**을 클릭합니다.
 
-If you do not already have an Azure Maps account, you'll need to create one.
+    화면이 새로 고쳐지고 선택한 디바이스 템플릿이 굵은 문자로 표시됩니다. 디바이스 템플릿이 많으면, 디바이스 템플릿을 정확하게 사용하는데 도움이 됩니다. 
 
-1. Navigate to [Azure Maps](https://azure.microsoft.com/services/azure-maps/?azure-portal=true).
+1. 상단 메뉴에서 **새로 만들기**를 클릭합니다.
 
-1. Follow the prompts to create a free account. When your account is set up, you'll need the **Subscription Key** for the account. Copy and paste this key into your text document, with a note that it applies to Azure Maps.
+1. **새 디바이스 만들기** 대화 상자의 **디바이스 이름**에서 **RefrigeratedTruck**이 접두사로 있는지 확인합니다.
 
-1. You can (optionally) verify your Azure Maps subscription key works. Save the following HTML to an .html file. Replace the **subscriptionKey** entry with your own key. Then, load the file into a web browser. Do you see a map of the world?
+    정확한 디바이스 템플릿을 선택했는지 확인할 수 있는 또 다른 기회입니다.
 
-```html
-<!DOCTYPE html>
-<html>
+1. **디바이스 ID**에 **RefrigeratedTruck1**을 입력합니다.
 
-<head>
-    <title>Map</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+1. **디바이스 이름**에 **RefrigeratedTruck - 1**을 입력합니다.
 
-    <!-- Add references to the Azure Maps Map control JavaScript and CSS files. -->
-    <link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.css" type="text/css">
-    <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.js"></script>
+1. **시뮬레이션**에서 **꺼짐**이 선택되어 있는지 확인합니다.
 
-    <!-- Add a reference to the Azure Maps Services lab JavaScript file. -->
-    <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas-service.min.js"></script>
+    IoT Central은 물리적 디바이스와 시뮬레이션된 디바이스의 연결을 동일한 방식으로 처리합니다. 둘 다 원격 앱이고 실제입니다. 여기서 실제 트럭을 구축하게 됩니다. 시뮬레이션된 _실제_ 트럭입니다! 
 
-    <script>
-        function GetMap() {
-            //Instantiate a map object
-            var map = new atlas.Map("myMap", {
-                //Add your Azure Maps subscription key to the map SDK. Get an Azure Maps key at https://azure.com/maps
-                authOptions: {
-                    authType: 'subscriptionKey',
-                    subscriptionKey: '<your Azure Maps subscription key>'
-                }
-            });
-        }
-    </script>
-    <style>
-        html,
-        body {
-            width: 100%;
-            height: 100%;
-            padding: 0;
-            margin: 0;
-        }
+    이 시뮬레이션된 값을 **켜기**로 설정하면 IoT Central이 원격 분석의 임의 값을 출력하도록 지시합니다. 이러한 임의의 값은 디바이스 템플릿의 유효성을 검사하는 데 유용할 수 있지만 이 랩에서는 시뮬레이션된 디바이스(트럭)를 사용하여 원격 분석을 시뮬레이션합니다.
 
-        #myMap {
-            width: 100%;
-            height: 100%;
-        }
-    </style>
-</head>
+1. **새 디바이스 만들기** 대화 상자에서 **만들기**를 클릭합니다.
 
-<body onload="GetMap()">
-    <div id="myMap"></div>
-</body>
+    몇 초 동안 기다리면 디바이스 목록이 단일 항목으로 채워집니다. 
 
-</html>
-```
+    **디바이스 상태**가 **등록됨**으로 설정되어 있습니다. IoT Central 앱은 **디바이스 상태**가 **프로비전된** 경우에만 디바이스의 연결을 허용합니다. 이 랩의 후반부에서는 디바이스를 프로비전하는 방법을 보여주는 코딩 작업이 있습니다.
 
-## Next steps
+1. **디바이스 이름**에서 **RefrigeratedTruck - 1**을 클릭합니다.
 
-You've now completed the preparatory steps of connecting your first IoT Central app to real devices. Good work!
+    라이브 대시보드가 표시됩니다(많은 **데이터 대기 중** 메시지).
 
-The next step is to create the device app.
+1. 디바이스 대시보드의 **RefrigeratedTruck - 1** 바로 아래에서 **명령**을 클릭합니다.
 
-## Exercise 5: Create a Programming Project for a Real Device
+    입력한 두 명령이 이미 있으며 실행할 준비가 되었습니다.
 
-In this task, you are going to create a programming project to simulate a sensor device in a refrigerated truck. This simulation enables you to test the code long before requiring a real truck!
+다음 단계는 원격 디바이스가 IoT Central 앱과 통신할 수 있는 키를 만드는 것입니다.
 
-IoT Central treats this simulation as "real" because the communication code between the device app and the IoT Central app is the same for a real truck. In other words, if you do run a refrigerated truck company, you would start with simulated code similar to the code in this task. After this code works to your satisfaction, the simulation-specific code would be replaced with code that receives sensor data. This limited update makes writing the following code a valuable experience.
+#### 작업 3: 연결 키 기록
 
-## Create the device app
+1. 오른쪽 상단 메뉴에서 **연결**을 클릭합니다.
 
-Using Visual Studio Code, build the device sensor app.
+    **게이트웨이에 연결**을 클릭하지 _마십시오_.
 
-1. Open a terminal in Visual Studio Code, and create a folder called "RefrigeratedTruck" (enter `mkdir RefrigeratedTruck`). Navigate to the RefrigeratedTruck folder.
+1. **디바이스 연결** 대화 상자에서 **ID 범위**, **디바이스 ID** 및 **기본 키** 값을 복사한 후 **Truck-connections.txt**라는 텍스트 파일에 저장합니다.
 
-1. Enter the following command in the terminal: `dotnet new console`. This command creates a Program.cs file in your folder, along with a project file.
+    메모장(또는 다른 텍스트 편집기)을 사용하여 값을 텍스트 파일에 저장하여 Truck-connections.txt와 같은 의미 있는 이름을 제공합니다.
 
-1. Enter `dotnet restore` in the terminal. This command gives your app access to the required .NET packages.
+1. **연결 방법**에서 **SAS(공유 액세스 서명)**가 선택되어 있는지 확인합니다.
 
-1. In the terminal, install the required libraries:
+1. 대화 상자 하단에서 **닫기**를 클릭합니다.
+
+IoT 포털을 브라우저에서 대기하는 열린 상태로 둡니다.
+
+### 연습 4: 무료 Azure Maps 계정 만들기
+
+Azure Maps 계정이 아직 없는 경우 계정을 만들어야 합니다.
+
+1. 새 브라우저 탭을 열고 [Azure Maps](https://azure.microsoft.com/services/azure-maps/?azure-portal=true)로 이동합니다.
+
+1. 무료 계정을 만들려면 오른쪽 상단 모서리에서 **무료로 시작**을 클릭하고 제공된 지침을 따릅니다.
+
+    > **참고**: 이 과정에서 사용했던 구독과 리소스 그룹을 사용하여 Azure Maps 계정을 만들고, 계정 이름에 AZ-220-MAPS를, 가격 책정 계층에 표준 S1을 사용할 수 있습니다.
+
+1. Azure Maps 계정이 만들어지면 Azure Maps 계정 구독 키(기본 키)를 Truck-connections.txt 텍스트 파일에 복사합니다.
+
+    이 과정에서 사용 중인 Azure 구독을 사용하여 Azure Maps 계정을 만든 경우, 다음과 같이 Azure Portal에서 계정의 기본 키를 찾을 수 있습니다. Azure Maps(AZ-220-MAPS) 블레이드를 열고 인증 창을 엽니다. 기본 키가 표시됩니다.
+
+    > **참고**: Azure Maps의 경우 기본 키가 올바른지 확인하려는 경우. 다음 HTML을 .html 파일에 저장합니다. `'<Azure Maps 구독 키>'` 자리 표시자를 기본 키 값으로 바꾼 다음, 파일을 웹 브라우저에 로드합니다. 세계 지도가 표시됩니다.
+
+    ```html
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+        <title>지도</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- 참조를 Azure Maps Map 맵 컨트롤 JavaScript 및 CSS 파일에 추가합니다. -->
+        <link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.css" type="text/css">
+        <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.js"></script>
+
+        <!-- 참조를 Azure Maps 서비스 랩 JavaScript 파일에 추가합니다. -->
+        <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas-service.min.js"></script>
+
+        <script>
+            function GetMap() {
+                // 맵 개체 인스턴스화
+                var map = new atlas.Map("myMap", {
+                    // Azure Maps 구독 키를 맵 SDK에 추가합니다. https://azure.com/maps에서 Azure Maps 키 받기
+                    authOptions: {
+                        authType: 'subscriptionKey',
+                        subscriptionKey: '<your Azure Maps subscription key>'
+                    }
+                });
+            }
+        </script>
+        <style>
+            html,
+            body {
+                width: 100%;
+                height: 100%;
+                padding: 0;
+                margin: 0;
+            }
+
+            #myMap {
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+    </head>
+
+    <body onload="GetMap()">
+        <div id="myMap"></div>
+    </body>
+
+    </html>
+    ```
+
+이제 첫 번째 IoT Central 앱을 실제 디바이스에 연결하는 준비 단계를 완료했습니다. 잘 하셨습니다.
+
+다음 단계에서는 디바이스 앱을 만듭니다.
+
+### 연습 5: 실제 디바이스용 프로그래밍 프로젝트 만들기
+
+이 작업에서는 냉동 트럭에서 센서 디바이스를 시뮬레이션하는 프로그래밍 프로젝트를 만듭니다. 이 시뮬레이션을 사용하면 물리적 디바이스를 요구하기 훨씬 전에 코드를 테스트할 수 있습니다.
+
+IoT Central은 디바이스 앱과 IoT Central 앱 간의 통신 코드가 물리적 디바이스/트럭용과 동일하기 때문에 이 시뮬레이션을 "실제"로 처리합니다. 즉, 냉동 트럭 회사를 운영하는 경우 이 작업의 코드와 유사한 시뮬레이션된 코드로 시작합니다. 코드가 만족스럽게 작동하는지 확인한 후 시뮬레이션 관련 코드가 센서 데이터를 수신하는 코드로 대체됩니다. 이 제한된 업데이트는 다음 코드를 작성하는 것을 소중한 경험으로 만듭니다.
+
+#### 작업 1: 디바이스 앱 만들기
+
+Visual Studio Code를 사용하여 디바이스 센서 앱을 빌드합니다.
+
+1. Visual Studio Code의 새 인스턴스를 엽니다.
+
+1. **파일** 메뉴에서 **폴더 열기**를 클릭합니다.
+
+1. **폴더 열기** 대화 상자의 상단에서 **새 폴더**를 클릭하고 **RefrigeratedTruck**을 입력한 후 **Enter** 키를 누릅니다.
+
+    이 과정의 랩 20 폴더 또는 선택한 다른 위치에서 RefrigeratedTruck 폴더를 만들 수 있습니다.
+
+1. **RefrigeratedTruck**을 클릭하고 **폴더 선택**을 클릭합니다.
+
+    이제 Visual Studio Code 탐색기 창을 열어야 합니다.
+
+1. **보기** 메뉴에서 통합 터미널을 열기 위해 **터미널**을 클릭하세요.
+
+    터미널 명령 프롬프트에 RefrigeratedTruck 폴더가 표시되어야 합니다. 이는 다음 명령이 현재 폴더에서 실행되므로 중요합니다.
+ 
+1. 터미널 명령 프롬프트에서 새 콘솔 앱을 만들려면 다음 명령을 입력하세요.
+
+    ```cmd/sh
+    dotnet new console
+    ```
+
+    이 명령은 프로젝트 파일과 함께 폴더에 Program.cs 파일을 만듭니다.
+
+1. 앱이 필수 .NET 패키지에 액세스할 수 있도록 하려면 터미널 명령 프롬프트에서 다음 명령을 입력합니다.
+
+    ```cmd/sh
+    dotnet restore
+    ```
+
+1. 터미널 명령 프롬프트에서 필요한 라이브러리를 설치하려면 다음 명령을 입력합니다.
 
     ```CLI
     dotnet add package AzureMapsRestToolkit
@@ -412,33 +576,22 @@ Using Visual Studio Code, build the device sensor app.
     dotnet add package System.Text.Json
     ```
 
-1. From the **File** menu, open up the Program.cs file, and delete the default contents.
+1. **탐색기** 창에서 **Program.cs**를 클릭합니다.
 
-1. After you've entered the code below into the Program.cs file, you can run the app with the command `dotnet run`. This command will run the Program.cs file in the current folder, so ensure you are in the `RefrigeratedTruck` folder.
+1. 코드 편집기 창에서 Program.cs 파일의 내용을 삭제합니다.
 
-1. Open Visual Studio, and create a new **Visual C#/Windows Desktop** project. Select **Console App (.NET Framework)**.
+이제 아래 코드를 추가할 준비가 되었습니다.
 
-1. Give the project a friendly name, such as "RefrigeratedTruck".
+#### 작업 2: 디바이스 앱 작성
 
-1. Under **Tools/NuGet Package Manager**, select **Manage NuGet Packages for Solution**. Install the following libraries:
-    * **AzureMapsRestToolkit**
-    * **Microsoft.Azure.Devices.Client**
-    * **Microsoft.Azure.Devices.Provisioning.Client**
-    * **Microsoft.Azure.Devices.Provisioning.Transport.Mqtt**
-    * **System.Text.Json**
+이 작업에서는 냉장 트럭을 위한 시뮬레이션된 디바이스 앱을 한 번에 한 섹션씩 빌드합니다. 각 섹션에 대한 간략한 설명이 제공됩니다.
 
-1. Delete the default contents of the Program.cs file.
+이 프로세스를 최대한 간단하게 만들려면 여기에 나열된 순서대로 각 추가 코드 섹션을 파일 끝에 추가해야 합니다.
 
-1. Add all the code that follows to the Program.cs file.
+> **참고**: 
+> 이 작업을 건너뛰고 모든 코드를 앱에 로드하려면 [MicrosoftDocs/mslearn-your-first-iot-central-app](https://github.com/MicrosoftDocs/mslearn-your-first-iot-central-app)에서 Program.cs의 모든 내용을 다운로드하여 프로젝트의 Program.cs 파일에 복사합니다. 이 코드를 복사하고 연결 및 구독 문자열을 바꾸면 다음 작업으로 바로 이동하여 테스트를 시작합니다.
 
-## Write the device app
-
-In the blank Program.cs file, insert the following code. Each additional section of code should be appended to the end of the file, in the order listed here.
-
-   > [!NOTE]
-   > If you would like to skip this task, and load all of the code into your app, then download and copy all of the contents of Program.cs from [MicrosoftDocs/mslearn-your-first-iot-central-app](https://github.com/MicrosoftDocs/mslearn-your-first-iot-central-app) into the Program.cs file of your project. If you copy this code (and replace the connection and subscription strings) then go straight to the next task, and start testing!
-
-1. Add the `using` statements, including for Azure IoT Central and Azure Maps.
+1. 코드 편집기 창에서 필요한 `using` 문을 추가하려면 다음 코드를 입력합니다.
 
    ```cs
     using System;
@@ -454,7 +607,9 @@ In the blank Program.cs file, insert the following code. Each additional section
     using AzureMapsToolkit.Common;
     ```
 
-1. Add the namespace, class, and global variables.
+    이러한 `using` 문을 사용하면 Azure IoT Central 및 Azure Maps와 같이 코드에서 사용하는 리소스에 쉽게 액세스할 수 있습니다.
+
+1. 코드 편집기 창에서 네임스페이스, 클래스 및 전역 변수를 추가하려면 다음 코드를 입력합니다.
 
    ```cs
     namespace refrigerated_truck
@@ -483,96 +638,104 @@ In the blank Program.cs file, insert the following code. Each additional section
                 failed
             }
 
-            // Azure maps service globals.
+            // Azure Maps 서비스 전역.
             static AzureMapsServices azureMapsServices;
 
-            // Telemetry globals.
-            const int intervalInMilliseconds = 5000;        // Time interval required by wait function.
+            // 전역 원격 분석.
+            const int intervalInMilliseconds = 5000;        // 대기 기능에 필요한 시간 간격.
 
-            // Refrigerated truck globals.
+            // 냉장 트럭 전역.
             static int truckNum = 1;
             static string truckIdentification = "Truck number " + truckNum;
 
-            const double deliverTime = 600;                 // Time to complete delivery, in seconds.
-            const double loadingTime = 800;                 // Time to load contents.
-            const double dumpingTime = 400;                 // Time to dump melted contents.
-            const double tooWarmThreshold = 2;              // Degrees C that is too warm for contents.
-            const double tooWarmtooLong = 60;               // Time in seconds for contents to start melting if temps are above threshold.
+            const double deliverTime = 600;                 // 배달 완료 시간(초).
+            const double loadingTime = 800;                 // 내용물 적재 시간.
+            const double dumpingTime = 400;                 // 녹은 내용물 덤프하는 시간.
+            const double tooWarmThreshold = 2;              // 내용물에 너무 뜨거운 온도(C).
+            const double tooWarmtooLong = 60;               // 온도가 임계값을 초과할 경우 내용물이 녹기 시작하는 시간(초).
 
 
-            static double timeOnCurrentTask = 0;            // Time on current task in seconds.
-            static double interval = 60;                    // Simulated time interval in seconds.
-            static double tooWarmPeriod = 0;                // Time that contents are too warm in seconds.
-            static double tempContents = -2;                // Current temp of contents in degrees C.
-            static double baseLat = 47.644702;              // Base position latitude.
-            static double baseLon = -122.130137;            // Base position longitude.
-            static double currentLat;                       // Current position latitude.
-            static double currentLon;                       // Current position longitude.
-            static double destinationLat;                   // Destination position latitude.
-            static double destinationLon;                   // Destination position longitude.
+            static double timeOnCurrentTask = 0;            // 현재 작업의 시간(초).
+            static double interval = 60;                    // 시뮬레이션된 시간 간격(초).
+            static double tooWarmPeriod = 0;                // 내용물이 너무 뜨거운 시간(초).
+            static double tempContents = -2;                // 내용물의 현재 온도(°C).
+            static double baseLat = 47.644702;              // 기지 위치 위도.
+            static double baseLon = -122.130137;            // 기지 위치 경도.
+            static double currentLat;                       // 현재 위치 위도.
+            static double currentLon;                       // 현재 위치 경도.
+            static double destinationLat;                   // 목적지 위치 위도.
+            static double destinationLon;                   // 목적지 위치 경도.
 
-            static FanEnum fan = FanEnum.on;                // Cooling fan state.
-            static ContentsEnum contents = ContentsEnum.full;    // Truck contents state.
-            static StateEnum state = StateEnum.ready;       // Truck is full and ready to go!
-            static double optimalTemperature = -5;         // Setting - can be changed by the operator from IoT Central.
+            static FanEnum fan = FanEnum.on;                // 냉각 팬 상태.
+            static ContentsEnum contents = ContentsEnum.full;    // 트럭 내용물 상태.
+            static StateEnum state = StateEnum.ready;       // 트럭이 가득 찼으며 이동 준비가 되었습니다!
+            static double optimalTemperature = -5;         // 설정 - IoT Central에서 운영자가 변경 가능.
 
             const string noEvent = "none";
-            static string eventText = noEvent;              // Event text sent to IoT Central.
+            static string eventText = noEvent;              // IoT Central에 전송된 이벤트 텍스트.
 
             static double[,] customer = new double[,]
             {
-                // Lat/lon position of customers.
-                // Gasworks Park
+                // 고객의 위도/경도 위치.
+                // 개스웍스 공원
                 {47.645892, -122.336954},
 
-                // Golden Gardens Park
+                // 골든 가든 파크
                 {47.688741, -122.402965},
 
-                // Seward Park
+                // 슈어드 파크
                 {47.551093, -122.249266},
 
-                // Lake Sammamish Park
+                // 레이크 사마미쉬 공원
                 {47.555698, -122.065996},
 
-                // Marymoor Park
+                // 메리무어 공원
                 {47.663747, -122.120879},
 
-                // Meadowdale Beach Park
+                // 메도우데일 비치 파크
                 {47.857295, -122.316355},
 
-                // Lincoln Park
+                // 링컨 파크
                 {47.530250, -122.393055},
 
-                // Gene Coulon Park
+                // 진 쿨론 파크
                 {47.503266, -122.200194},
 
-                // Luther Bank Park
+                // 루터 뱅크 파크
                 {47.591094, -122.226833},
 
-                // Pioneer Park
+                // 파이오니어 파크
                 {47.544120, -122.221673 }
             };
 
-            static double[,] path;                          // Lat/lon steps for the route.
-            static double[] timeOnPath;                     // Time in seconds for each section of the route.
-            static int truckOnSection;                      // The current path section the truck is on.
-            static double truckSectionsCompletedTime;       // The time the truck has spent on previous completed sections.
+            static double[,] path;                          // 경로의 위도/경도 단계.
+            static double[] timeOnPath;                     // 각 경로 섹션의 시간(초).
+            static int truckOnSection;                      // 트럭이 이동 중인 현재 경로 섹션.
+            static double truckSectionsCompletedTime;       // 이전 완료 섹션에 트럭이 사용한 시간.
             static Random rand;
 
-            // IoT Central global variables.
+            // IoT Central 전역 변수.
             static DeviceClient s_deviceClient;
             static CancellationTokenSource cts;
             static string GlobalDeviceEndpoint = "global.azure-devices-provisioning.net";
             static TwinCollection reportedProperties = new TwinCollection();
 
-            // User IDs.
+            // 사용자 ID
             static string ScopeID = "<your Scope ID>";
             static string DeviceID = "<your Device ID>";
             static string PrimaryKey = "<your device Primary Key>";
             static string AzureMapsKey = "<your Azure Maps Subscription Key>";
     ```
 
-1. Add the methods to get a route via Azure Maps.
+    추가할 코드가 더 많지만 지금은 방금 입력한 자리 표시자 값을 대체하기에 좋은 시점입니다. 이러한 모든 항목은 랩에서 추가한 텍스트 파일에서 사용할 수 있어야 합니다.
+
+1. 이전에 저장한 RefrigeratorTruck1 및 Azure Maps 계정 정보를 포함하는 텍스트 파일을 엽니다.
+
+1. 코드 편집기 창에서 자리 표시자 값을 텍스트 파일의 해당 값으로 바꿉니다.
+
+    코드에서 이러한 값을 업데이트하면 앱 빌드로 돌아갈 수 있습니다.
+
+1. Azure Maps를 통해 경로를 얻는 데 사용할 메서드를 추가하려면 코드 편집기 창에서 다음 코드를 입력합니다.
 
    ```cs
             static double Degrees2Radians(double deg)
@@ -580,7 +743,7 @@ In the blank Program.cs file, insert the following code. Each additional section
                 return deg * Math.PI / 180;
             }
 
-            // Returns the distance in meters between two locations on Earth.
+            // 지구상의 두 위치 사이의 거리를 미터로 반환합니다.
             static double DistanceInMeters(double lat1, double lon1, double lat2, double lon2)
             {
                 var dlon = Degrees2Radians(lon2 - lon1);
@@ -594,7 +757,7 @@ In the blank Program.cs file, insert the following code. Each additional section
 
             static bool Arrived()
             {
-                // If the truck is within 10 meters of the destination, call it good.
+                // 트럭이 목적지에서 10미터 이내의 거리에 있으면 양호로 판단합니다.
                 if (DistanceInMeters(currentLat, currentLon, destinationLat, destinationLon) < 10)
                     return true;
                 return false;
@@ -604,34 +767,34 @@ In the blank Program.cs file, insert the following code. Each additional section
             {
                 while ((truckSectionsCompletedTime + timeOnPath[truckOnSection] < timeOnCurrentTask) && (truckOnSection < timeOnPath.Length - 1))
                 {
-                    // Truck has moved onto the next section.
+                    // 트럭이 다음 섹션으로 이동했습니다.
                     truckSectionsCompletedTime += timeOnPath[truckOnSection];
                     ++truckOnSection;
                 }
 
-                // Ensure remainder is 0 to 1, as interval may take count over what is needed.
+                필요한 항목을 간격에 따라 계산할 수도 있으므로 나머지가 0에서 1인지 확인하세요.
                 var remainderFraction = Math.Min(1, (timeOnCurrentTask - truckSectionsCompletedTime) / timeOnPath[truckOnSection]);
 
-                // The path should be one entry longer than the timeOnPath array.
-                // Find how far along the section the truck has moved.
+                // 경로는 timeOnPath 배열보다 긴 하나의 항목이어야 합니다.
+                // 트럭이 이동한 섹션을 따라 얼마나 멀리 이동했는지 알아보세요.
                 currentLat = path[truckOnSection, 0] + remainderFraction * (path[truckOnSection + 1, 0] - path[truckOnSection, 0]);
                 currentLon = path[truckOnSection, 1] + remainderFraction * (path[truckOnSection + 1, 1] - path[truckOnSection, 1]);
             }
 
             static void GetRoute(StateEnum newState)
             {
-                // Set the state to ready, until the new route arrives.
+                // 새 경로가 도착할 때까지 상태를 준비 상태로 설정합니다.
                 state = StateEnum.ready;
 
                 var req = new RouteRequestDirections
                 {
-                    Query = $"{currentLat},{currentLon}:{destinationLat},{destinationLon}"
+                    Query = FormattableString.Invariant($"{currentLat},{currentLon}:{destinationLat},{destinationLon}")
                 };
                 var directions = azureMapsServices.GetRouteDirections(req).Result;
 
                 if (directions.Error != null || directions.Result == null)
                 {
-                    // Handle any error.
+                    // 오류를 처리합니다.
                     redMessage("Failed to find map route");
                 }
                 else
@@ -639,16 +802,16 @@ In the blank Program.cs file, insert the following code. Each additional section
                     int nPoints = directions.Result.Routes[0].Legs[0].Points.Length;
                     greenMessage($"Route found. Number of points = {nPoints}");
 
-                    // Clear the path. Add two points for the start point and destination.
+                    // 경로를 지웁니다. 시작 지점과 목적지에 두 지점을 추가합니다.
                     path = new double[nPoints + 2, 2];
                     int c = 0;
 
-                    // Start with the current location.
+                    // 현재 위치에서 시작합니다.
                     path[c, 0] = currentLat;
                     path[c, 1] = currentLon;
                     ++c;
 
-                    // Retrieve the route and push the points onto the array.
+                    // 경로를 검색하고 포인트를 배열로 푸시합니다.
                     for (var n = 0; n < nPoints; n++)
                     {
                         var x = directions.Result.Routes[0].Legs[0].Points[n].Latitude;
@@ -658,11 +821,11 @@ In the blank Program.cs file, insert the following code. Each additional section
                         ++c;
                     }
 
-                    // Finish with the destination.
+                    // 목적지에서 마칩니다.
                     path[c, 0] = destinationLat;
                     path[c, 1] = destinationLon;
 
-                    // Store the path length and time taken, to calculate the average speed.
+                    // 평균 속도를 계산하기 위해 소요된 경로 거리와 시간을 저장합니다.
                     var meters = directions.Result.Routes[0].Summary.LengthInMeters;
                     var seconds = directions.Result.Routes[0].Summary.TravelTimeInSeconds;
                     var pathSpeed = meters / seconds;
@@ -670,16 +833,16 @@ In the blank Program.cs file, insert the following code. Each additional section
                     double distanceApartInMeters;
                     double timeForOneSection;
 
-                    // Clear the time on path array. The path array is 1 less than the points array.
+                    // 경로 배열의 시간을 지웁니다. 경로 배열은 지점 배열보다 1이 적습니다.
                     timeOnPath = new double[nPoints + 1];
 
-                    // Calculate how much time is required for each section of the path.
+                    // 경로의 각 섹션에 필요한 시간을 계산합니다.
                     for (var t = 0; t < nPoints + 1; t++)
                     {
-                        // Calculate distance between the two path points, in meters.
+                        // 두 경로 지점 사이의 거리를 미터로 계산합니다.
                         distanceApartInMeters = DistanceInMeters(path[t, 0], path[t, 1], path[t + 1, 0], path[t + 1, 1]);
 
-                        // Calculate the time for each section of the path.
+                        // 경로의 각 섹션에 대한 시간을 계산합니다.
                         timeForOneSection = distanceApartInMeters / pathSpeed;
                         timeOnPath[t] = timeForOneSection;
                     }
@@ -687,27 +850,27 @@ In the blank Program.cs file, insert the following code. Each additional section
                     truckSectionsCompletedTime = 0;
                     timeOnCurrentTask = 0;
 
-                    // Update the state now the route has arrived. One of: enroute or returning.
+                    // 이제 경로가 도착했기 때문에 상태를 업데이트합니다. One of: enroute or returning.
                     state = newState;
                 }
             }
     ```
 
-    > [!NOTE]
-    > The key call here is `var directions = azureMapsServices.GetRouteDirections(req).Result;`. The `directions` structure is complex. Consider setting a breakpoint in this method, and examining the contents of `directions`.
+    > **참고**: 
+    > 위의 코드에 있는 키 호출은 `var directions = azureMapsServices.GetRouteDirections(req).Result;`입니다. `directions` 구조는 복잡합니다. 이 메서드에서 중단점을 설정하고 `directions`의 내용을 검사하는 것이 좋습니다.
 
-1. Add the direct method to deliver to a customer.
+1. 코드 편집기 창에서 고객에게 전달할 직접 메서드를 추가하려면 다음 코드를 입력합니다.
 
    ```cs
         static Task<MethodResponse> CmdGoToCustomer(MethodRequest methodRequest, object userContext)
         {
-            try
+            시도
             {
-                // Pick up variables from the request payload, with the name specified in IoT Central.
+                // IoT Central에 지정된 이름으로 요청 페이로드에서 변수를 선택합니다.
                 var payloadString = Encoding.UTF8.GetString(methodRequest.Data);
                 int customerNumber = Int32.Parse(payloadString);
 
-                // Check for a valid key and customer ID.
+                // 유효한 키와 고객 ID를 확인합니다.
                 if (customerNumber >= 0 && customerNumber < customer.Length)
                 {
                     switch (state)
@@ -727,19 +890,19 @@ In the blank Program.cs file, insert the following code. Each additional section
                             }
                             else
                             {
-                                // Set event only when all is good.
+                                // 모든 것이 양호한 경우에만 이벤트를 설정합니다.
                                 eventText = "New customer: " + customerNumber.ToString();
 
                                 destinationLat = customer[customerNumber, 0];
                                 destinationLon = customer[customerNumber, 1];
 
-                                // Find route from current position to destination, storing route.
+                                // 경로를 저장하여 현재 위치에서 대상까지의 경로를 찾습니다.
                                 GetRoute(StateEnum.enroute);
                             }
                             break;
                     }
 
-                    // Acknowledge the direct method call with a 200 success message.
+                    // 200 성공 메시지와 함께 직접 메서드 호출을 승인합니다.
                     string result = "{\"result\":\"Executed direct method: " + methodRequest.Name + "\"}";
                     return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes(result), 200));
                 }
@@ -747,24 +910,24 @@ In the blank Program.cs file, insert the following code. Each additional section
                 {
                     eventText = $"Invalid customer: {customerNumber}";
 
-                    // Acknowledge the direct method call with a 400 error message.
+                    // 400 오류 메시지가 있는 직접 메서드 호출을 승인합니다.
                     string result = "{\"result\":\"Invalid customer\"}";
                     return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes(result), 400));
                 }
             }
             catch
             {
-                // Acknowledge the direct method call with a 400 error message.
+                // 400 오류 메시지가 있는 직접 메서드 호출을 승인합니다.
                 string result = "{\"result\":\"Invalid call\"}";
                 return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes(result), 400));
             }
         }
     ```
 
-    > [!NOTE]
-    > The device responds with a conflict, if the device isn't in the correct state. The command itself is acknowledged at the end of the method. The recall command that follows in the next step handles things similarly.
+    > **참고**: 
+    > 디바이스가 올바른 상태가 아닌 경우 디바이스가 충돌로 응답합니다. 명령 자체는 메서드의 끝에서 승인됩니다. 다음 단계에 나오는 리콜 명령은 작업을 유사하게 처리합니다.
 
-1. Add the recall direct method.
+1. 회수 직접 메서드를 추가하려면 코드 편집기 창에서 다음 코드를 입력합니다.
 
    ```cs
         static void ReturnToBase()
@@ -772,7 +935,7 @@ In the blank Program.cs file, insert the following code. Each additional section
             destinationLat = baseLat;
             destinationLon = baseLon;
 
-            // Find route from current position to base, storing route.
+            // 현재 위치에서 베이스까지의 경로를 찾고 경로를 저장합니다.
             GetRoute(StateEnum.returning);
         }
         static Task<MethodResponse> CmdRecall(MethodRequest methodRequest, object userContext)
@@ -798,23 +961,23 @@ In the blank Program.cs file, insert the following code. Each additional section
                     break;
             }
 
-            // Acknowledge the command.
+            // 명령을 승인합니다.
             if (eventText == noEvent)
             {
-                // Acknowledge the direct method call with a 200 success message.
+                // 200 성공 메시지와 함께 직접 메서드 호출을 승인합니다.
                 string result = "{\"result\":\"Executed direct method: " + methodRequest.Name + "\"}";
                 return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes(result), 200));
             }
             else
             {
-                // Acknowledge the direct method call with a 400 error message.
+                // 400 오류 메시지가 있는 직접 메서드 호출을 승인합니다.
                 string result = "{\"result\":\"Invalid call\"}";
                 return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes(result), 400));
             }
         }
     ```
 
-1. Add the method that updates the truck simulation at each time interval.
+1. 코드 편집기 창에서 매 시간 간격으로 트럭 시뮬레이션을 업데이트하는 메서드를 추가하려면 다음 코드를 입력합니다.
 
    ```cs
         static double DieRoll(double max)
@@ -826,7 +989,7 @@ In the blank Program.cs file, insert the following code. Each additional section
         {
             if (contents == ContentsEnum.empty)
             {
-                // Turn the cooling system off, if possible, when the contents are empty.
+                // 내용물이 비어 있는 경우 가능하면 냉각 시스템을 끕니다.
                 if (fan == FanEnum.on)
                 {
                     fan = FanEnum.off;
@@ -835,31 +998,31 @@ In the blank Program.cs file, insert the following code. Each additional section
             }
             else
             {
-                // Contents are full or melting.
+                // 내용물이 가득 차 있거나 녹고 있습니다.
                 if (fan != FanEnum.failed)
                 {
                     if (tempContents < optimalTemperature - 5)
                     {
-                        // Turn the cooling system off, as contents are getting too cold.
+                        // 내용물이 너무 차가워지므로 냉각 시스템을 끕니다.
                         fan = FanEnum.off;
                     }
                     else
                     {
                         if (tempContents > optimalTemperature)
                         {
-                            // Temp getting higher, turn cooling system back on.
+                            // 온도가 상승하고 있어서 냉각 시스템을 다시 켭니다.
                             fan = FanEnum.on;
                         }
                     }
 
-                    // Randomly fail the cooling system.
+                    // 냉각 시스템의 작동을 불규칙적으로 멈춥니다.
                     if (DieRoll(100) < 1)
                     {
                         fan = FanEnum.failed;
                     }
                 }
 
-                // Set the contents temperature. Maintaining a cooler temperature if the cooling system is on.
+                // 내용물 온도를 설정합니다. 냉각 시스템이 켜지면 더 차가운 온도를 유지합니다.
                 if (fan == FanEnum.on)
                 {
                     tempContents += -3 + DieRoll(5);
@@ -869,21 +1032,21 @@ In the blank Program.cs file, insert the following code. Each additional section
                     tempContents += -2.9 + DieRoll(6);
                 }
 
-                // If the temperature is above a threshold, count the seconds this is occurring, and melt the contents if it goes on too long.
+                // 온도가 임계값을 초과하는 경우 발생한 시간(초)을 계산하고, 너무 오래 진행되면 내용물이 녹습니다.
                 if (tempContents >= tooWarmThreshold)
                 {
-                    // Contents are warming.
+                    // 내용물이 뜨거워지고 있습니다.
                     tooWarmPeriod += interval;
 
                     if (tooWarmPeriod >= tooWarmtooLong)
                     {
-                        // Contents are melting.
+                        // 내용물이 녹고 있습니다.
                         contents = ContentsEnum.melting;
                     }
                 }
                 else
                 {
-                    // Contents are cooling.
+                    // 내용물이 냉각되고 있습니다.
                     tooWarmPeriod = Math.Max(0, tooWarmPeriod - interval);
                 }
             }
@@ -895,13 +1058,13 @@ In the blank Program.cs file, insert the following code. Each additional section
                 case StateEnum.loading:
                     if (timeOnCurrentTask >= loadingTime)
                     {
-                        // Finished loading.
+                        // 적재가 완료되었습니다.
                         state = StateEnum.ready;
                         contents = ContentsEnum.full;
                         timeOnCurrentTask = 0;
 
-                        // Turn on the cooling fan.
-                        // If the fan is in a failed state, assume it has been fixed, as it is at the base.
+                        // 냉각 팬을 켭니다.
+                        // 팬이 고장 상태인 경우, 팬이 기지에 있는 것처럼 수리되었다고 가정합니다.
                         fan = FanEnum.on;
                         tempContents = -2;
                     }
@@ -914,7 +1077,7 @@ In the blank Program.cs file, insert the following code. Each additional section
                 case StateEnum.delivering:
                     if (timeOnCurrentTask >= deliverTime)
                     {
-                        // Finished delivering.
+                        // 배달을 완료했습니다.
                         contents = ContentsEnum.empty;
                         ReturnToBase();
                     }
@@ -922,10 +1085,10 @@ In the blank Program.cs file, insert the following code. Each additional section
 
                 case StateEnum.returning:
 
-                    // Update the truck position.
+                    // 트럭 위치를 업데이트합니다.
                     UpdatePosition();
 
-                    // Check to see if the truck has arrived back at base.
+                    // 트럭이 기지에 다시 도착했는지 확인합니다.
                     if (Arrived())
                     {
                         switch (contents)
@@ -948,10 +1111,10 @@ In the blank Program.cs file, insert the following code. Each additional section
 
                 case StateEnum.enroute:
 
-                    // Move the truck.
+                    // 트럭을 이동합니다.
                     UpdatePosition();
 
-                    // Check to see if the truck has arrived at the customer.
+                    // 트럭이 고객에게 도착했는지 확인합니다.
                     if (Arrived())
                     {
                         state = StateEnum.delivering;
@@ -962,7 +1125,7 @@ In the blank Program.cs file, insert the following code. Each additional section
                 case StateEnum.dumping:
                     if (timeOnCurrentTask >= dumpingTime)
                     {
-                        // Finished dumping.
+                        // 덤핑이 완료되었습니다.
                         state = StateEnum.loading;
                         contents = ContentsEnum.empty;
                         timeOnCurrentTask = 0;
@@ -972,10 +1135,10 @@ In the blank Program.cs file, insert the following code. Each additional section
         }
     ```
 
-    > [!NOTE]
-    > This function is called every time interval. The actual time interval is set at 5 seconds, though the _simulated time_ (the number of simulated seconds you specify that has passed each time this function is called) is set by the global `static double interval = 60`. Setting this value at 60 means the simulation runs at a rate of 60 divided by 5, or 12 times real time. To lower the simulated time, reduce `interval` to, say, 30 (for a simulation that runs at six times real-time). Setting `interval` at 5 would run the simulation in real-time. Though realistic, this speed would be a bit slow, given the real driving times to the customer destinations.
+    > **참고**: 
+    > 이 함수는 매시간 간격이라고 합니다. 실제 시간 간격은 5초로 설정되지만 _시뮬레이션된 시간_(이 함수가 호출될 때마다 경과하도록 지정한 시뮬레이션된 초)은 전역 `static double interval = 60`으로 설정됩니다. 이 값을 60으로 설정한다는 것은 시뮬레이션이 60을 5 또는 12회로 나눈 속도로 실시간으로 실행된다는 의미입니다. 시뮬레이션된 시간을 줄이려면 `interval`을 예를 들어, 30(실시간으로 6회 실행되는 시뮬레이션)으로 줄입니다. `간격`을 5로 설정하면 시뮬레이션이 실시간으로 실행됩니다. 이 속도는 현실적이지만, 고객 목적지까지의 실제 주행 시간을 고려하면 약간 느릴 것입니다.
 
-1. Add the methods to send truck telemetry. Send events too, if any have occurred.
+1. 코드 편집기 창에서 트럭 원격 분석을 보내는 메서드를 추가하기 위해 (이벤트가 발생한 경우 이벤트도 전송) 다음 코드를 입력합니다.
 
    ```cs
         static void colorMessage(string text, ConsoleColor clr)
@@ -1000,7 +1163,7 @@ In the blank Program.cs file, insert the following code. Each additional section
             {
                 UpdateTruck();
 
-                // Create the telemetry JSON message.
+                // 원격 분석 JSON 메시지를 만듭니다.
                 var telemetryDataPoint = new
                 {
                     ContentsTemperature = Math.Round(tempContents, 2),
@@ -1013,15 +1176,15 @@ In the blank Program.cs file, insert the following code. Each additional section
                 var telemetryMessageString = JsonSerializer.Serialize(telemetryDataPoint);
                 var telemetryMessage = new Message(Encoding.ASCII.GetBytes(telemetryMessageString));
 
-                // Clear the events, as the message has been sent.
+                // 메시지가 전송되었기 때문에 이벤트를 지웁니다.
                 eventText = noEvent;
 
                 Console.WriteLine($"\nTelemetry data: {telemetryMessageString}");
 
-                // Bail if requested.
+                // 요청하면 종료합니다.
                 token.ThrowIfCancellationRequested();
 
-                // Send the telemetry message.
+                // 원격 분석 메시지를 보냅니다.
                 await s_deviceClient.SendEventAsync(telemetryMessage);
                 greenMessage($"Telemetry sent {DateTime.Now.ToShortTimeString()}");
 
@@ -1030,10 +1193,10 @@ In the blank Program.cs file, insert the following code. Each additional section
         }
     ```
 
-    > [!NOTE]
-    > The `SendTruckTelemetryAsync` is an important function, handling the sending of telemetry, states, and events to IoT Central. Note the use of JSON strings to send the data.
+    > **참고**: 
+    > `SendTruckTelemetryAsync`는 원격 분석, 상태 및 이벤트를 IoT Central으로 전송하는 중요한 기능입니다. JSON 문자열을 사용하여 데이터를 전송합니다.
 
-1. Add the code to handle settings and properties. You only have one setting and one property in our app, though if there are more, they are easily added.
+1. 코드 편집기 창에서 설정 및 속성을 처리하는 코드를 추가하려면 다음 코드를 입력합니다.
 
    ```cs
         static async Task SendDevicePropertiesAsync()
@@ -1066,10 +1229,12 @@ In the blank Program.cs file, insert the following code. Each additional section
         }
     ```
 
-    > [!NOTE]
-    > This section of code is generic to most C# apps that communicate with IoT Central. To add additional properties or settings, add to `reportedProperties`, or create a new setting string, and check on `desiredProperties`, respectively. No other code changes are usually needed.
+    하나의 설정과 하나의 속성만 앱에 추가됩니다. 더 필요한 경우 쉽게 추가할 수 있습니다.
 
-1. Add the `Main` function.
+    > **참고**: 
+    > 이 코드 섹션은 IoT Central과 통신하는 대부분의 C# 앱에 일반적입니다. 추가 속성 또는 설정을 추가하려면 `reportedProperties`에 추가하거나 새 설정 문자열을 만들고 각각 `desiredProperties`를 확인합니다. 일반적으로 다른 코드 변경은 필요하지 않습니다.
+
+1. 코드 편집기 창에서 `Main` 함수를 추가하려면 다음 코드를 입력합니다.
 
    ```cs
             static void Main(string[] args)
@@ -1080,7 +1245,7 @@ In the blank Program.cs file, insert the following code. Each additional section
                 currentLat = baseLat;
                 currentLon = baseLon;
 
-                // Connect to Azure Maps.
+                // Azure Maps에 연결합니다.
                 azureMapsServices = new AzureMapsServices(AzureMapsKey);
 
                 try
@@ -1090,13 +1255,13 @@ In the blank Program.cs file, insert the following code. Each additional section
                         DeviceRegistrationResult result = RegisterDeviceAsync(security).GetAwaiter().GetResult();
                         if (result.Status != ProvisioningRegistrationStatusType.Assigned)
                         {
-                            Console.WriteLine("Failed to register device");
+                            Console.WriteLine("디바이스 등록 실패");
                             return;
                         }
                         IAuthenticationMethod auth = new DeviceAuthenticationWithRegistrySymmetricKey(result.DeviceId, (security as SecurityProviderSymmetricKey).GetPrimaryKey());
                         s_deviceClient = DeviceClient.Create(result.AssignedHub, auth, TransportType.Mqtt);
                     }
-                    greenMessage("Device successfully connected to Azure IoT Central");
+                    greenMessage("디바이스를 Azure IoT Central에 성공적으로 연결");
 
                     SendDevicePropertiesAsync().GetAwaiter().GetResult();
 
@@ -1106,13 +1271,13 @@ In the blank Program.cs file, insert the following code. Each additional section
 
                     cts = new CancellationTokenSource();
 
-                    // Create a handler for the direct method calls.
+                    // 직접 메서드 호출에 대한 처리기를 만듭니다.
                     s_deviceClient.SetMethodHandlerAsync("GoToCustomer", CmdGoToCustomer, null).Wait();
                     s_deviceClient.SetMethodHandlerAsync("Recall", CmdRecall, null).Wait();
 
                     SendTruckTelemetryAsync(rand, cts.Token);
 
-                    Console.WriteLine("Press any key to exit...");
+                    Console.WriteLine("끝내려면 아무 키나 누르세요...");
                     Console.ReadKey();
                     cts.Cancel();
                 }
@@ -1147,178 +1312,258 @@ In the blank Program.cs file, insert the following code. Each additional section
     }
     ```
 
-    > [!NOTE]
-    > Direct methods are set in the client using statements such as `s_deviceClient.SetMethodHandlerAsync("cmdGoTo", CmdGoToCustomer, null).Wait();`.
+    > **참고**: 
+    > 직접 메서드는 `s_deviceClient.SetMethodHandlerAsync("cmdGoTo", CmdGoToCustomer, null).Wait();`와 같은 문을 사용하여 클라이언트에서 설정됩니다.
 
-Fantastic! You are now ready to test your code.
+1. **파일** 메뉴에서 **저장**을 클릭합니다.   
 
-## Exercise 6: Test Your IoT Central Device
+    시뮬레이션된 디바이스 앱이 완료되면 이제 코드 테스트에 대해 생각할 수 있습니다.
 
-Working through this task is an exciting time in IoT Central development! Finally, you get to check whether all the moving parts you've created work together.
+### 연습 6: IoT Central 디바이스 테스트
 
-## Test the device app and IoT Central app together
+이 연습에서는 마지막으로 만든 모든 움직이는 부품이 의도한 대로 함께 작동하는지 확인합니다.
 
-To fully test the refrigerated truck device, it helps to break down the testing into a number of discreet checks:
+냉장 트럭 디바이스를 완전히 테스트하려면 테스트를 다음과 같이 여러 개의 신중한 검사로 세분화하는 것이 좋습니다.
 
-1. The device app connects to Azure IoT Central.
+* 디바이스 앱은 Azure IoT Central에 연결됩니다.
 
-1. The telemetry functions send data on the specified interval.
+* 원격 분석 함수는 지정된 간격으로 데이터를 보냅니다.
 
-1. The data is picked up correctly by IoT Central.
+* 데이터는 IoT Central에 의해 올바르게 수집됩니다.
 
-1. The command to send the truck to a specified customer works as expected.
+* 지정된 고객에게 트럭을 보내는 명령은 예상대로 작동합니다.
 
-1. The command to recall the truck works as expected.
+* 트럭을 리콜하는 명령은 예상대로 작동합니다.
 
-1. Check customer and conflict events are transmitted correctly.
+* 고객 및 충돌 이벤트가 올바르게 전송되는지 확인합니다.
 
-1. Check the truck properties, and change the optimal temperature.
+* 트럭 특성을 확인하고 최적의 온도를 변경합니다.
 
-In addition to this list, there are edge-cases you could also investigate. One such case is what happens when the truck's contents start to melt? This state is left up to chance in our simulation, with the use of random numbers in our code in the previous task.
+이 목록 외에도 조사할 수 있는 극단적인 경우도 있습니다. 한 가지 예로는 트럭의 내용물이 녹기 시작하면 어떻게 되느냐 하는 것입니다. 이 상태는 이전 작업 코드의 난수를 사용하며 운에 따라 시뮬레이션됩니다.
 
-To begin the testing, with your [Azure IoT Central](https://apps.azureiotcentral.com/?azure-portal=true) app open in a browser, run the device app.
+#### 작업 1: IoT Central 및 시뮬레이션된 디바이스 준비 
 
-1. In Visual Studio, select **Debug/Start without Debugging**.
+1. Azure IoT Central 앱이 브라우저에서 열려 있는지 확인합니다.
 
-1. In the terminal, enter `dotnet run`.
+    IoT Central과 디바이스 간 연결을 테스트하기 전에 Azure IoT Central 앱이 브라우저에서 열려 있는지 확인합니다. RefrigeratedTruck - 1 대시보드의 명령 탭이 열린 상태로 앱을 나갔습니다. 필요한 경우 브라우저에서 [Azure IoT Central](https://apps.azureiotcentral.com/?azure-portal=true)을 다시 열 수 있습니다.
 
-A console screen should open, with the text: **Starting Truck number 1**.
+1. Visual Studio Code의 터미널 명령 프롬프트에 다음 명령을 입력합니다.
 
-### 1. Confirm the device app connects to Azure IoT Central
+    ```cmd/sh
+    dotnet run
+    ```
 
-1. If one of the next lines on the console is **Device successfully connected to Azure IoT Central** you've made the connection. If you do not get this message, it usually means either the IoT Central app isn't running, or the connection key strings aren't correct.
+1. 터미널 창으로 전송되는 출력을 검사하세요.
 
-1. The "connected" line should be followed by some text verifying the settings and properties were sent successfully.
+    터미널 콘솔에 문자와 함께 나타난 출력을 봐야 합니다. **시작 트럭 번호 1**.
 
-If all goes well, go straight into the second test.
+1. 문자가 다음과 같은지 확인하세요. **시작 트럭 번호 1**이 나타납니다.
 
-### 2. Confirm the telemetry functions send data on the specified interval
+    > **참고**: 모든 것이 예상대로 작동한다면 정의된 테스트 사례 여러 개를 매우 빠르게 확인할 수 있습니다.
 
-1. A console message should appear every five seconds, with the contents temperature.
+    예정 작업에 대한 터미널 창을 계속 모니터링하세요.
 
-1. Watch the telemetry for a short while, and mentally prepare for the main test of this lab!
+#### 작업 2: Azure IoT Central에 디바이스 앱이 연결되었는지 확인하기
 
-### 3. Confirm the data is picked up correctly by IoT Central
+1. **Azure IoT Central에 성공적으로 연결된 디바이스**가 터미널 창에 나타나는지 확인하세요.
 
-1. To verify the data is being received at IoT Central, make sure your IoT Central pp is open, and the device selected. If not, select the **Devices** entry in the left-hand menu. Double-click the real device (**RefrigeratedTruck - 1**), in the list of devices.
+    콘솔의 다음 줄 중 하나가 **디바이스가 Azure IoT Central에 성공적으로 연결됨**이면 연결을 완료한 것입니다. 이 메시지가 표시되지 않으면 일반적으로 IoT Central 앱이 실행 중이거나 연결 키 문자열이 올바르지 않음을 의미합니다.
 
-1. Locate the **Contents temperature** tile, and verify approximately that the temperatures being sent by the device app, in the console window, match the data being shown in the telemetry view of the IoT Central app.
+1. "연결된" 메시지 뒤에 설정 및 속성이 성공적으로 전송되었는지 확인하는 텍스트가 있는지 확인합니다.
 
-1. Check the state tiles: **Truck state**, **Cooling system state**, and **Contents state** in the IoT Central app, to verify the truck and its contents are in the expected state.
+    모든 것이 잘 진행되면 두 번째 테스트(작업 3)를 계속 진행합니다.
 
-1. Check the **Location** map view for the device. A blue circle near Seattle, USA shows our truck ready to go. You may have to zoom out a bit.
+#### 작업 3: 원격 분석 함수가 지정된 간격으로 데이터를 전송하는지 확인
 
-If all is well, this is great progress. The truck is at its base, in the correct state, and waiting for a command.
+1. 원격 분석 데이터가 전송되고 있는지 확인합니다. 
 
-# Continue the tests of your IoT Central device
+    콘솔 메시지는 콘텐츠 온도와 함께 5초마다 표시되어야 합니다.
 
-In this task, we complete the app testing.
+1. 잠시 동안 원격 분석을 보며 이 랩의 주요 테스트에 대한 마음의 준비를 하세요!
 
-### 4. Confirm the command to send the truck to a specified customer works as expected
+#### 작업 4: IoT Central에서 데이터가 올바르게 수집되어 있는지 확인
 
-Now for the best fun of all.
+1. Azure IoT Central 앱이 포함된 브라우저 창으로 전환합니다.
 
-1. Click the **Commands** title for the device. This control should be under the truck name, and right of the **Truck view** control.
+1. 당신의 **RefrigeratedTruck - 1** 대시보드에, **트럭 보기**를 클릭합니다.
 
-1. Enter a customer ID, say "1" ("0" through "9" are valid customer IDs), and click **Run**.
+    IoT Central에서 RefrigeratedTruck 디바이스를 선택하지 않은 경우 다음을 수행합니다.
 
-1. In the console for the device app, you should both see  **New customer** event, and a **Route found** message.
+    * 왼쪽 탐색 메뉴에서 **디바이스**를 클릭합니다.
+    * 디바이스 목록에서 냉장 트럭 - **>RefrigeratedTruck - 1**을 두 번 클릭합니다.
+    * 대시보드에서 **트럭 보기**가 선택되어 있는지 확인합니다.
 
-   > [!NOTE]
-   > If you see a message including the text **Access denied due to invalid subscription key**, then check your subscription key to Azure Maps.
+1. 데이터가 **RefrigeratedTruck - 1** 대시보드에 있는지 확인합니다.
 
-1. In the dashboard **Location** tile, is your truck on its way? You might have to wait a short time for the apps to sync up.
+    예를 들어 트럭 ID 타일에는 "트럭 번호 1"이 표시되고 트럭 상태 타일에는 "준비됨" 및 시간 값이 표시되어야 합니다.
 
-1. Verify the event text in the dashboard tile.
+1. 대시보드에서 **내용 온도** 타일을 찾습니다.
 
-Great progress! Take a moment to just watch the map update, and your truck deliver its contents.
+    > **참고**: 일반적으로 허용되는 온도(약 섭씨 0도)의 기간 후, 숫자가 위로 순환하기 시작합니다.
 
-### 5. Confirm the command to recall the truck works as expected
+1. 디바이스 앱에서 전송되는 온도가 IoT Central 앱의 원격 분석 보기에 표시되는 데이터와 일치하는지 확인합니다.
 
-1. When the truck returns to base, and is reloaded with contents, it's state will be **ready**. Try issuing another delivery command. Choose another customer ID.
+    Visual Studio Code의 터미널 창에서 가장 최근 값을 "내용물 온도" 그래프에 표시된 최신 값과 비교합니다. 
 
-1. Issue a recall command before the truck reaches its customer, to check the truck responds to this command.
+1. 트럭과 그 콘텐츠가 예상된 상태에 있는지 확인하려면 상태 타일을 확인합니다. **트럭 상태**, **냉각 시스템 상태** 및 **내용물 상태**.   
 
-### 6. Check customer and conflict events are transmitted correctly
+1. 디바이스의 **위치** 맵 보기를 확인합니다. 
 
-To test a conflict event, send a command that you know doesn't make sense.
+    미국 시애틀 근처의 파란색 원이 출발할 준비가 된 트럭을 보여줍니다. 조금 축소해야 할 수도 있습니다.
 
-1. With your truck at the base, issue a Recall command. The truck should respond with the "already at base" event.
+    트럭은 기지, 올바른 상태, 명령을 기다리는 위치에 있어야 합니다.
 
-### 7. Check the truck properties, and change the optimal temperature
+    다음 작업에서는 앱 테스트를 완료합니다.
 
-1. The simplest test is to check the **Truck ID** tile. This tile should have picked up the **Truck number 1** message when the apps were started.
+#### 작업 5. 지정된 고객에게 트럭을 보낼 수 있는 명령이 예상대로 작동하는지 확인합니다.
 
-1. A more complex test is to check the writable property, **OptimalTemperature**. To change this value, click on **Jobs** in the left-hand menu.
+1. 대시보드 제목 바로 아래의 **RefrigeratedTruck - 1** 대시보드에서 **명령**을 클릭합니다. 
 
-1. Click **+ New**, top-right.
+1. **고객 ID**에 **1**을 입력합니다.
 
-1. Give the job a friendly name, "Set optimal temperature to -10".
+    "0"에서 "9"까지의 모든 값은 유효한 고객 ID입니다
 
-1. For **Device group**, select **RefrigeratedTruck - All devices**. For **Job type**, select **Writable properties**. For **Writable properties**, select **Optimal Temperature**.
+1. 명령을 실행하려면 **실행**을 클릭합니다.
 
-1. Finally, set the value as **-10**.
+1. **트럭 보기**로 다시 전환합니다.
 
-1. Running this job should set the optimal temperature for all trucks in the device group, just one in our case. Click **Run**. Wait for the **Status** of the job to change from **Pending** to **Completed**. This change should only take a few seconds.
+    디바이스 앱의 콘솔에는 **새 고객** 이벤트와 **라우팅 검색** 메시지가 모두 표시됩니다.
 
-1. Navigate back, via **Devices** to your dashboard. Verify the **Optimal temperature** has been set to -10, in the tile on the dashboard.
+   > **참고**: 
+   > **올바르지 않은 구독 키로 인해 액세스 거부됨**이라는 텍스트가 포함된 메시지가 표시되면 Azure Maps에 대한 구독 키를 확인합니다.
 
-## Next steps
+1. 대시보드 **위치** 타일에서 트럭이 도중에 있는지 확인합니다.
 
-With the testing for one truck complete, it is time to consider expanding our IoT Central system.
+    두 앱이 동기화될 때까지 잠시 기다려야 할 수 있습니다.
 
-## Exercise 7: Create multiple devices
+1. 이벤트 타일에서 이벤트 텍스트가 업데이트되고 있는지 확인합니다.
 
-In this task, we consider what steps would be necessary to add multiple trucks to our system.
+1. 잠시 지도 업데이트를 보면, 트럭이 그 내용을 전달합니다.
 
-## Add multiple devices to the IoT Central app
+#### 작업 6. 예상대로 작동하는지 트럭 리콜 명령 확인하기
 
-1. To add multiple devices, start in the [Azure IoT Central](https://apps.azureiotcentral.com/?azure-portal=true) app, clicking **Devices** in the left-hand menu.
+1. 트럭이 기지로 돌아와 내용물을 다시 실을 때 트럭 상태가 **준비**로 업데이트되었는지 확인하세요. 
 
-1. Click **RefrigeratedTruck** in the **Devices** menu, to ensure the device we create uses this device template. The device template you select will be shown in bold text.
+    다른 배달 명령을 실행해 보세요. 다른 고객 ID를 선택하세요.
 
-1. Click **+ New**. Verify in the dialog that the device name includes the **RefrigeratedTruck** text. If it doesn't, you've not selected the right device template.
+1. 트럭이 고객에게 도달하기 전에 리콜 명령을 행합니다.
 
-1. Change the **Device ID** to a friendlier name, say "RefrigeratedTruck2".
+1. 트럭이 이 명령에 응답하는지 확인하세요.
 
-1. Change the **Device name** to a friendlier name, say "RefrigeratedTruck - 2".
+#### 작업 7. 고객 및 충돌 이벤트가 올바르게 전송되는지 확인하기
 
-1. Leave the **Simulated** setting at **Off**.
+충돌 이벤트를 테스트하려면 이해가 되지 않는 명령을 보낼 수 있습니다.
 
-1. Click **Create**.
+1. 트럭을 기지에 두면 리콜 명령을 실행합니다. 
 
-Repeat this process to create as many devices as you need.
+1. 트럭이 "이미 기본" 이벤트로 응답하는지 확인합니다.
 
-## Provision the new devices
+#### 작업 8. 트럭 특성을 확인하고 최적의 온도를 변경합니다.
 
-1. Double-click on **RefrigeratedTruck - 2**, and then click **Connect** (top right of your IoT Central screen).
+1.  **트럭 ID** 타일에  **트럭 번호 1**이 표시되는지 확인합니다.
 
-1. In the **Device Connection** screen, copy the **Device ID** and the **Primary Key** to your text file, noting that they are for the second truck. There is no need to copy the **Scope ID**, as this value is identical to the value for the first truck (it identifies your app, not an individual device).
+    이 속성은 테스트 할 수 있는 가장 간단한 것들에 있습니다. 
 
-1. Click **Close**.
+    쓰기 가능한 속성을 테스트하는 것이 더 복잡하며 **OptimalTemperature** 속성은 쓰기 가능한 속성이므로 다음 테스트가 될 것입니다.
 
-1. Back on the **Devices** page, repeat the process for any other devices you created, copying their **Device ID** and **Primary Key** to your text file.
+1. 왼쪽 탐색 메뉴에서 **작업**을 클릭합니다.
 
-1. When you have completed connecting all new trucks, notice that the **Provisioning Status** is still **Registered**. Not until you make the connection will this change.
+1. **작업**에서 **New**를 클릭합니다.
 
-## Create new apps for each new device
+1. **작업**에서 **새 작업 이름 입력**을 바꾸려면 **최적 온도를 -10으로 설정**을 입력합니다.
 
-Each truck is simulated by one running copy of the device app. So, you need multiple versions of this app running simultaneously.
+1. **디바이스 그룹** 드롭다운에서 **RefrigeratedTruck - All devices**를 클릭합니다.
 
-1. Create multiple projects by repeating the steps in the **Create a programming project for a real device** for each new device. Copy and paste the entire app from your current working project, replacing the **Device ID** and **Primary Key** with new values. No need to change the **Scope ID** or the **Azure Maps subscription Key**, as these are identical for all devices.
+1. **작업 유형** 드롭다운에서 **속성**을 클릭합니다.
 
-1. Remember to add the necessary libraries to each new project.
+1. **이름** 드롭다운에서 **최적 온도**를 클릭합니다.
 
-1. Change the `truckNum` in each project to a different value.
+1. **값** 텍스트 상자에 **-10**을 입력합니다.
 
-1. Set each project app running.
+    이 작업을 실행할 때 디바이스 그룹의 모든 트럭에 대한 최적 온도를 설정해야 하며, 이 경우 하나만 설정해야 합니다.
 
-## Verify the telemetry from all the devices
+1. 창 상단에서 **실행**을 클릭합니다.
 
-1. Verify that the one dashboard you created works for all trucks.
+1. 잠시 후, 작업 **상태**가 **보류 중**에서 **완료됨**으로 변경됩니다.
 
-1. Using the dashboard for each truck, try ordering the trucks to different customers. Using the **Location** map on each dashboard, verify the trucks are heading in the right direction!
+    이 변경은 몇 초 밖에 걸리지 않습니다.
 
-Congratulations on completing the lab!
+1. **디바이스**를 통해 다시 대시보드로 이동합니다.
 
-We suggest that you clean up your resources.
+1. 대시보드에서 **>최적 온도** 타일의 **최적 온도**가 -10으로 설정되었는지 확인합니다.
+
+한 대의 트럭에 대한 테스트가 완료되면 IoT Central 시스템 확장을 고려할 때입니다.
+
+### 연습 7: 여러 디바이스 만들기
+
+이 연습에서는 여러 대의 트럭을 차량에 추가하는 데 필요한 단계를 완료합니다.
+
+#### 작업 1: IoT Central 앱에 여러 디바이스 추가
+
+1. IoT Central 앱이 열려 있는지 확인합니다.
+
+    필요한 경우 [Azure IoT Central](https://apps.azureiotcentral.com/?azure-portal=true) 앱을 엽니다.
+
+1. 왼쪽 탐색 메뉴에서 **디바이스**를 클릭합니다.
+
+1. **디바이스** 아래에서 **RefrigeratedTruck**를 클릭합니다.
+
+    이렇게 하면 만든 디바이스가 이 디바이스 템플릿을 사용할 수 있습니다. 선택한 디바이스 템플릿이 굵은 텍스트로 표시됩니다.
+
+1. **RefrigeratedTruck**에서 **New**를 클릭합니다.
+
+    기본 디바이스 이름에 **RefrigeratedTruck** 텍스트가 포함되어 있는지 확인합니다. 그렇지 않으면 올바른 디바이스 템플릿을 선택하지 않은 것입니다.
+
+1. **새 디바이스 만들기** 대화 상자의 **디바이스 ID**에 **RefrigeratedTruck2**를 입력합니다.
+
+1. **디바이스 이름**에 **RefrigeratedTruck - 2**를 입력합니다.
+
+1. **새 디바이스 만들기** 대화 상자 하단에서 **만들기**를 클릭합니다. 
+
+    원하는 경우 위의 프로세스를 추가 트럭에 반복할 수 있습니다.
+
+#### 작업 2: 새 디바이스 프로비전
+
+1. **디바이스 이름**에서 **RefrigeratedTruck - 2**를 두 번 클릭합니다.
+
+1. 페이지 오른쪽 상단에서 **연결**을 클릭합니다.
+
+1. **디바이스 연결** 대화 상자에서 **장치 ID**와 **기본 키**를 텍스트 파일에 복사하여 두 번째 트럭용임을 확인합니다.
+
+    이 값은 첫 번째 트럭의 값과 동일하므로 **ID 범위**를 복사할 필요가 없습니다(개별 디바이스가 아닌 앱을 식별함).
+
+1. **디바이스 연결**의 대화 상자 하단에서 **닫기**를 클릭합니다.
+
+1. **디바이스** 페이지로 돌아가서, 만든 다른 디바이스에 대한 프로세스를 반복하여 **장치 ID** 및 **기본 키**를 텍스트 파일에 복사합니다.
+
+1. 새 트럭이 모두 연결되면 **프로비전 상태**가 여전히 **등록됨**임을 확인합니다.
+
+    이는 연결할 때까지 변경되지 않습니다.
+
+#### 작업 3: 각 새 디바이스에 대한 새 앱 만들기
+
+각 트럭은 시뮬레이션된 디바이스 앱의 별도로 실행되는 인스턴스로 시뮬레이션됩니다. 따라서 동시에 실행되는 앱의 여러 버전이 필요합니다.
+
+1. 새 시뮬레이션된 디바이스 앱을 만들려면 IoT Central 앱에서 만든 각 새 트럭에 대한 **실제 디바이스용 프로그래밍 프로젝트 만들기** 작업을 반복합니다. 
+
+1. **장치 ID** 및 **기본 키**를 새 트럭의 값으로 바꿨는지 확인합니다.
+
+    **범위 ID** 및 **Azure Maps 계정 기본 키**는 모든 디바이스에 대해 동일해야 합니다.
+
+1. 각 새 프로젝트에 필요한 라이브러리를 로드해야 합니다.
+
+1. 각 프로젝트의 `truckNum`을 다른 값으로 변경합니다.
+
+1. 각 프로젝트에 대해 터미널 명령 `dotnet run`을 사용하여 앱을 시작합니다.
+
+#### 작업 4: 모든 디바이스에서 원격 분석 확인
+
+1. 만든 하나의 대시보드가 모든 트럭에 적합한지 확인합니다.
+
+1. 각 트럭의 대시보드를 사용하여 다른 고객에게 트럭을 배정해 봅니다. 
+
+1. 각 대시보드의 **위치** 맵을 사용하여 트럭이 정확한 방향으로 향하고 있는지 확인합니다.
+
+    랩을 완료했습니다!
+
+1. 리소스를 정리합니다.

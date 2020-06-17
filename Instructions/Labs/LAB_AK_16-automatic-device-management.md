@@ -1,171 +1,218 @@
----
+﻿---
 lab:
-    title: 'Lab 16: Automate IoT Device Management with Azure IoT Hub'
-    module: 'Module 8: Device Management'
+    title: '랩 16: Azure IoT Hub를 통한 IoT 디바이스 관리 자동화'
+     module: '모듈 8: 디바이스 관리'
 ---
 
-# Automate IoT Devices Management with Azure IoT Hub
+# Azure IoT Hub를 통한 IoT 디바이스 관리 자동화
 
-Azure IoT Hub is a cloud service designed to be your cloud gateway for IoT devices. It allows securely connect millions of devices and establish a bidirectional communication to not only collect data from sensors, but also allow for remote monitoring and management of the devices.
+IoT 디바이스는 종종 최적화된 운영 체제를 사용하거나 실제 운영 체제가 없어도 실리콘에서 직접 코드를 실행합니다. 이와 같은 디바이스에서 실행되는 소프트웨어를 업데이트하기 위해 가장 흔히 사용하는 방법은 OS와 OS에서 실행 중인 앱(펌웨어라고 함)을 포함하여 전체 소프트웨어 패키지의 새 버전을 플래시하는 것입니다.
 
-## Lab Scenario
+디바이스마다 특정한 목적이 있기 때문에, 펌웨어 역시 매우 구체적이며 디바이스의 목적뿐만 아니라 한정된 리소스에 맞게 최적화되어 있습니다.
 
-Suppose you manage a company that offers a solution to maintain and monitor cheese caves' temperature and humidity at optimal levels. You have been working with gourmet cheese making companies for a long time and established long term trust with these customers who value the quality of your product.
+펌웨어 업데이트 프로세스도 하드웨어와 하드웨어 제조업체가 보드를 만든 방식에 따라 다를 수 있습니다. 이는 펌웨어 업데이트 프로세스의 일부가 일반적이지 않으며 펌웨어 업데이트 프로세스의 세부 정보를 얻으려면 디바이스 제조업체와 협력해야 함을 의미합니다(단, 자체 하드웨어를 개발하는 경우, 즉 펌웨어 업데이트 프로세스를 알고 있는 경우는 예외).
 
-Your solution consists in sensors and a climate system installed in the cave that report in real time on the temperature and humidity and an online portal customers can use to monitor and remotely operate their devices to adapt the temperature and humidity to the type of cheese they stored in their cave or to fine tune the environment for perfectly aging their cheese.
+예전에는 펌웨어 업데이트를 개별 디바이스에 수동으로 적용하였지만, 이 방법은 일반적인 IoT 솔루션에 사용되는 디바이스 수를 고려할 때 더 이상 적합하지 않습니다. 클라우드에서 원격으로 관리하는 새 펌웨어가 배포되면서 현재 펌웨어 업데이트는 OTA(Over-the-Air)에서 이루어지는 경우가 훨씬 많아졌습니다.
 
-Your company is always enhancing the software running on the devices to better adapt to your customers different cheeses and diverse types of rooms they use to store their cheese. In addition to the features updates, you also want to make sure the devices deployed at customers locations have the latest security patches to ensure privacy and prevent hackers to take control of the system. In order to do this, you need to keep the devices up to date by remotely updating their firmware.
+IoT 디바이스에 대한 모든 OTA 펌웨어 업데이트에는 다음과 같은 공통점이 있습니다.
 
-## In This Lab
+1. 펌웨어 버전은 고유하게 식별됩니다.
+1. 펌웨어는 디바이스가 온라인 소스에서 가져와야 할 이진 파일 형식으로 제공됩니다.
+1. 펌웨어는 로컬로 저장되며 이는 일종의 실제 저장소(ROM 메모리, 하드 드라이브 등)입니다.
+1. 디바이스 제조업체는 펌웨어를 업데이트하기 위해 디바이스에서 필요한 작업에 대한 설명을 제공합니다.
 
-In this lab, you will you'll learn how automate device management with IoT Hub to configure and manage IoT devices remotely at scale.
+Azure IoT Hub는 단일 디바이스와 디바이스 컬렉션에서 디바이스 관리 작업을 구현할 수 있는 고급 지원을 제공합니다. [자동 디바이스 관리](https://docs.microsoft.com/azure/iot-hub/iot-hub-auto-device-config) 기능을 사용하면 간단하게 일련의 작업을 구성하고 트리거한 다음 진행 상황을 모니터링할 수 있습니다.
 
-This lab includes:
+## 랩 시나리오
 
-* Create an Azure IoT Hub and a Device ID
-* Setup an Azure IoT environment: and Azure IoT Hub instance and a device Id
-* Write code for simulating the device that will implement the firmware update
-* Test the firmware update process on a single device using Azure IoT Hub automatic device management
+Contoso는 치즈 창고에서 구현한 자동 공기 처리 시스템을 통해 이미 우수한 품질 기준을 더욱 높일 수 있었습니다. 이 회사는 그 어느 때보다 수상 경력에 빛나는 치즈를 가장 많이 보유하고 있습니다.
 
+기본 솔루션은 센서와 통합된 IoT 디바이스와 다중 챔버 케이브 시스템 내에서 온도와 습도를 실시간으로 제어하는 기후 제어 시스템으로 구성됩니다. 또한, 직접 메서드와 디바이스 쌍 속성을 모두 사용하여 디바이스를 관리할 수 있는 기능을 보여주는 간단한 백 엔드 앱을 개발했습니다.
 
-## Exercise 1: Create an Azure IoT Hub and a Device ID
+Contoso는 운영자가 창고 환경을 모니터링하고 원격으로 관리하는 데 사용할 수 있는 온라인 포털이 포함되도록 초기 솔루션에서 간단한 백 엔드 앱을 확장했습니다. 새로운 포털에서 운영자는 치즈의 종류 또는 치즈 숙성 과정의 특정 단계에 따라 창고 내부의 온도와 습도도 사용자 정의할 수 있습니다. 창고 내부의 각 챔버 또는 영역은 별도로 제어할 수 있습니다.
 
-This lab assumes the following resources are available:
+IT 부서는 운영자를 위해 개발한 백 엔드 포털을 유지 관리하지만, 관리자는 솔루션의 디바이스 쪽을 관리하기로 동의했습니다. 
 
-| Resource Type | Resource Name |
+이는 사용자에게 다음 두 가지를 의미합니다. 
+
+1. Contoso 운영팀은 항상 개선할 방법을 찾고 있습니다. 이러한 개선으로 인해 디바이스 소프트웨어에서 새 기능에 대한 요청이 발생하는 경우가 많습니다. 
+
+1. 케이브 위치에 배포되는 IoT 디바이스에는 프라이버시를 보장하고 해커가 시스템을 제어하지 못하도록 최신 보안 패치가 필요합니다. 시스템 보안을 유지하려면 펌웨어를 원격으로 업데이트하여 디바이스를 최신 상태로 유지해야 합니다.
+
+규모에 맞는 자동 디바이스 관리 및 디바이스 관리를 가능하게 하는 IoT Hub 기능을 구현하려는 계획이 있으십니다.
+
+다음의 리소스가 만들어집니다.
+
+![랩 16 아키텍처](media/LAB_AK_16-architecture.png)
+
+## 이 랩에서는
+
+이 랩에서는 다음 활동을 완료할 예정입니다.
+
+* 랩 필수 구성 요소 확인
+* 펌웨어 업데이트를 구현할 시뮬레이션된 디바이스에 대한 코드 쓰기
+* Azure IoT Hub 자동 디바이스 관리를 사용하여 단일 디바이스에서 펌웨어 업데이트 프로세스 테스트
+
+## 랩 지침
+
+### 연습 1: 랩 필수 구성 요소 확인
+
+이 랩에서는 다음과 같은 Azure 리소스를 사용할 수 있다고 가정합니다.
+
+| 리소스 종류 | 리소스 이름 |
 | :-- | :-- |
-| Resource Group | AZ-220-RG |
-| IoT Hub | AZ-220-HUB-{YOUR-ID} |
-| IoT Device | SimulatedSolutionThermostat |
+| 리소스 그룹 | AZ-220-RG |
+| IoT Hub | AZ-220-HUB-_{YOUR-ID}_ |
+| IoT 디바이스 | SimulatedSolutionThermostat |
 
-To create these resources, please update and execute the **lab-setup.azcli** script before starting the lab.
+이러한 리소스를 사용할 수 없는 경우 아래 지침에 따라 **lab16-setup.azcli** 스크립트를 실행한 후 연습 2로 이동해야 합니다. 스크립트 파일은 개발자 환경 구성(랩 3)의 일부로 로컬로 복제한 GitHub 리포지토리에 포함됩니다.
 
-1. If necessary, log in to your Azure portal using your Azure account credentials.
+>**참고:** **SimulatedSolutionThermostat** 디바이스에 대한 연결 문자열이 필요합니다. 이 디바이스가 Azure IoT Hub에 이미 등록된 경우, Azure Cloud Shell에서 다음 명령을 실행하여 연결 문자열을 가져올 수 있습니다."
+>
+> ```bash
+> az iot hub device-identity show-connection-string --hub-name AZ-220-HUB-_{YOUR-ID}_ --device-id SimulatedThermostat -o tsv
+> ```
 
-    If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
+ **lab16-setup.azcli** 스크립트는 **Bash** 셸 환경에서 실행되도록 작성되었습니다. 이를 실행할 수 있는 가장 쉬운 방법은 Azure Cloud Shell에서 실행하는 것입니다.
 
-1. Open the Azure Cloud Shell by clicking the **Terminal** icon within the top header bar of the Azure portal, and select the **Bash** shell option.
+1. 브라우저를 사용하여 [Azure Shell](https://shell.azure.com/)을 열고 이 과정에 사용 중인 Azure 구독으로 로그인합니다.
 
-1. Before the Azure CLI can be used with commands for working with Azure IoT Hub, the **Azure IoT Extensions** need to be installed. To install the extension, run the following command:
+    Cloud Shell에 대한 저장소 설정 관련 메시지가 표시되면 기본값을 수락합니다.
 
-    ```sh
-    az extension add --name azure-cli-iot-ext
-    ```
+1. Azure Cloud Shell에서 **Bash**를 사용하고 있는지 확인합니다.
 
-1. To upload the setup script, in the Azure Cloud Shell toolbar, click **Upload/Download files** (fourth button from the right).
+    Azure Cloud Shell 페이지의 왼쪽 상단에 있는 드롭다운으로 환경을 선택할 수 있습니다. 선택한 드롭다운 값이 **Bash**인지 확인합니다.
 
-1. In the dropdown, select **Upload** and in the file selection dialog, navigate to the **lab-setup.azcli** file for this lab. Select the file and click **Open** to upload it.
+1. Azure Shell 도구 모음에서 **파일 업로드/다운로드**(오른쪽에서 네 번째 단추)를 클릭합니다.
 
-    A notification will appear when the file upload has completed.
+1. 드롭다운에서 **업로드**를 클릭합니다.
 
-1. You can verify that the file has uploaded by listing the content of the current directory by entering the `ls` command.
+1. 파일 선택 대화 상자에서 개발 환경을 구성할 때 다운로드한 GitHub 랩 파일의 폴더 위치로 이동합니다.
 
-1. To create a directory for this lab, move **lab-setup.azcli** into that directory, and make that the current working directory, enter the following commands:
+    _랩 3: 개발 환경 설정_, ZIP 파일을 다운로드하고 콘텐츠를 로컬로 추출하여 랩 리소스를 포함하는 GitHub 리포지토리를 복제했습니다. 추출된 폴더 구조는 다음 폴더 경로를 포함합니다.
+
+    * Allfiles
+      * 랩
+          * 16-Azure IoT Hub를 통한 IoT 디바이스 관리 자동화
+            * 설정
+
+    lab16-setup.azcli 스크립트 파일은 랩 16의 설치 폴더에 있습니다.
+
+1. **lab16-setup.azcli** 파일을 선택한 다음 **열기**를 클릭합니다.
+
+    파일 업로드가 완료되면 알림이 나타납니다.
+
+1. Azure Cloud Shell에 올바른 파일이 업로드되었는지 확인하려면 다음 명령을 입력합니다.
 
     ```bash
-    mkdir lab14
-    mv lab-setup.azcli lab14
-    cd lab14
+    ls
     ```
 
-1. To ensure the **lab-setup.azcli** has the execute permission, enter the following commands:
+    `ls` 명령으로 현재 디렉터리의 내용을 나열합니다. lab16-setup.azcli 파일이 나열되어 있어야 합니다.
+
+1. 설치 스크립트가 포함된 이 랩에 대한 디렉터리를 만든 다음 해당 디렉터리로 이동하려면 다음 Bash 명령을 입력합니다.
 
     ```bash
-    chmod +x lab-setup.azcli
+    mkdir lab16
+    mv lab16-setup.azcli lab16
+    cd lab16
     ```
 
-1. To edit the **lab-setup.azcli** file, click **{ }** (Open Editor) in the toolbar (second button from the right). In the **Files** list, select **lab14** to expand it and then select **lab-setup.azcli**.
+1. **lab16-setup.azcli**에 실행 권한이 있는지 확인하려면 다음 명령을 입력합니다.
 
-    The editor will now show the contents of the **lab-setup.azcli** file.
+    ```bash
+    chmod +x lab16-setup.azcli
+    ```
 
-1. In the editor, update the values of the `YourID` and `Location` variables. Set `YourID` to your initials and todays date - i.e. **CP123019**, and set `Location` to the location that makes sense for your resources.
+1. Cloud Shell 도구 모음에서 lab16-setup.azcli 파일을 편집하려면 **편집기 열기**(오른쪽에서 두 번째 단추 - { })를 클릭합니다.
 
-    > [!NOTE] The `Location` variable should be set to the short name for the location. You can see a list of the available locations and their short-names (the **Name** column) by entering this command:
+1. **파일** 목록에서 lab16 폴더를 확장하고 스크립트 파일을 열려면 **lab16**을 클릭한 다음 **lab16-setup.azcli**를 클릭합니다.
+
+    이제 편집기에서 **lab16-setup.azcli** 파일의 콘텐츠가 표시됩니다.
+
+1. 편집기에서 `{YOUR-ID}` 및 `{YOUR-LOCATION}`의 할당된 값을 업데이트합니다.
+
+    아래 참조 샘플에서 `{YOUR-ID}`를 이 과정을 시작할 때 만든 고유 ID(예: **CAH191211**)로 설정하고 `{YOUR-LOCATION}`을 리소스에 적합한 위치로 설정해야 합니다.
+
+    ```bash
+    #!/bin/bash
+
+    RGName="AZ-220-RG"
+    IoTHubName="AZ-220-HUB-{YOUR-ID}"
+
+    Location="{YOUR-LOCATION}"
+    ```
+
+    > **참고**:  `{YOUR-LOCATION}` 변수는 해당 지역의 짧은 이름으로 설정되어야 합니다. 이 명령을 입력하면 사용 가능한 지역 목록과 이 지역의 짧은 이름(**이름** 열)을 볼 수 있습니다.
     >
     > ```bash
     > az account list-locations -o Table
-    > ```
     >
-    > ```text
-    > DisplayName           Latitude    Longitude    Name
+    > 표시이름           위도    경도    이름
     > --------------------  ----------  -----------  ------------------
-    > East Asia             22.267      114.188      eastasia
-    > Southeast Asia        1.283       103.833      southeastasia
-    > Central US            41.5908     -93.6208     centralus
-    > East US               37.3719     -79.8164     eastus
-    > East US 2             36.6681     -78.3889     eastus2
+    > 동아시아             22.267      114.188      eastasia
+    > 동남 아시아        1.283       103.833      southeastasia
+    > 미국 중부            41.5908     -93.6208     centralus
+    > 미국 동부               37.3719     -79.8164     eastus
+    > 미국 동부 2             36.6681     -78.3889     eastus2
     > ```
 
-1. To save the changes made to the file and close the editor, click **...** in the top-right of the editor window and select **Close Editor**.
+1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창의 오른쪽 상단에서 ...를 클릭한 다음 **편집기 닫기**를 클릭합니다.
 
-    If prompted to save, click **Save** and the editor will close.
+    저장하라는 메시지가 표시된 경우 **저장**을 클릭하면 편집기가 닫힙니다.
 
-    > [!NOTE] You can use **CTRL+S** to save at any time and **CTRL+Q** to close the editor.
+    > **참고**:  **CTRL+S**를 사용하여 언제든지 저장할 수 있으며 **CTRL+Q**를 사용하여 편집기를 닫을 수 있습니다.
 
-1. To create a resource group named **AZ-220-RG**, create an IoT Hub named **AZ-220-HUB-{YourID}**, add a device with a Device ID of **SimulatedSolutionThermostat**, and display the device connection string, enter the following command:
+1. 이 랩에 필요한 리소스를 만들려면 다음 명령을 입력합니다.
 
     ```bash
-    ./lab-setup.azcli
+    ./lab16-setup.azcli
     ```
 
-    This will take a few minutes to run. You will see JSON output as each step completes.
+    이 스크립트를 실행하는 데 몇 분이 걸릴 수 있습니다. 각 단계가 완료되면 JSON 출력이 표시됩니다.
 
-1. Once complete, the connection string for the device, starting with "HostName=", is displayed. Copy this connection string into a text document and note that it is for the **SimulatedSolutionThermostat** device.
+    스크립트는 먼저 **AZ-220-RG**라는 리소스 그룹과 **AZ-220-HUB-{YourID}**라는 IoT Hub를 만듭니다. 이미 있는 경우 해당 메시지가 표시됩니다. 그런 다음 스크립트는 ID가 **SimulatedSolutionThermostat**인 디바이스를 IoT Hub에 추가하고 디바이스 연결 문자열을 표시합니다.
 
-## Exercise 2: Write code to simulate device that implements firmware update
+1. 스크립트가 완료되면 디바이스의 연결 문자열이 표시됩니다.
 
-At the end of this task, you'll have a device simulator awaiting for a firmware update request from IoT Hub.
+    연결 문자열은 "HostName="으로 시작합니다.
 
-Before getting started with your first firmware update on an IoT device, take a minute to review what it actually means to implement such an operation and how Azure IoT Hub helps making the process.
+1. 연결 문자열을 텍스트 문서에 복사합니다. 이는 **SimulatedSolutionThermostat** 디바이스용이라는 점에 유의하십시오.
 
-### What does updating an IoT device's firmware imply?
+    연결 문자열을 쉽게 찾을 수 있는 위치에 저장하셨다면, 랩을 계속할 준비가 되었습니다.
 
-IoT devices most often are powered by optimized operating systems or even sometimes running code directly on the silicon (without the need for an actual operating system). In order to update the software running on this kind of devices the most common method is to flash a new version of the entire software package, including the OS as well as the apps running on it (called firmware).
+### 연습 2: 펌웨어 업데이트를 구현하는 디바이스를 시뮬레이션하는 코드 작성
 
-Because each device has a specific purpose, its firmware is also very specific and optimized for the purpose of the device as well as the constrained resources available.
+이 연습에서는 원하는 디바이스 쌍의 속성 변경 내용을 관리하고 펌웨어 업데이트를 시뮬레이션하는 로컬 프로세스를 트리거할 간단한 시뮬레이터를 만듭니다. 전체 프로세스는 실제 디바이스의 경우에도 동일합니다(로컬 펌웨어 업데이트에 대한 실제 단계 제외). 그런 다음 Azure Portal을 사용하여 단일 디바이스에 대한 펌웨어 업데이트를 구성하고 실행합니다. IoT Hub는 디바이스 쌍 속성을 사용하여 구성 변경 요청을 디바이스로 전송하고 진행 상황을 모니터링합니다.
 
-The process for updating a firmware is also something that can be very specific to the hardware itself and to the way the hardware manufacturer does things. This means that a part of the firmware update process is not generic and you will need to work with your device manufacturer to get the details of the firmware update process (unless you are developing your own hardware which means you probably know what the firmware update process).
+#### 작업 1: 디바이스 시뮬레이터 앱 만들기
 
-While firmware updates can be and used to applied manually on devices, this is no longer possible considering the rapid growth in scale of IoT solutions. Firmware updates are now more commonly done over-the-air (OTA) with deployments of new firmware managed remotely from the cloud.
+이 작업에서는 Visual Studio Code를 사용하여 새 콘솔 앱을 만듭니다.
 
-There is a set of common denominators to all over-the-air firmware updates for IoT devices:
+1. Visual Studio Code를 엽니다.
 
-1. Firmware versions are uniquely identified
-1. Firmware comes in a binary file format that the device will need to acquire from an online source
-1. Firmware is locally stored is some form of physical storage (ROM memory, hard drive,...)
-1. Device manufacturer provide a description of the required operations on the device to update the firmware.
+    이 과정의 랩 3을 완료한 경우 [.NET Core](https://dotnet.microsoft.com/download) 및 [C# 확장](https://marketplace.visualstudio.com/items?itemName=ms-vscode.csharp)이 개발 환경에 설치되어 있어야 합니다.
 
-### Azure IoT Hub Automatic Device Management
+1. **터미널** 메뉴에서 **새 터미널**을 클릭합니다.
 
-Azure IoT Hub offers advanced support for implementing device management operations on a single and on collections of devices. The [Automatic Device Management](https://docs.microsoft.com/azure/iot-hub/iot-hub-auto-device-config) feature allows to simply configure a set of operations, trigger them and then monitor their execution.
-
-In this exercise, you will create a simple simulator that will manage the device twin desired properties changes and will trigger a local process simulating a firmware update. The overall process would be exactly the same for a real device with the exception of the actual steps for the local firmware update. You will then use the Azure Portal to configure and execute a firmware update for a single device. IoT Hub will use the device twin properties to transfer the configuration change request to the device and monitor the progress
-
-## Create the device simulator app
-
-1. To use C# in Visual Studio Code, ensure both [.NET Core](https://dotnet.microsoft.com/download), and the [C# extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.csharp) are installed
-
-1. Open a terminal in Visual Studio Code. Create a folder called **fwupdatedevice** and Navigate to the **fwupdatedevice** folder by running the following commands in the terminal:
+1. 터미널 명령 프롬프트에서 다음 명령을 입력합니다.
 
     ```cmd/sh
     mkdir fwupdatedevice
     cd fwupdatedevice
     ```
 
-1. Enter the following command in the terminal to create a **Program.cs** file in your folder, along with a project file.
+    첫 번째 명령은 **fwupdatedevice**라는 폴더를 만듭니다. 두 번째 명령은 **fwupdatedevice** 폴더로 이동합니다.
+
+1. 새 콘솔 앱을 만들려면 다음 명령을 입력합니다.
 
     ```cmd/sh
     dotnet new console
     ```
 
-1. Enter `dotnet restore` in the terminal. This command gives your app access to the required .NET packages.
+    > **참고**: 새 .NET 콘솔 앱이 만들어지면 `dotnet restore`이 사후 생성 프로세스로 실행되었어야 합니다. 터미널 창에 이 문제가 발생했음을 나타내는 메시지가 표시되지 않으면 앱에서 필수 .NET 패키지에 액세스하지 못할 수도 있습니다. 이를 처리하려면 다음 명령을 입력합니다. `dotnet restore`
 
-    ```cmd/sh
-    dotnet restore
-    ```
-
-
-1. In the terminal, install the required libraries. Enter the following commands and make sure all three libraries are installed:
+1. 앱에 필요한 라이브러리를 설치하려면 다음 명령을 입력합니다.
 
     ```cmd/sh
     dotnet add package Microsoft.Azure.Devices.Client
@@ -173,69 +220,83 @@ In this exercise, you will create a simple simulator that will manage the device
     dotnet add package Newtonsoft.Json
     ```
 
-1. From the **File** menu, open up the **Program.cs** file, and delete the default contents.
+    터미널 창에서 메시지를 리뷰하고 세 개의 라이브러리를 모두 설치했는지 확인합니다.
 
-## Add code to your app
+1. **파일** 메뉴에서 **폴더 열기**를 클릭합니다.
 
-1. Open the **Program.cs** file for the device app.
+1. **폴더 열기** 대화 상자에서 터미널 창에 지정된 폴더 위치로 이동한 다음 **fwupdatedevice**를 클릭한 후 **폴더 선택**을 클릭합니다.
 
-1. Copy and paste the following code.
+    EXPLORER 창은 Visual Studio Code에서 열리고 `Program.cs` 및 `fwupdatedevice.csproj` 파일이 나열되어 있어야 합니다.
+
+1. **탐색기** 창에서 **Program.cs**를 클릭합니다.
+
+1. 코드 편집기 창에서 Program.cs 파일의 콘텐츠를 삭제합니다.
+
+#### 작업 2: 앱에 코드 추가
+
+이 작업에서는 IoT Hub가 생성한 요청에 대한 응답으로 디바이스에서 펌웨어 업데이트를 시뮬레이션하기 위한 코드를 입력합니다.
+
+1. Visual Studio Code에서 **Program.cs** 파일을 열려 있는지 확인합니다.
+
+    코드 편집기 창에는 빈 코드 파일이 표시되어야 합니다.
+
+1. 다음 코드를 코드 편집기 창에 복사하여 붙여넣습니다.
 
     ```cs
     // Copyright (c) Microsoft. All rights reserved.
-    // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+    // MIT 라이선스에 따라 라이선스가 부여되었습니다. 전체 라이선스 정보는 프로젝트 루트의 LICENSE 파일을 참조하세요.
 
     using Microsoft.Azure.Devices.Shared;
     using Microsoft.Azure.Devices.Client;
     using System;
     using System.Threading.Tasks;
-    
+
     namespace fwupdatedevice
     {
         class SimulatedDevice
         {
-            // The device connection string to authenticate the device with your IoT hub.
+            // IoT Hub를 사용하여 디바이스를 인증하는 디바이스 연결 문자열입니다.
             static string s_deviceConnectionString = "";
-    
-            // Device ID variable
+
+            // 디바이스 ID 변수
             static string DeviceID="unknown";
-    
-            // Firmware version variable
+
+            // 펌웨어 버전 변수
             static string DeviceFWVersion = "1.0.0";
-    
-            // Simple console log function
+
+            // 간단한 콘솔 로그 함수
             static void LogToConsole(string text)
             {
-                // we prefix the logs with the device ID
-                Console.WriteLine(DeviceID + ": " + text);
+                // 디바이스 ID로 로그를 접두사화합니다.
+                Console.WriteLine(header.Key + ": " + text);
             }
-    
-            // Function to retreive firmware version from the OS/HW
+
+            // OS/HW에서 펌웨어 버전을 검색하는 기능
             static string GetFirmwareVersion()
             {
-                // In here you would get the actual firmware version from the hardware. For the simulation purposes we will just send back the FWVersion variable value
+                // 여기서는 하드웨어에서 실제 펌웨어 버전을 얻을 수 있습니다. 시뮬레이션 프로세스를 위해 FWVersion 변수 값을 되돌려 보내겠습니다.
                 return DeviceFWVersion;
             }
-    
-            // Function for updating a device twin reported property to report on the current Firmware (update) status
-            // Here are the values expected in the "firmware" update property by the firmware update configuration in IoT Hub
-            //  currentFwVersion: The firmware version currently running on the device.
-            //  pendingFwVersion: The next version to update to, should match what's
-            //                    specified in the desired properties. Blank if there
-            //                    is no pending update (fwUpdateStatus is 'current').
-            //  fwUpdateStatus:   Defines the progress of the update so that it can be
-            //                    categorized from a summary view. One of:
-            //         - current:     There is no pending firmware update. currentFwVersion should
-            //                    match fwVersion from desired properties.
-            //         - downloading: Firmware update image is downloading.
-            //         - verifying:   Verifying image file checksum and any other validations.
-            //         - applying:    Update to the new image file is in progress.
-            //         - rebooting:   Device is rebooting as part of update process.
-            //         - error:       An error occurred during the update process. Additional details
-            //                    should be specified in fwUpdateSubstatus.
-            //         - rolledback:  Update rolled back to the previous version due to an error.
-            //  fwUpdateSubstatus: Any additional detail for the fwUpdateStatus . May include
-            //                     reasons for error or rollback states, or download %.
+
+            // 현재 펌웨어(업데이트) 상태를 보고하도록 디바이스 쌍 reported 속성을 업데이트하는 함수
+            // IoT Hub에서 펌웨어 업데이트 구성에 의한 "펌웨어" 업데이트 속성에서 예상되는 값입니다
+            //  currentFwVersion: 현재 디바이스에서 실행 중인 펌웨어 버전.
+            //  pendingFwVersion: 다음 업데이트 할 버전은 
+            //                    원하는 속성에 지정된 버전과 일치해야 합니다. 다음의 경우에는 비어 있습니다
+            //                    보류 중인 업데이트가 없는 경우(fwUpdateStatus가 '현재').
+            //  fwUpdateStatus:   업데이트 진행률이 다음과 같도록 정의합니다
+            //                    요약 보기에서 분류. 다음 중 하나.
+            //         - 현재:     보류 중인 펌웨어 업데이트가 없습니다. currentFwVersion는
+            //                    fwVersion을 원하는 속성과 일치합니다.
+            //         - 다운로드 중: 펌웨어 업데이트 이미지가 다운로드 중입니다.
+            //         - verifying:   이미지 파일 체크섬 및 기타 유효성 검사 확인.
+            //         - applying:    프로세스 중인 새 이미지 파일 업데이트.
+            //         - 다시 부팅:   업데이트 프로세스의 일부로 디바이스가 다시 부팅되고 있습니다.
+            //         - 오류:       업데이트 중 오류가 발생하였습니다. 추가 세부 정보
+            //                    fwUpdateSubstatus에서 지정되어야 합니다.
+            //         - 롤백:  오류로 인해 업데이트가 이전 버전으로 롤백되었습니다.
+            //  fwUpdateSubstatus: fwUpdateStatus에 대한 추가 세부 정보. 다음을 포함할 수 있습니다.
+            //                     오류 또는 롤백 상태에 대한 이유 또는 다운로드 %.
             //
             // reported: {
             //       firmware: {
@@ -263,20 +324,20 @@ In this exercise, you will create a simple simulator that will manage the device
                     properties["lastFwUpdateStartTime"] = lastFwUpdateStartTime;
                 if (lastFwUpdateEndTime!=null)
                     properties["lastFwUpdateEndTime"] = lastFwUpdateEndTime;
-    
+
                 TwinCollection reportedProperties = new TwinCollection();
                 reportedProperties["firmware"] = properties;
-    
+
                 await client.UpdateReportedPropertiesAsync(reportedProperties).ConfigureAwait(false);
             }
-            
-            // Execute firmware update on the device
+
+            // 디바이스에서 펌웨어 업데이트 실행
             static async Task UpdateFirmware(DeviceClient client, string fwVersion, string fwPackageURI, string fwPackageCheckValue)
             {
                 LogToConsole("A firmware update was requested from version " + GetFirmwareVersion() + " to version " + fwVersion);
                 await UpdateFWUpdateStatus(client, null, fwVersion, null, null, DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"), null);
-    
-                // Get new firmware binary. Here you would download the binary or retreive it from the source as instructed for your device, then double check with a hash the integrity of the binary you downloaded 
+
+                // 새로운 펌웨어 이진 가져오기 여기에서 이진을 다운로드하거나 디바이스에 대해 지시된 대로 소스에서 검색한 다음 다운로드한 이진의 무결성을 해시로 다시 확인하세요.
                 LogToConsole("Downloading new firmware package from " + fwPackageURI);
                 await UpdateFWUpdateStatus(client, null, null, "downloading", "0", null, null);
                 await Task.Delay(2 * 1000);
@@ -287,63 +348,63 @@ In this exercise, you will create a simple simulator that will manage the device
                 await UpdateFWUpdateStatus(client, null, null, "downloading", "75", null, null);
                 await Task.Delay(2 * 1000);
                 await UpdateFWUpdateStatus(client, null, null, "downloading", "100", null, null);
-                // report the binary has been downloaded
+                // 이진이 저장되었는지 보고합니다
                 LogToConsole("The new firmware package has been successfully downloaded.");
-                
-                // Check binary integrity
+
+                // 이진 무결성 확인
                 LogToConsole("Verifying firmware package with checksum " + fwPackageCheckValue);
                 await UpdateFWUpdateStatus(client, null, null, "verifying", null, null, null);
                 await Task.Delay(5 * 1000);
-                // report the binary has been downloaded
+                // 이진이 저장되었는지 보고합니다
                 LogToConsole("The new firmware binary package has been successfully verified");
-    
-                // Apply new firmware
+
+                // 새로운 펌웨어 적용
                 LogToConsole("Applying new firmware");
                 await UpdateFWUpdateStatus(client, null, null, "applying", null, null, null);
                 await Task.Delay(5 * 1000);
-    
-                // On a real device you would reboot at the end of the process and the device at boot time would report the actual firmware version, which if successfull should be the new version.
-                // For the sake of the simulation, we will simply wait some time and report the new firmware version
+
+                // 실제 디바이스에서는 프로세스가 끝날 때 다시 부팅하고 부팅 시 디바이스는 실제 펌웨어 버전을 보고하며, 성공하는 경우 새 버전이어야 합니다.
+                // 시뮬레이션을 위해 잠시 기다린 후 새 펌웨어 버전을 보고합니다.
                 LogToConsole("Rebooting");
                 await UpdateFWUpdateStatus(client, null, null, "rebooting", null, null, DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"));
                 await Task.Delay(5 * 1000);
-    
-                // On a real device you would issue a command to reboot the device. Here we are simply runing the init function
+
+                // 실제 디바이스에서는 디바이스를 다시 부팅하라는 명령을 내릴 수 있습니다. 여기서는 단순히 초기화 함수를 실행하고 있습니다.
                 DeviceFWVersion = fwVersion;
                 await InitDevice(client);
-    
+
             }
-    
-            // Callback for responding to desired property changes 
+
+            // 원하는 속성 변경에 응답하기 위한 콜백
             static async Task OnDesiredPropertyChanged(TwinCollection desiredProperties, object userContext)
             {
                 LogToConsole("Desired property changed:");
                 LogToConsole($"{desiredProperties.ToJson()}");
-    
-                // Execute firmware update
+
+                // 펌웨어 업데이트 실행
                 if (desiredProperties.Contains("firmware") && (desiredProperties["firmware"]!=null))
                 {
-                    // In the desired properties, we will find the following information:
-                    // fwVersion: the version number of the new firmware to flash
-                    // fwPackageURI: URI from where to download the new firmware binary
-                    // fwPackageCheckValue: Hash for validating the integrity of the binary  downloaded
-                    // We will assume the version of the firmware is a new one
+                    // 원하는 속성에서 다음 정보를 찾습니다.
+                    // fwVersion: 플래시할 새 펌웨어의 버전 번호
+                    // fwPackageURI: 새로운 펌웨어 이진을 다운로드 할 수 있는 URI
+                    // fwPackageCheckValue: 다운로드한 이진 파일의 무결성을 확인하기 위한 해시
+                    // 펌웨어 버전이 새 버전이라고 가정하겠습니다.
                     TwinCollection fwProperties = new TwinCollection(desiredProperties["firmware"].ToString());
                     await UpdateFirmware((DeviceClient)userContext, fwProperties["fwVersion"].ToString(), fwProperties["fwPackageURI"].ToString(), fwProperties["fwPackageCheckValue"].ToString());
-    
+
                 }
             }
-    
+
             static async Task InitDevice(DeviceClient client)
             {
                 LogToConsole("Device booted");
                 LogToConsole("Current firmware version: " + GetFirmwareVersion());
                 await UpdateFWUpdateStatus(client, GetFirmwareVersion(), "", "current", "", "", "");
             }
-    
+
             static async Task Main(string[] args)
             {
-                // Get the device connection string from the command line
+                // 명령줄에서 디바이스 연결 문자열을 가져옵니다.
                 if (string.IsNullOrEmpty(s_deviceConnectionString) && args.Length > 0)
                 {
                     s_deviceConnectionString = args[0];
@@ -352,30 +413,30 @@ In this exercise, you will create a simple simulator that will manage the device
                     Console.WriteLine("Please enter the connection string as argument.");
                     return;
                 }
-    
+
                 DeviceClient deviceClient = DeviceClient.CreateFromConnectionString(s_deviceConnectionString, TransportType.Mqtt);
-    
+
                 if (deviceClient == null)
                 {
                     Console.WriteLine("Failed to create DeviceClient!");
                     return;
                 }
-    
-                // Get the device ID 
+
+                // 디바이스 ID를 가져옵니다.
                 string[] elements = s_deviceConnectionString.Split('=',';');
-    
+
                 for(int i=0;i<elements.Length; i+=2)
                 {
                     if (elements[i]=="DeviceId") DeviceID = elements[i+1];
                 }
-    
-                // Run device init routine
+
+                // 디바이스 초기화 루틴을 실행합니다
                 await InitDevice(deviceClient);
-    
-                // Attach callback for Desired Properties changes
+
+                // 원하는 속성 변경에 대한 콜백을 연결합니다.
                 await deviceClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertyChanged, deviceClient).ConfigureAwait(false);
-    
-                // Wait for keystroke to end app
+
+                // 앱이 종료될 때까지 키 입력 대기
                 // TODO
                 while (true)
                 {
@@ -385,63 +446,69 @@ In this exercise, you will create a simple simulator that will manage the device
             }
         }
     }
-        
     ```
 
-    > [!NOTE]
-    > Read through the comments in the code, noting how the device reacts to device twin changes to execute a firmware update based on the configuration shared in the desired Property "firmware". You can also note the function that will report the current firmware update status through the reported properties of the device twin.
+    > **참고**: 
+    > 원하는 속성 "펌웨어"에서 공유된 구성을 기반으로 펌웨어 업데이트를 실행하기 위해 디바이스가 디바이스 쌍 변경에 반응하는 방식에 주목하면서 코드의 주석을 읽습니다. 또한 디바이스 쌍의 보고된 속성을 통해 현재 펌웨어 업데이트 상태를 보고하는 함수를 기록할 수도 있습니다.
 
-1. After you've entered the code below into the **Program.cs** file, you can run the app with the command `dotnet run`. This command will run the **Program.cs** file in the current folder, so ensure you are in the fwupdatedevice folder. 
+1. **파일** 메뉴에서 **저장**을 클릭합니다.   
 
+이제 디바이스 측 코드가 완성되었습니다. 다음으로 이 시뮬레이션된 디바이스에 대해 펌웨어 업데이트 프로세스가 예상대로 작동하는지 테스트합니다.
 
-    ```cmd/sh
-    dotnet run
+### 연습 3: 단일 디바이스에서 펌웨어 업데이트 테스트
+
+이 연습에서는 Azure Portal을 사용하여 새 디바이스 관리 구성을 만들고 이를 단일 시뮬레이션된 디바이스에 적용합니다.
+
+#### 작업 1: 디바이스 시뮬레이터 시작
+
+1. 필요한 경우 Visual Studio Code에서 **fwupdatedevice** 프로젝트를 엽니다.
+
+1. 터미널 창을 열어야 합니다.
+
+    명령 프롬프트의 폴더 위치는 `fwupdatedevice` 폴더입니다.
+
+1. `fwupdatedevice` 앱을 실행하려면 다음 명령을 입력합니다.
+
+    ``` bash
+    dotnet run "<device connection string>"
     ```
 
+    > **참고**: 자리 표시자를 실제 디바이스 연결 문자열로 바꾸고 연결 문자열 주위에 "" 기호를 포함해야 합니다. 
+    > 
+    > 예: `"HostName=AZ-220-HUB-{YourID}.azure-devices.net;DeviceId=SimulatedSolutionThermostat;SharedAccessKey={}="`
 
-1. Save the **Program.cs** file.
+1. 터미널 창의 내용을 검토합니다.
 
-At this point your device is ready to be manage from IoT Hub. Next, we will test that the firmware update process works as expected for this simulated device.
+    터미널에 다음과 같은 출력이 표시됩니다(여기에서 "mydevice"는 디바이스 ID를 만들 때 사용한 디바이스 ID임).
 
-## Exercise 3: Test firmware update on a single device
-
-In this exercise, we will use the Azure portal to create a new device management configuration and apply it to our single simulated device.
-
-## Start device simulator
-
-In the same terminal you setup the application for the simulated device, start the simulator typing the following command (replacing \<device connection string\> with the device connection string you got at the end of task 2):
-
-``` 
-dotnet run "<device connection string>" 
-```
-
-You should see the following output in the terminal (where "mydevice" is the device ID you used when creating the device identity):
-
-``` 
-    mydevice: Device booted
-    mydevice: Current firmware version: 1.0.0
-```
-
-> [!NOTE]
-> Make sure to put "" around your connection string. For example: "HostName=AZ-220-HUB-{YourID}.azure-devices.net;DeviceId=SimulatedSolutionThermostat;SharedAccessKey={}="
-
-## Create the device management configuration
-
-1. Sign into the [Azure portal](https://portal.azure.com/learn.docs.microsoft.com?azure-portal=true).
-
-1. Go to the IoT Hub blade. You can find your IoT Hub by typing in the search bar (on top) the name you used when creating it in task 2.
-
-1. In the IoT Hub, find the **Automatic Device Management** blade and select **IoT Device Configuration**, then select **Add Device Configuration**
-
-1. Enter an ID for the configuration such as **firmwareupdate** then click on **Next: Twins settings >** on the bottom.
-    
-1. For the **Device Twin Property** field, enter the following:
-
+    ``` bash
+        mydevice: 부팅된 디바이스
+        mydevice: 현재 펌웨어 버전: 1.0.0
     ```
-    properties.desired.firmware
-    ```
-    
-1. In the **Device Twin Property Content** field type the following. Then click on **Next: Metrics >**
+
+#### 작업 2: 디바이스 관리 구성 만들기
+
+1. 필요한 경우 Azure 계정 자격 증명을 사용하여 [Azure Portal](https://portal.azure.com/learn.docs.microsoft.com?azure-portal=true)에 로그인합니다.
+
+    둘 이상의 Azure 계정이 있는 경우에는 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
+
+1. Azure Portal 대시보드에서 **AZ-220-HUB-{YOUR-ID}**를 클릭합니다.
+
+    이제 IoT Hub 블레이드가 표시되어야 합니다.
+ 
+1. 왼쪽 탐색 메뉴의 **자동 디바이스 관리**에서 **IoT 디바이스 구성**을 클릭합니다.
+
+1. **IoT 디바이스 구성** 창에서 **디바이스 구성 추가**를 클릭합니다.
+
+1. **디바이스 쌍 구성 만들기** 블레이드에서 **이름**에 **firmwareupdate**를 입력합니다.
+
+    **레이블** 아래가 아니라 구성의 필수 **이름** 필드에 `firmwareupdate` 를 입력해야 합니다. 
+
+1. 블레이드 하단에서 **다음:**을 클릭합니다.** 쌍 설정 >**.
+
+1. **디바이스 쌍 설정**에서 **디바이스 쌍 속성** 필드에 **properties.desired.firmware**를 입력합니다.
+
+1. **디바이스 쌍 속성 콘텐츠** 필드에서 다음을 입력합니다.
 
     ``` json
     {
@@ -450,24 +517,49 @@ You should see the following output in the terminal (where "mydevice" is the dev
         "fwPackageCheckValue":"1234"
     }
     ```
-   
-1. In the **Metrics** blade we will define a custom metric to track the firmware update was effective. Create a new custom metric called **"fwupdated"** and type in the below criteria, then click on **Next: Target devices >**
+
+1. 블레이드 하단에서 **다음:**을 클릭합니다.** 메트릭 >**.
+
+    사용자 지정 메트릭을 사용하여 펌웨어 업데이트가 효과적인지 추적합니다. 
+
+1. **메트릭** 탭에서 **메트릭 이름** 아래에 **fwupdated**를 입력합니다.
+
+1. **메트릭 기준** 아래에 다음을 입력합니다.
 
     ``` SQL
-        SELECT deviceId FROM devices
-            WHERE properties.reported.firmware.currentFwVersion='1.0.1'
+    SELECT deviceId FROM devices
+        WHERE properties.reported.firmware.currentFwVersion='1.0.1'
     ```
-    
-1. In the **Priority** field, type **"10"** and in the **Target Condition** field, type in the following query, replacing "\<your device id\>" with the device Id you used to create the device in task 2, then click on **Next: Review + Create >**
+
+1. 블레이드 하단에서 **다음:**을 클릭합니다.** 대상 디바이스 >**.
+
+1. **대상 디바이스** 탭에서 **우선 순위** 아래 **우선 순위(더 높은 값 ...)** 필드에 **10**을 입력합니다.
+
+1. **대상 조건** 아래 **대상 조건** 필드에 다음 쿼리를 입력합니다.
 
     ``` SQL
-        deviceId='<your device id>'
+    deviceId='<your device id>'
     ```
-    
-1. On the next blade you should see the validation succeed for your new configuration. Click on **Create**.
 
-1. Once the configuration has been created you will see it in the **Automatic Device Management** blade.
+    > **참고**: `'<your device id>'`를 디바이스를 만들 때 사용한 디바이스 ID로 바꿉니다. 예: `'SimulatedSolutionThermostat'`
 
-At this point IoT Hub will look for devices matching the configuration's target devices criteria, and will apply the firmware update configuration automatically.
-    
-You have validated that the firmware update process on your simulated device works. You can stop the device simulator by simply pressing the "Enter" key in the terminal.
+1. 블레이드 하단에서 **다음:**을 클릭합니다.** 검토 + 만들기 >**
+
+    **검토 + 만들기** 탭이 열리면 새 구성에 대한 "유효성 검사 통과" 메시지가 표시되어야 합니다. 
+
+1. **검토 + 만들기** 탭에서 "유효성 검사 통과" 메시지가 표시되면 **만들기**를 클릭합니다.
+
+    "유효성 검사 통과" 메시지가 표시되면 되돌아가서 작업을 확인해야 구성을 만들 수 있습니다.
+
+1. **IoT 디바이스 구성** 창에서 **구성 이름**아래에 새 **firmwareupdate** 구성이 나열되어 있는지 확인합니다.  
+
+    새 구성이 만들어지면 IoT Hub는 구성의 대상 디바이스 기준과 일치하는 디바이스를 찾고 펌웨어 업데이트 구성을 자동으로 적용합니다.
+
+1. Visual Studio Code 창으로 전환하고 터미널 창의 내용을 검토합니다.
+
+    터미널 창에는 트리거된 펌웨어 업데이트 프로세스의 진행률을 나열하는 앱에서 생성된 새 출력이 포함되어야 합니다.
+
+1. 시뮬레이션된 앱을 중지하고 Visual Studio Code를 닫습니다.
+
+    터미널에서 "Enter" 키를 누르기만 하면 디바이스 시뮬레이터를 중지할 수 있습니다.
+

@@ -1,12 +1,12 @@
----
+﻿---
 demo:
-    title: 'Demo: Deploying an ARM Template'
-    module: 'Module 1: Exploring Azure Resource Manager'
+    title: '데모: ARM 템플릿 배포'
+    module: '모듈 1: Azure Resource Manager 살펴보기'
 ---
 
-# Demo: Deploying an ARM Template
+# 데모: ARM 템플릿 배포
 
-## Instructions
+## 지침
 
 1. Quisque dictum convallis metus, vitae vestibulum turpis dapibus non.
 
@@ -30,7 +30,7 @@ demo:
 
 1. Fusce tincidunt sapien nec dolor congue facilisis lacinia quis urna.
 
-    > **Note**: Ut feugiat est id ultrices gravida.
+    > **참고**: Ut feugiat est id ultrices gravida.
 
 1. Phasellus urna lacus, luctus at suscipit vitae, maximus ac nisl. 
 

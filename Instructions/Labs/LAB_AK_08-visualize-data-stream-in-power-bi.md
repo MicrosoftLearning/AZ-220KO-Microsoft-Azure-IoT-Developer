@@ -1,363 +1,391 @@
----
+﻿---
 lab:
-    title: 'Lab 08: Visualize a Data Stream in Power BI'
-    module: 'Module 4: Message Processing and Analytics'
+    title: '랩 08: Power BI에서 데이터 스트림 시각화'
+    module: '모듈 5: 인사이트 및 비즈니스 통합'
 ---
 
-# Visualize a Data Stream in Power BI
+# Power BI에서 데이터 스트림 시각화
 
-> [!NOTE] This lab is a continuation of Lab 7 - Device Message Routing. 
-
-> [!IMPORTANT] This lab has several service prerequisites that are not related to the Azure subscription you were given for the course:
-> 1. The ability to sign in to a "Work or School Account" (Azure Active Directory account)
-> 2. You must know your account sign-in name, which may not match your e-mail address.
-> 3. Access to Power BI, which could be through:
-    1. An existing Power BI account
-    2. The ability to sign up for Power BI - some organizations block this.
+> **참고**:  이 랩은 랩 7 - 디바이스 메시지 라우팅에서 이어집니다.
 >
-> The first lab exercise will validate your ability to access Power BI.  If you are not successful in the first exercise, you will not be able to complete the lab, as there is no quick workaround to this.
+> **중요**: 이 랩에는 과정을 위해 제공된 Azure 구독과 관련이 없는 몇 가지 서비스 필수 구성 요소가 있습니다.
+>
+> 1. "회사 또는 학교 계정"(Azure Active Directory 계정)에 로그인하는 기능
+> 2. 자신의 계정 로그인 이름을 알고 있어야 하며, 이는 이메일 주소와 일치하지 않을 수 있습니다.
+> 3. Power BI에 대한 액세스가 다음과 같이 진행될 수 있습니다.
+>       1. 기존 Power BI 계정
+>       2. Power BI에 등록하는 기능 - 일부 조직에서는 이를 차단합니다.
+>
+> 첫 번째 랩 연습에서는 Power BI에 액세스하는 기능을 확인합니다.  첫 번째 연습에 성공하지 못하면 차단된 회사 또는 학교 계정 액세스에 대한 빠른 해결 방법이 없으므로 랩을 완료할 수 없습니다.
 
-## Lab Scenario
+## 랩 시나리오
 
-You have developed a device simulator that generates vibration data and other telemetry outputs for a conveyor belt system that takes packages and drops them off in mailing bins. You have built and tested a logging route that sends dat to Azure Blob storage.
+Contoso의 치즈 포장 공정에 사용되는 컨베이어 벨트 시스템을 대표하는 진동 데이터 및 기타 원격 분석 출력을 생성하는 시뮬레이션된 IoT 디바이스를 개발했습니다. Azure Blob Storage로 데이터를 보내는 로깅 라우팅을 만들고 테스트했습니다. 이제 원격 분석 데이터를 Azure Event Hubs 서비스로 전송하는 IoT Hub 내에서 새 경로에 대한 작업을 시작합니다.
 
-The second route will be to an Event Hub, because an Event Hub is a convenient input to Stream Analytics. And Stream Analytics is a convenient way of handling anomaly detection, like the excessive vibration we're looking for in our scenario.
+Azure IoT Hub와 Azure Event Hubs의 주요 차이점은 Event Hubs는 빅 데이터 스트리밍을 위해 설계된 반면 IoT Hub는 IoT 솔루션에 최적화되어 있다는 점입니다. 두 서비스 모두 대기 시간이 적고 안정성이 높은 데이터 수집을 지원합니다. Azure Event Hubs는 IoT Hub와 유사한 방식으로 Stream Analytics에 대한 입력을 제공하므로 이 경우 Event Hubs를 선택하면 솔루션 내에서 추가 Azure 서비스 옵션을 탐색할 수 있습니다.
 
-This route will be created for the IoT Hub, then added as an input to the Azure Stream Analytics job.
+### 기본 제공 기계 학습 모델 호출
 
-We need to update the job to handle two inputs and two outputs, and a more complex query.
+호출하려는 기본 제공 ML(기계 학습) 함수는 `AnomalyDetection_SpikeAndDip`입니다.
 
-The process of creating the second route follows a similar process to the first, though it diverges at the creation of an endpoint. An Event Hub is chosen as the endpoint for the telemetry route.
+`AnomalyDetection_SpikeAndDip` 함수는 데이터의 슬라이딩 창을 가져와 이상 징후가 없는지 검사합니다. 슬라이딩 창은 가장 최근의 2분 간의 원격 분석 데이터일 수 있습니다. 이 슬라이딩 창은 원격 분석의 흐름을 거의 실시간으로 따라갑니다. 슬라이딩 창의 크기가 증가하면 일반적으로 변칙 검색의 정확도도 증가합니다. 대기 시간도 마찬가지입니다.
 
-In this exercise, you will create an Event Hubs *namespace*. You then have to create an *instance* of the namespace to complete the setting up of an Event Hub. You can then use this instance as the destination for the new message route.
+데이터 흐름이 계속되면 알고리즘은 정상 값 범위를 설정한 다음 새 값을 정상 값과 비교합니다. 결과는 각 값에 대한 점수 즉, 주어진 값이 변칙적인 신뢰도를 결정하는 백분율입니다. 낮은 신뢰도는 무시되며, 문제는 어느 정도 비율의 신뢰 값이 허용되느냐입니다. 쿼리에서 이 티핑 포인트를 95%로 설정합니다.
 
-After the route is created, we move on to updating the query.
+데이터에 차이가 있을 때(컨베이어 벨트가 잠시 멈춘 경우)와 같이 항상 문제가 있습니다. 알고리즘은 대체 값으로 대체하여 데이터의 빈 공간을 처리합니다.
 
-### Make a Call to a Built-in ML Model
+> **참고**: 통계에서 대체는 누락된 데이터를 대체 값으로 대체하는 작업입니다. 대체에 대한 자세한 내용은 [여기서](https://en.wikipedia.org/wiki/Imputation_%28statistics%29) 확인할 수 있습니다.
 
-The built-in function we're going to call is `AnomalyDetection_SpikeAndDip`.
+원격 분석 데이터의 급상승과 급하락은 일시적인 이상입니다. 그러나, 진동 사인파를 다루고 있기 때문에 짧은 기간의 "정상" 값이 이상 경고를 트리거하는 높거나 낮은 값을 따를 수 있습니다. 운영자가 짧은 시간 동안 발생하는 이상 징후 클러스터를 찾고 있습니다. 이러한 클러스터는 문제가 있음을 나타냅니다.
 
-The `AnomalyDetection_SpikeAndDip` function takes a sliding window of data, and examines it for anomalies. The sliding window could be, say, the most recent two minutes of telemetry data. This sliding window keeps up with the flow of telemetry in close to real time. If the size of the sliding window is increased, generally the accuracy of anomaly detection will increase too. As will the latency.
+추세를 감지하는 모델 등 다른 기본 제공 ML 모델이 있습니다. 이 모듈의 일부로 이러한 모델을 포함하지는 않지만 학생들에게 추가 조사를 권장합니다.
 
-As the flow of data continues, the algorithm establishes a normal range of values, then compares new values against those norms. The result is a score for each value, a percentage that determines the confidence level that the given value is anomalous. Low confidence levels are ignored, the question is what percentage confidence value is acceptable? In our query, we're going to set this tipping point at 95%.
+### Power BI를 사용하여 데이터 시각화
 
-There are always complications, like when there are gaps in the data (the conveyor belt stops for a while, perhaps). The algorithm handles voids in the data by imputing values.
+수치 데이터(특히 양)를 시각화하는 것 자체가 과제입니다. 무엇이 잘못되었는지 추론하는 일련의 이상 징후를 운영자에게 어떻게 알릴 수 있습니까?
 
-Spikes and dips in telemetry data are temporary anomalies. However, as we're dealing with sine waves for vibration, we can expect a short period of "normal" values follow a high or low value that triggers an anomaly alert. The operator is looking for a cluster of anomalies occurring in a short time span. Such a cluster indicates something is wrong.
+이 모듈에서 사용하는 솔루션은 Azure Stream Analytics의 기능과 함께 Power BI의 일부 기본 제공 기능을 사용하여 Power BI가 수집할 수 있는 실시간 형식으로 데이터를 전송합니다.
 
-There are other built-in ML models, such as a model for detecting trends. We don't include these models as part of this module, but the student is encouraged to investigate further.
+Power BI의 대시보드 기능을 사용하여 여러 개의 타일을 만듭니다. 하나의 타일에는 실제 진동 측정값이 포함되어 있습니다. 또 다른 타일은 값이 변칙적인 신뢰도를 0.0~1.0으로 표시하는 게이지입니다. 세 번째 타일은 95% 신뢰도에 도달했는지 여부를 나타냅니다. 마지막으로, 네 번째 타일은 지난 한 시간 동안 감지된 이상 징후의 수를 표시합니다. 시간을 x축으로 포함시킴으로써, 이 타일은 가로로 함께 클러스터될 때 이상 현상의 클러치가 짧은 시간 동안 연속으로 감지되었는지를 분명하게 알 수 있습니다.
 
-### Visualize data using Power BI
+네 번째 타일을 사용하면 원격 분석 콘솔 창의 빨간색 텍스트와 이상 징후를 비교할 수 있습니다. 강제 진동 또는 증가하는 진동 또는 이 두 개의 진동이 모두 발생할 경우 감지되는 이상 징후 클러스터가 있습니까?
 
-Visualizing numerical data, especially volumes of it, is a challenge in itself. How can we alert a human operator of the sequence of anomalies that infer something is wrong?
+다음의 리소스가 만들어집니다.
 
-The solution we use in this module is to use some built-in functionality of Power BI. And the ability of Azure Stream Analytics to send data in a real-time format that Power BI can ingest.
+![랩 8 아키텍처](media/LAB_AK_08-architecture.png)
 
-We use the dashboard feature of Power BI to create a number of tiles. One tile contains the actual vibration measurement. Another tile is a gauge, showing from 0.0 to 1.0 the confidence level that the value is an anomaly. A third tile indicates if the 95% confidence level is reached. The main tile though shows the number of anomalies detected over the past hour. This tile makes it clear if a clutch of anomalies were detected in short succession.
+## 이 랩에서
 
-The fourth tile includes time as the x-axis. This tile allows you to compare the anomalies with the red text in the telemetry console window. Is there a cluster of anomalies being detected when forced, or increasing, or both, vibrations are in action?
+이 랩에서는 다음 활동을 완료할 예정입니다.
 
-Let's create the Event Hub, create the second route, update the SQL query, create a Power BI dashboard, and let it all run!
+* Power BI 등록
+* 랩 필수 구성 요소가 충족되는지 확인(필요한 Azure 리소스가 있음)
+* 실시간 원격 분석 분석
+* Azure Event Hubs 서비스 만들기
+* 실시간 메시지 경로 만들기
+* IoT Hub에 원격 분석 경로 추가
+* Power BI 대시보드를 만들어 데이터 이상을 시각화합니다.
 
+이벤트 허브를 만들고, 두 번째 경로를 만들고, SQL 쿼리를 업데이트하고, Power BI 대시보드를 만든 뒤 전부 실행해 보겠습니다!
 
+## 랩 지침
 
+### 연습 1: PowerBI 등록
 
+Power BI는 개인 데이터 분석 및 시각화 도구가 될 수 있으며 그룹 프로젝트, 부서 또는 기업 전체의 분석과 의사 결정 엔진 역할을 할 수도 있습니다. 이 랩의 후반부에 PowerBI를 사용하여 대시보드를 만들고 데이터를 시각화합니다. 이 연습에서는 Power BI를 개인으로 등록하는 방법을 설명합니다.
 
+>**참고:** PowerBI 구독이 이미 있는 경우 다음 단계로 건너뛸 수 있습니다.
 
+#### 작업 1: 지원되는 이메일 주소 이해
 
+등록 프로세스를 시작하기 전에 Power BI 등록에 사용할 수 있는 이메일 주소 유형을 알아보는 것이 중요합니다.
 
+* Power BI에 등록할 때는 회사 또는 학교 이메일 주소를 사용해야 합니다. 소비자 이메일 서비스 또는 통신 제공업체에서 제공하는 이메일 주소를 사용하여 등록할 수 없습니다. outlook.com, hotmail.com, gmail.com 등이 여기에 포함됩니다.
 
+* 등록 후에는 [게스트 사용자를 초대](https://docs.microsoft.com/azure/active-directory/active-directory-b2b-what-is-azure-ad-b2b)하여 개인 계정을 포함한 모든 이메일 주소로 Power BI 콘텐츠를 확인할 수 있습니다.
 
+* .gov 또는 .mil 주소로도 Power BI에 등록할 수 있지만 다른 프로세스가 필요합니다. 자세한 내용은 [Power BI 서비스에 미국 정부 조직 등록](https://docs.microsoft.com/ko-kr/power-bi/service-govus-signup)을 참조하세요.
 
+#### 작업 2: Power BI 계정 등록
 
-## In This Lab
+Power BI 계정에 등록하려면 다음 단계를 따르세요. 이 프로세스를 완료하면 내 작업 영역을 사용하여 Power BI를 직접 사용해 보거나 Power BI Premium 용량에 할당된 Power BI 작업 영역의 콘텐츠를 사용하거나 개별 Power BI Pro 평가판을 시작하는 데 사용할 수 있는 Power BI(무료) 라이선스가 있습니다.
 
-This lab includes:
+1. 브라우저에서 [등록 페이지](https://signup.microsoft.com/signup?sku=a403ebcc-fae0-4ca2-8c8c-7a907fd6c235)로 이동합니다.
 
-* Sign-up for Power BI
-* Verify Lab Prerequisites
-* Analyze Telemetry in Real-Time
-* Create EventHub
-* Create Real-time Message Route
-* Add Telemetry Route
-* Create a dashboard to visualize data anomalies, using Power BI
+1. **시작** 페이지에서 지원되는 이메일 주소를 입력합니다.
 
-## Exercise 1: Sign Up For PowerBI
+1. 로봇이 아님을 증명해 달라는 메시지가 표시되면 **문자 보내기** 또는 **전화 걸기**를 선택하여 관련 정보를 제공하고 확인 코드를 받은 다음 이 절차의 다음 단계로 계속 이동합니다.
 
-Power BI can be your personal data analysis and visualization tool, and can also serve as the analytics and decision engine behind group projects, divisions, or entire corporations. Later on in this lab, you will visualize data using PowerBI. This article explains how to sign up for Power BI as an individual.
+    ![당신은 로봇입니까?](./Media/LAB_AK_08-prove-robot.png)
 
->**Note:** If you already have a PowerBI subscription, you can skip to the next step.
+    이 메시지 대신 이미 계정이 있다는 알림을 받으면 로그인을 계속하고 Power BI를 사용할 준비가 된 것입니다.
 
-### Task 1: Understand Supported Email Addresses
+    ![당신은 로봇입니까?](./Media/LAB_AK_08-existing-account.png)
 
-Before you start the sign-up process, it's important to learn which types of email addresses that you can use to sign-up for Power BI:
+1. 문자 메시지를 확인하거나 전화를 기다려서 받은 코드를 입력한 다음 **등록**을 클릭합니다.
 
-* Power BI requires that you use a work or school email address to sign up. You can't sign up using email addresses provided by consumer email services or telecommunication providers. This includes outlook.com, hotmail.com, gmail.com, and others.
+    ![등록](./Media/LAB_AK_08-sign-up.png)
 
-* After you sign up, you can [invite guest users](https://docs.microsoft.com/azure/active-directory/active-directory-b2b-what-is-azure-ad-b2b) to see your Power BI content with any email address, including personal accounts.
+1. 이메일에 이와 유사한 메시지가 있는지 확인합니다.
 
-* You can sign-up for Power BI with .gov or .mil addresses, but this requires a different process. For more info, see [Enroll your US Government organization in the Power BI service](https://docs.microsoft.com/en-us/power-bi/service-govus-signup).
+    ![등록](./Media/LAB_AK_08-email-verification.png)
 
-### Task 2: Sign up for a Power BI Account
+1. 다음 화면에서 이메일로 받은 정보와 확인 코드를 입력합니다. 지역을 선택하고 이 화면에 연결된 정책을 검토한 다음 시작을 선택합니다.
 
-Follow these steps to sign up for a Power BI account. Once you complete this process you will have a Power BI (free) license which you can use to try Power BI on your own using My Workspace, consume content from a Power BI workspace assigned to a Power BI Premium capacity or initiate an individual Power BI Pro Trial. 
+    ![등록](./Media/LAB_AK_08-create-account.png)
 
-1. In your browser, navigate to the [sign-up page](https://signup.microsoft.com/signup?sku=a403ebcc-fae0-4ca2-8c8c-7a907fd6c235).
+1. 그런 다음 [Power BI 로그인 페이지](https://powerbi.microsoft.com/landing/signin/)로 이동하여 Power BI 사용을 시작할 수 있습니다.
 
-1. On the **Get started** page, enter a supported email address.
+이제 Power BI에 액세스했으므로 실시간 원격 분석 데이터를 Power BI 대시보드로 라우팅할 준비가 되었습니다.
 
-1. If you see a message requesting you prove you are not a robot, choose either **Text me** or **Call me** and supply the relevant information to receive a verification code, then continue to the next step in this procedure.
+### 연습 2: 랩 필수 구성 요소 확인
 
-    ![Are you a robot](../../Linked_Image_Files/M99-L07b-prove-robot.png)
+Power BI 대시보드의 IoT Hub에서 라이브 스트리밍 데이터를 시각화하려면 원격 분석 메시지를 보내는 실제 또는 시뮬레이션된 IoT 디바이스가 있어야 합니다. 다행히 랩 7에서 이 요구 사항을 만족하는 시뮬레이션된 디바이스를 만들었습니다.
 
-    If, instead, you are informed that you already have an account, continue to sign-in and you are ready to use PowerBI.
+이 연습에서는 이전 랩의 디바이스 시뮬레이터 앱이 실행 중인지 확인합니다. 
 
-    ![Are you a robot](../../Linked_Image_Files/M99-L07b-existing-account.png)
+> **참고**: 이 과정의 랩 7을 완료하지 않았다면 지금 완료하세요.
 
-1. Check your phone texts or wait for the call, then enter the code that you received, then click **Sign up**.
+#### 작업 1: Visual Studio Code에서 "vibrationdevice" 앱을 시작합니다.
 
-    ![Sign Up](../../Linked_Image_Files/M99-L07b-sign-up.png)
+1. Visual Studio Code를 엽니다.
 
-1. Check your email for a message like this one.
+1. **파일** 메뉴에서 **폴더 열기**를 클릭합니다.
 
-    ![Sign Up](../../Linked_Image_Files/M99-L07b-email-verification.png)
+1. 폴더 열기 대화 상자에서 **vibrationdevice** 폴더로 이동한 다음 **폴더 선택**을 클릭합니다.
 
-1. On the next screen, enter your information and the verification code from the email. Select a region, review the policies that are linked from this screen, then select Start.
+    탐색기 창에 나열된 Program.cs 및 vibrationdevice.csproj 파일이 표시됩니다.
 
-    ![Sign Up](../../Linked_Image_Files/M99-L07b-create-account.png)
+    디바이스에 대한 연결 문자열이 Program.cs 파일의 `s_deviceConnectionString` 변수에 할당되었는지 확인할 수 있습니다. 랩 7을 완료한 경우 다음과 유사한 변수 할당이 코드에 표시됩니다.
 
-1. You're then taken to [Power BI sign in page](https://powerbi.microsoft.com/landing/signin/), and you can begin using Power BI.
+    ```csharp
+    s_deviceConnectionString = "HostName=AZ-220-HUB-CAH200509.azure-devices.net;DeviceId=VibrationSensorId;SharedAccessKey=nSUbphUKsS1jEd7INrEtmVWZesMBDIxzjVe4jn01KJI=";
+    ```
 
-Now you have access to Power BI, you are ready to route real-time telemetry data to a Power BI dashboard.
+1. **보기** 메뉴에서 **터미널**을 클릭합니다.
 
-## Exercise 2: Verify Lab Prerequisites
-
-As we need some real-time telemetry, you need to ensure the Device Simulator app from the previous lab is running.
-
-1. In Visual Studio Code, to run the app in the terminal, enter the following command:
+    명령 프롬프트에 **vibrationdevice** 폴더에 대한 폴더 경로가 표시되는지 확인합니다.
+ 
+1. 터미널에서 앱을 실행하려면 다음 명령을 입력합니다.
 
     ```bash
     dotnet run
     ```
 
-   This command will run the **Program.cs** file in the current folder.
+   이 명령은 현재 폴더에서 **Program.cs** 파일을 실행합니다.
 
-1. You should quickly see console output, similar to the following:
+1. 다음과 유사한 콘솔 출력을 빠르게 확인해야 합니다.
 
-    ![Console Output](../../Linked_Image_Files/M99-L07-vibration-telemetry.png)
+    ![콘솔 출력](./Media/LAB_AK_08-vibration-telemetry.png)
 
-    > [!NOTE] Green text is used to show things are working as they should and red text when bad stuff is happening. If you don't get a screen similar to this image, start by checking your device connection string.
+    > **참고**:  녹색 텍스트는 정상 작동을, 빨간색 텍스트는 문제가 발생했음을 의미합니다. 이 이미지와 유사한 화면이 없는 경우 디바이스 연결 문자열을 확인하여 시작합니다.
 
-1. Watch the telemetry for a short while, checking that it is giving vibrations in the expected ranges.
+1. 이 앱을 실행 상태로 둡니다.
 
-1. You can leave this app running, as it's needed for the next section.
+    데이터 시각화를 위한 원격 분석 데이터가 필요합니다.
 
-## Exercise 3: Add Azure Event Hub Route and Anomaly Query
+### 연습 3: Azure Event Hubs 서비스 만들기
 
-In this exercise, we're going to add a query to the Stream Analytics job, and then use Microsoft Power BI to visualize the output from the query. The query searches for spikes and dips in the vibration data, reporting anomalies. We must create the second route, after first creating an instance of an Event Hubs namespace.
+이제 원격 분석 데이터를 IoT Hub로 스트리밍하므로 Azure Event Hubs 네임스페이스 및 Azure Event Hubs 인스턴스를 솔루션에 추가합니다. Azure Event Hubs는 스트리밍 데이터를 처리하는 데 이상적이며, 라이브 대시보드 시나리오를 지원하여 진동 데이터를 Power BI로 전달하는 데 적합합니다.
 
-### Task 1: Create an Event Hubs Namespace
+#### 작업 1: Event Hubs 네임스페이스 만들기
 
-In this task, you will use the Azure portal to create an Event Hubs resource.
+이 작업에서는 Azure Portal을 사용하여 Event Hubs 리소스를 만듭니다.
 
-1. Login to [portal.azure.com](https://portal.azure.com) using your Azure account credentials.
+1. Azure 계정 자격 증명을 사용하여 [portal.azure.com](https://portal.azure.com)에 로그인하세요.
 
-    If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
+    둘 이상의 Azure 계정이 있는 경우에는 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. On the portal menu, click **+ Create a resource**.
+1. Azure Portal에서 **모든 서비스**를 클릭합니다.
 
-    The Azure Marketplace is a collection of all the resources you can create in Azure. The marketplace contains resources from both Microsoft and the community.
+1. 검색 텍스트 상자에서 **이벤트**를 입력합니다.
 
-2. In the Search textbox, type **Event Hubs** and press **Enter**.
+1. 검색 텍스트 상자 아래의 검색 결과 패널에서 **Event Hubs**를 클릭합니다.
 
-3. On the search results panel under the textbox, click **Event Hubs**.
+1. 새 Event Hubs 리소스를 만드는 프로세스를 시작하려면 **이벤트 허브 네임스페이스 만들기**를 클릭합니다.
 
-4. To begin the process of creating your new Event Hubs resource, click **Create event hubs namespace**.
+     **네임스페이스 만들기** 블레이드가 표시됩니다.
 
-    The **Create Namespace** blade will be displayed.
+1. **이름** 아래에 **네임스페이스 만들기** 블레이드에서 **vibrationNamespace** 및 고유 식별자를  입력합니다.
 
-5. On the **Create Namespace** blade, under **Name**, enter **vibrationNamespace** plus a unique identifier (your initials and today's date) - i.e. **vibrationNamespaceCAH191212**
+    귀하의 이니셜과 오늘의 날짜를 사용하여 **vibrationNamespaceCAH191212**처럼 이름을 고유하게 만들 수 있습니다.
 
-    This name must be globally unique.
+    각 이름은 전역으로 고유해야 합니다.
 
-6. Under **Pricing tier**, select **Standard**.
+1. **가격 책정 계층**의 경우 **표준**을 선택합니다.
 
-   > [!NOTE] Choosing the standard pricing tier enables _Kafka_. The Event Hubs for Kafka feature provides a protocol head on top of Azure Event Hubs that is binary compatible with Kafka versions 1.0 and later for both reading from and writing to Kafka topics. You can learn more about Event Huibs and Apache Kafka [here](https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-for-kafka-ecosystem-overview). We will not be using Kafka in this lab.
+   > **참고**:  표준 가격 책정 계층을 선택하면 _Kafka_를 사용할 수 있습니다. Kafka에 대한 이벤트 허브 기능은 Kafka 버전 1.0 이상에서 읽기와 Kafka 항목에 쓰기 모두에 대한 이진 호환 Azure 이벤트 허브의 상단에 프로토콜 헤드를 제공합니다. Event Hub와 Apache Kafka에 대한 자세한 내용은 [여기](https://docs.microsoft.com/ko-kr/azure/event-hubs/event-hubs-for-kafka-ecosystem-overview)에서 확인할 수 있습니다. 이 랩에서는 Kafka를 사용하지 않습니다.
 
-7. Leave **Make this namespace zone redundant** unchecked.
+1. **이 네임스페이스 지역 중복**을 선택하지 않은 상태로 둡니다.
 
-    > [!NOTE] Checking this option enables enhanced availability by spreading replicas across availability zones within one region at no additional cost - however we don't need this capability for the lab.
+    > **참고**:  이 옵션을 선택하면 추가 비용 없이 한 지역 내의 가용성 영역에 복제본을 분산하여 가용성을 향상시킬 수 있지만 랩에 이 기능이 필요하지는 않습니다.
 
-8. Under **Subscription**, select the subscription you are using for this lab.
+1. **구독**에서 이 랩에 사용 중인 구독을 선택합니다.
 
-9. Under **Resource group**, select the resource group you are using for this lab - **AZ-220-RG**.
+1.  **리소스 그룹**에서 이 랩에 사용 중인 리소스 그룹인 **AZ-220-RG**를 선택합니다.   
 
-10. Under **Location**, choose the region you are using for all lab work.
+1. **위치**에서 모든 랩 작업에 사용 중인 지역을 선택합니다.
 
-11. Under **Throughput units**, set the value to 1.
+1.  **처리량 단위**에서 값을 1로 설정합니다. 
 
-    This lab does not generate sufficient data to warrant increasing the number of units.
+    이 랩은 단위 수를 늘리기 위해 충분한 데이터를 생성하지 않습니다.
 
-12. Leave **Enable Auto-Inflate** unchecked.
+1. **자동 팽창 사용**을 선택하지 않은 상태로 둡니다.
 
-    > [!NOTE] Auto-Inflate automatically scales the number of Throughput Units assigned to your Event Hubs Namespace when your traffic exceeds the capacity of the Throughput Units assigned to it. You can specify a limit to which the Namespace will automatically scale. We do not require this feature for this lab.
+    > **참고**:  자동 팽창은 트래픽이 할당된 처리량 단위의 용량을 초과할 때 이벤트 허브 네임스페이스에 할당된 처리량 단위 수를 자동으로 조정합니다. 네임스페이스가 자동으로 크기 조정되는 제한을 지정할 수 있습니다. 이 랩에는 이 기능이 필요하지 않습니다.
 
-13. To create the resource, click **Create**, and wait for the resource to be deployed. This can take a few minutes.
+1. 리소스를 만들려면 **만들기**를 클릭한 다음 리소스가 배포될 때까지 기다립니다. 
 
-Now we have an Event Hubs Namespace, we can create and Event Hubs instance.
+    이 배포는 몇 분 정도 걸릴 수 있습니다. 알림 창을 열어 진행 상황을 모니터링할 수 있습니다. 
 
-### Task 2: Create an Event Hubs Instance
+    Event Hubs 네임스페이스가 있으면 Event Hubs 인스턴스를 만들 수 있습니다.
 
-1. Navigate back to the Azure Portal home page.
+#### 작업 2: Event Hubs 인스턴스 만들기.
 
-1. In your resource group tile, select your Event Hub namespace, e. g. **vibrationNamespaceCAH191212**.  (If it is not visible, refresh the tile.)
+1. Azure Portal 대시보드 페이지로 돌아갑니다.
 
-    The **Overview** pane of the **Event Hubs Namespace** blade will be displayed.
+1. 리소스 그룹 타일에서 이벤트 허브 네임스페이스를 선택합니다.
 
-2. To create an Event Hubs Instance, at the top of the pane, click **+ Event Hub**.
+    이벤트 허브 네임스페이스가 나열되지 않은 경우 타일을 새로 고칩니다.
 
-    The **Create Event Hub** blade will be displayed.
+    **Event Hubs 네임스페이스** 블레이드의 **개요** 창이 표시됩니다.
 
-3. On the **Create Event Hub** blade, under **Name**, enter **vibrationeventhubinstance**.
+1. 창 상단에서 Event Hubs 인스턴스를 만들려면 **+ 이벤트 허브**를 클릭합니다.
 
-4. Leave **Partition Count** set to **1**.
+     **이벤트 허브 만들기** 블레이드가 표시됩니다. 
 
-    > [!NOTE] Partitions are a data organization mechanism that relates to the downstream parallelism required in consuming applications. The number of partitions in an event hub directly relates to the number of concurrent readers you expect to have. You can increase the number of partitions beyond 32 by contacting the Event Hubs team. The partition count is not changeable, so you should consider long-term scale when setting partition count. In this lab, we only require 1.
+1. **이벤트 허브 만들기** 블레이드에서 **이름** 아래에 **vibrationeventhubinstance**를 입력합니다.
 
-5. Leave **Message Retention** set to **1**.
+1.  **파티션 수**를  **1**로 설정합니다.   
 
-    > [!NOTE] This is the retention period for events. You can set the retention period between 1 and 7 days. For this lab, we only require the minimum retention.
+    > **참고**:  파티션은 데이터 조직 메커니즘으로서 응용 프로그램 소비에 필요한 다운스트림 병렬 처리와 관련되어 있습니다. 이벤트 허브의 파티션 수는 예상되는 동시 독자의 수와 직접적인 관련이 있습니다. Event Hubs 팀에 문의하여 파티션 수를 32개 이상으로 늘릴 수 있습니다. 파티션 수는 변경할 수 없으므로 파티션 수를 설정할 때 장기적 규모를 고려해야 합니다. 이 랩에서는 1개만 필요합니다.
 
-6. Leave **Capture** set to **Off**.
+1. **메시지 보존**을 **1**로 설정합니다.
 
-    > [!NOTE] Azure Event Hubs Capture enables you to automatically deliver the streaming data in Event Hubs to an Azure Blob storage or Azure Data Lake Store account of your choice, with the added flexibility of specifying a time or size interval. We do not require this feature for the lab.
+    > **참고**:  이벤트의 보존 기간입니다. 보존 기간을 1일에서 7일 사이로 설정할 수 있습니다. 이 랩에서는 최소 보존만 필요합니다.
 
-7. To create the Azure Hubs Instance, click **Create**. Wait for the resource to be deployed.
+1. **캡처**를  **꺼짐**으로 설정합니다.
 
-## Exercise 4: Create Real-Time Message Route
+    > **참고**:  Azure Event Hubs Capture를 사용하면 시간 또는 크기 간격을 지정할 수 있는 유연성이 추가되어 Event Hub의 스트리밍 데이터를 선택한 Azure Blob 스토리지 또는 선택한 Azure Data Lake Store 계정으로 자동 전달할 수 있습니다. 랩에는 이 기능이 필요하지 않습니다.
 
-Now that we have an Event Hubs Namespace and an Event Hub, we can start to build the route itself.
+1. Azure 허브 인스턴스를 만들려면 **만들기**를 클릭합니다. 리소스가 배포될 때까지 기다립니다.
 
-## Create a Route to an Event Hub
+### 연습 4: 실시간 메시지 라우팅 만들기
 
-In this task we will add a message route to our IoT Hub that will send telemetry messages to the Event Hub Instance we just created.
+이제 Event Hubs 네임스페이스와 Event Hubs 서비스가 있으므로 IoT Hub에서 Event Hub로 원격 분석 데이터를 전달해야 합니다.
 
-1. Navigate to your Azure Portal dashboard, and select your IoT Hub **AZ-220-HUB-*{YOURID}***) from the resource group tile.
+#### 작업 1: 원격 분석 경로 만들기
 
-    The **Overview** blade for the IoT Hub will be displayed.
+이 작업에서는 방금 만든 Event Hubs 인스턴스에 원격 분석 메시지를 보내는 메시지 경로를 IoT Hub에 추가합니다.
 
-1. On the **Overview** blade, in the left hand navigation, under **Messaging**, select **Message routing**.
+1. Azure Portal 대시보드로 이동하여 리소스 그룹 타일에서 IoT Hub **AZ-220-HUB-*{YOURID}***)를 선택합니다.
 
-1. On the **Message routing** pane, to add a new message route, click **+ Add**.
+    IoT Hub에 대한 **개요** 창이 표시됩니다. 
 
-1. On the **Add a route** blade, under **Name**, enter **vibrationTelemetryRoute**.
+1. **개요** 창 왼쪽 탐색 메뉴의 **메시지**에서 **메시지 라우팅**을 선택합니다.
 
-2. To the right of the **Endpoint** dropdown, click **+ Add endpoint**. This time, select **Event hubs** for the type of endpoint.
+1. **메시지 라우팅** 창에 새 메시지 경로를 추가하려면 **+ 추가**를 클릭합니다.
 
-3. On the **Add an event hub endpoint** blade, under **Endpoint name**, enter **vibrationTelemetryEndpoint**.
+1. **경로 추가** 블레이드의 **이름**에 **vibrationTelemetryRoute**를 입력합니다.
 
-4. Under **Event hub namespace**, select the namespace you created earlier - i.e. **vibrationNamespaceCAH191212**.
+1. **엔드포인트** 드롭다운 오른쪽의 **+ 엔드포인트 추가**를 클릭한 다음 **Event Hubs**를 클릭합니다.
 
-5. Under **Event hub instance**, select the namespace you created earlier - i.e. **vibrationeventhubinstance**.
+1. **이벤트 허브 엔드포인트 추가** 블레이드의 **엔드포인트 이름**에 **vibrationTelemetryEndpoint**를 입력합니다.
 
-6. To create the endpoint, click **Create**, and wait for the success message.
+1.  **이벤트 허브 네임스페이스**에서 이전에 만든 네임스페이스를 선택합니다. 
 
-    You will be returned to the **Add a route** blade and the **Endpoint** value will have been updated.
+    진동은 다음과 같아야 합니다. **vibrationNamespaceCA191212**
 
-7. Under **Data source**, ensure **Device Telemetry Messages** is selected.
+1. **이벤트 허브 인스턴스**에서 **vibrationeventhubinstance**를 클릭합니다.
 
-8. Under **Enable route**, ensure **Enable** is selected.
+1. 엔드포인트를 만들려면 **만들기**를 클릭하고 성공 메시지를 기다립니다.
 
-9. Under **Routing query**, replace the existing query with the following:
+    **라우팅 추가** 블레이드로 돌아가고 **엔드포인트** 값이 업데이트됩니다.
+
+1. **데이터 원본**에서 **디바이스 원격 분석 메시지**가 선택되어 있는지 확인합니다.
+
+1. **라우팅 활성화**에서 **활성화**가 선택되어 있는지 확인합니다.
+
+1. **라우팅 쿼리**에서 기존 쿼리를 다음 쿼리로 바꿉니다.
 
     ```sql
     sensorID = "VSTel"
     ```
 
-    You may recall that the earlier sent "VSLog" messages to the logging storage. This message route will be sending "VSTel" (the telemetry) to the Event Hubs Instance.
+    이전 쿼리가 로깅 저장소에 "VSLog" 메시지를 보냈던 것을 기억할 수 있습니다. 이 메시지 라우팅은 이벤트 허브 인스턴스에 "VSTel"(원격 분석)을 보냅니다.
 
-10. To create the message route, click **Save**.
+1. 메시지 라우팅을 만들려면 **저장**을 클릭합니다. 
 
-11. Once the **Message routing** blade is displayed, verify you have two routes that match the following:
+1. **메시지 라우팅**블레이드가 표시되면 다음과 같은 두 가지 경로가 있는지 확인합니다. 
 
-    | Name | Data Source | Routing Query | Endpoint | Enabled |
+    | 이름 | 데이터 원본 | 라우팅 쿼리 | 엔드포인트 | 활성화됨 |
     |:-----|:------------|:--------------|:---------|:--------|
     |`vibrationLoggingRoute`|`DeviceMessages`|`sensorID = "VSLog"`|`vibrationLogEndpoint`|`true`|
     |`vibrationTelemetryRoute`|`DeviceMessages`|`sensorID = "VSTel"`|`vibrationTelemetryEndpoint`|`true`|
 
-We are now ready to update the Azure Stream Analytics job to hand the real-time device telemetry.
+이제 Azure Stream Analytics 작업을 업데이트하여 실시간 디바이스 원격 분석을 제공합니다.
 
-## Exercise 5: Add Telemetry Route
+### 연습 5: 원격 분석 라우팅 추가
 
-With this new IoT Hub route in place, we need to update our Stream Analytics job to handle the telemetry stream.
+새로운 IoT Hub 라우팅이 준비되고 원격 분석 데이터가 이벤트 허브로 스트리밍되면 Stream Analytics 작업을 업데이트해야 합니다. 이 작업은 이벤트 허브의 데이터를 사용하고, **AnomalyDetection_SpikeAndDip** ML 모델을 사용하여 분석한 다음 그 결과를 Power BI로 출력해야 합니다.
 
-### Task 1: Add a New Input to the Job
+#### 작업 1: 작업에 새 입력을 추가합니다.
 
-1. Return to your Azure Portal dashboard, and click on the **vibrationJob** you created in an earlier section.
+1. Azure Portal 대시보드로 돌아갑니다.
 
-    The **Stream Analytics Job** blade will open displaying the **Overview** pane.
+1. 리소스 그룹 타일에서 **vibrationJob**을 클릭합니다. 
 
-1. In the left hand navigation, under **Job topology**, click **Inputs**.
+    이전 랩에서 만든 Stream Analytics 작업입니다.
+ 
+    **Stream Analytics 작업** 블레이드가 열리고 **개요** 창이 표시됩니다.
 
-1. On the **Inputs** pane, click **+ Add stream input** and then select **Event Hub**.
+    > **참고**: 작업 상태가 **중지됨**을 확인합니다.
 
-1. On the **Event Hub** pane, under **Input alias**, enter **vibrationEventInput**
+1. 왼쪽 탐색 메뉴에서 **작업 토폴로지**에서 **입력**을 클릭합니다.
 
-1. Ensure **Select Event Hub from your subscriptions** is selected.
+1. **입력** 창에서 **+ 스트림 입력 추가**를 클릭한 다음 **이벤트 허브**를 클릭합니다.
 
-1. Under **Subscription**, select the subscription you have been using for this lab.
+1. **이벤트 허브** 창에서 **별칭 입력** 아래에서 **vibrationEventInput**을 입력합니다.
 
-1. Under **Event Hub namespace**, select the namespace you entered in the previous section.
+1. **구독에서 이벤트 허브 선택**을 선택해야 합니다.
 
-1. Under **Event Hub name**, ensure **Use existing** is selected and then select the Event Hub instance you created in the previous section - **vibrationeventhubinstance**.
+1.  **구독**에서 이 랩에 사용 중인 구독을 선택합니다. 
 
-1. Under **Event Hub policy name**, ensure **RootManageSharedAccessKey** is selected.
+1.  **이벤트 허브 네임스페이스**에서 이전 섹션에서 입력한 네임스페이스를 선택합니다.
 
-    > [!NOTE] The **Event Hub policy key** is populated and read-only.
+1.  **이벤트 허브 이름**에서 **기존 사용**을 선택하고 이전 섹션에서 만든 이벤트 허브 인스턴스가 선택되었는지 확인합니다.
 
-1. Under **Event Hub Consumer group**, leave it blank - this will use the `$Default` Consumer group.
+     **vibrationeventhubinstance**가 이미 선택되었을 수 있습니다.
 
-1. Under **Event serialization format**, ensure **JSON** is selected.
+1. **이벤트 허브 정책 이름**에서 **기존 사용**을 클릭한 다음 **RootManageSharedAccessKey**가 선택되었는지 확인합니다.
 
-1. Under **Encoding**, ensure **UTF-8** is selected.
+    > **참고**:   **이벤트 허브 정책 키**는 채워지고 읽기 전용입니다. 
 
-1. Under **Event compression type**, ensure **None** is selected.
+1.  **이벤트 허브 소비자 그룹**에서 **기존의 것을 사용**을 클릭한 다음 `$Default`이 선택되었는지 확인합니다.   
 
-1. To save the new input, click **Save**. Wait for the input to be created.
+1. **이벤트 Serialization 형식**에서 **JSON**이 선택되어 있는지 확인합니다.
 
-    The **Inputs** list should be updated to show the new input.
+1. **인코딩**에서 **UTF-8**이 선택되어 있는지 확인합니다.
 
-### Task 2: Add a New Output
+1. **이벤트 압축 형식**에서 **없음**을 선택하지 않았는지 확인합니다.
 
-1. To create an output, in the left hand navigation, under **Job topology**, click **Outputs**.
+1. 새 입력을 저장하려면 **저장**을 클릭한 다음 입력이 만들어질 때까지 기다립니다.
 
-    The **Outputs** pane is displayed.
+    **입력** 목록은 새 입력 - **vibrationEventInput**을 표시하도록 업데이트되어야 합니다.
 
-1. On the **Outputs** pane, click **+ Add**, and select **Power BI** from the dropdown list.
+#### 작업 2: 새 출력을 추가합니다.
 
-    The **Power BI** pane is displayed.
+1. 출력을 만들려면 왼쪽 탐색 메뉴의 **작업 토폴로지**에서 **출력**을 클릭합니다.
 
-1. Authorize the connection using the Power BI account you created earlier (or an existing account).
+    **출력** 창이 표시됩니다.
 
-1. On the **New output** pane, under **Output alias**, enter **vibrationBI**.
+1. **출력** 창에서 **+ 추가**를 클릭한 다음 **Power BI**를 클릭합니다.
 
-1. Under **Group workspace**, select the workspace you wish to use.  If this is a brand new account, this dropdown will be greyed out.  If you have an existing account, choose an appropriate workspace, or ask your instructor for assistance.
+    **Power BI** 창이 표시됩니다.
 
-1. Under **Dataset name**, enter **vibrationDataset**.
+1. 이전에 만든 Power BI 계정(또는 기존 계정)을 사용하여 연결을 승인합니다.
 
-1. Under **Table name**, enter **vibrationTable**.
+1. **새 출력** 창의 **출력 별칭**에 **vibrationBI**를 입력합니다.
 
-1. Under **Authentication mode**, select **User token**, and read the note that appears about revoking access.
+1. **그룹 작업 영역**에서 사용할 작업 영역을 선택합니다.
 
-1. To create the output, click **Save**. Wait for the output to be created.
+    새 계정인 경우 이 드롭다운은 회색으로 표시됩니다.  기존 계정이 있는 경우 적절한 작업 영역을 선택하거나 강사에게 도움을 요청합니다.
 
-    The **Outputs** list will be updated with the new output.
+1. **데이터 집합 이름**에서 **vibrationDataset**를 입력합니다.
 
-## Update the SQL query for the Job
+1.  **테이블 이름**아래에서 **vibrationTable**을 입력합니다.
 
-1. In the left hand navigation, under **Job topology**, click **Query**.
+1.  **인증 모드**에서 **사용자 토큰**을 클릭한 다음 액세스 취소에 대한 참고를 읽기.
 
-1. Copy and paste the following SQL query, *before* the existing short query.
+1. 출력을 만들려면 **저장**을 클릭한 다음 출력이 만들어질 때까지 기다립니다.
+
+    **출력** 목록이 새 출력으로 업데이트됩니다.
+
+#### 작업 3: 작업에 대한 SQL 쿼리 업데이트
+
+1. 왼쪽 탐색 메뉴에서 **작업 토폴로지** 아래에서 **쿼리**를 클릭합니다.
+
+1. 다음 SQL 쿼리를 복사한 다음 기존 짧은 쿼리 *위*에 붙여넣습니다.
 
     ```sql
     WITH AnomalyDetectionStep AS
@@ -380,9 +408,9 @@ With this new IoT Hub route in place, we need to update our Stream Analytics job
     FROM AnomalyDetectionStep
     ```
 
-    > [!NOTE] This first section of this query takes the vibration data, and examines the previous 120 seconds worth. The `AnomalyDetection_SpikeAndDip` function will return a `Score` parameter, and an `IsAnomaly` parameter. The score is how certain the ML model is that the given value is an anomaly, specified as a percentage. If the score exceeds 95%, the `IsAnomaly` parameter has a value of 1, otherwise `IsAnomaly` has a value of 0. Notice the 120 and 95 parameters in the first section of the query. The second section of the query sends the time, vibration, and anomaly parameters to `vibrationBI`.
+    > **참고**:  이 쿼리의 첫 번째 섹션에서는 진동 데이터를 가져와 이전 120초만큼 검사합니다. `AnomalyDetection_SpikeAndDip` 함수는 `점수` 매개 변수와 `IsAnomaly` 매개 변수를 반환합니다. 점수는 지정된 값이 변칙일 때 ML 모델의 값을 백분율로 지정합니다. 점수가 95%를 초과하면 `IsAnomaly` 매개 변수 값이 1이며 그러지 않으면 `IsAnomaly` 값이 0입니다. 쿼리의 첫 번째 섹션에서 120 및 95 매개 변수를 확인합니다. 쿼리의 두 번째 섹션에서는 시간, 진동 및 변칙 매개 변수를 `vibrationBI`로 보냅니다.
 
-1. Verify that the query editor on lists 2 Inputs and Outputs:
+1. 쿼리 편집기에서 이제 2개의 입력 및 출력이 나열되는지 확인합니다.
 
     * `Inputs`
       * `vibrationEventInput`
@@ -391,169 +419,170 @@ With this new IoT Hub route in place, we need to update our Stream Analytics job
       * `vibrationBI`
       * `vibrationOutput`
 
-    If you see more than 2 of each then you likely have a typo in your query or in the name you used for the input or output - correct the issue before moving on.
+    각각 2개 이상이 표시되면 쿼리 또는 입력 또는 출력에 사용한 이름으로 오타가 있을 가능성이 높습니다. 이동하기 전에 그 문제를 수정합니다.
 
-1. To save the query, click **Save query**.
+1. 쿼리를 저장하려면 **쿼리 저장**을 클릭합니다.
 
-1. In the left navigation area, to navigate back to the home page of the job, click **Overview**.
+1. 왼쪽 탐색 메뉴에서 작업의 홈페이지로 돌아가려면 **개요**를 클릭합니다.
 
-2. To start the job again, click **Start** and then, at the bottom of the **Start job** pane, click **Start**.
+1. 작업을 다시 시작하려면 **시작**을 클릭한 다음 **작업 시작** 창 하단에서 **시작**을 클릭합니다.
 
-In order for a human operator to make much sense of the output from this query, we need to visualize the data in a friendly way. One way of doing this visualization is to create a Power BI dashboard.
+운영자가 이 쿼리의 출력을 더욱 잘 이해하도록 친숙한 방식으로 데이터를 시각화해야 합니다. 이 시각화를 실시하는 방법 중 하나는 Power BI 대시보드를 만드는 것입니다.
 
-## Exercise 6: Create a Power BI Dashboard
+### 연습 6: Power BI 대시보드 만들기
 
-Now let's create a dashboard to visualize the query, using Microsoft Power BI.
+이제 시나리오의 마지막 부분인 실제 데이터 시각화입니다. ML 모델을 통해 진동 원격 분석을 처리하고 결과를 Power BI로 출력하는 작업을 업데이트했습니다. 결과를 시각화하고 운영자의 의사 결정을 지원하기 위해 Power BI 내에서 여러 개의 타일이 있는 대시보드를 만들어야 합니다.
 
-1. In your browser, navigate to https://app.powerbi.com/.
+#### 작업 1: 새 대시보드 만들기
 
-1. Once Power BI has opened, using the left navigation area, select the workspace you chose above.
+1. 브라우저에서 [https://app.powerbi.com/](https://app.powerbi.com/)으로 이동합니다.
 
-    > [!NOTE] At the time of writing a *New Look* is in preview. The steps in this task have been written assuming the *New Look* is **Off**. To turn off the *New Look*, at the top right of the screen, ensure the toggle reads **New look off**.
+1. Power BI가 열리면 왼쪽 탐색 영역을 사용하여 위에서 선택한 작업 영역을 선택합니다.
 
-1. Under **Datasets** verify that `vibrationDataset` is displayed. If not, you might have to wait a short time for this list to populate.
+    > **참고**:  작성 시 Power BI의 미리 보기에는 *새 모양*이 있습니다. 이 작업의 단계는 *새 모양*이 **꺼짐**인 상태를 가정하여 작성되었습니다. 화면 상단 도구 모음에서 *새 모양*을 끄려면 토글이 **새 모양 꺼짐**을 인식하는지 확인합니다. 
 
-1. At the top right of the page, click **+ Create** and select **Dashboard** from the dropdown list.
+1. **데이터 집합** 탭에서 **vibrationDataset** 집합이 표시되는지 확인합니다.
 
-1. In the **Create dashboard** popup, under **Dashboard name**, enter **Vibration Dash**.
+    그렇지 않은 경우 이 목록이 채워질 때까지 잠시 기다려야 할 수 있습니다.
 
-1. To create the dashboard, click **Create**.
+1. 페이지 오른쪽 상단에서 **+ 만들기**를 클릭한 다음 **대시보드**를 클릭합니다.
 
-    The new dashboard will be displayed as an essentially blank page.
+1. **대시보드 만들기** 팝업의 **대시보드 이름**에 **진동 대시**를 입력합니다.
 
-## Add the Vibration Gauge Tile
+1. 대시보드를 만들려면 **만들기**를 클릭합니다.
 
-1. To add the vibration gauge, at the top of the blank dashboard, click **+ Add tile**.
+    새 대시보드는 기본적으로 빈 페이지로 표시됩니다.
 
-1. In the **Add tile** pane, under **REAL-TIME DATA**, click **Custom Streaming Data** and then click **Next** at the bottom of the pane.
+#### 작업 2: 진동 계기 타일 추가
 
-1. On the **Add a custom streaming data tile** pane, under **YOUR DATASETS**, click **vibrationDataset** and click **Next**.
+1. 진동 계기를 추가하려면 빈 대시보드 상단에서 **+ 타일 추가**를 클릭합니다.
 
-    The pane will refresh to allow you to choose a visualization type and fields.
+1. **타일 추가** 창의 **실시간 데이터**에서 **사용자 지정 스트리밍 데이터**를 클릭하고 **다음**을 클릭합니다.
 
-1. Under **Visualization Type**, select **Gauge**.
+1. **사용자 지정 스트리밍 데이터 타일 추가** 창의 **데이터 집합**에서 **vibrationDataset**을 클릭하고 **다음**을 클릭합니다.
 
-    Notice that changing the visualization type changes the fields below.
+    시각화 형식과 필드를 선택할 수 있도록 창이 새로 고침됩니다.
 
-1. Under **Value**, click **+ Add value** and select **Vibe** from the dropdown.
+1. **진동 유형**에서 드롭다운을 열고 **계기**를 클릭합니다.
 
-    Notice that the gauge appears immediately on the dashboard with a value that begins to update!
+    시각화 형식을 변경하면 아래 필드가 변경됩니다.
 
-1. To move to the tile details, click **Next**.
+1. **값**에서 **+ 값 추가**를 클릭하고 드롭다운을 연 다음 **진동**을 클릭합니다.
 
-1. In the **Tile details** pane, under **Title**, enter **Vibration**.
+    값이 업데이트되기 시작하면서 계기가 대시보드에 즉시 나타납니다!
 
-1. Leave the remaining fields as they are and click **Apply**.
+1. 타일 세부 정보 창을 표시하려면 **다음**을 클릭합니다.
 
-    If you see a notification about creating a phone view, you can ignore it and it will disappear shortly (or dismiss it yourself).
+1. **타일 세부 정보** 창의 **제목**에 **진동**을 입력합니다.
 
-1. To reduce the size of the tile, move your mouse over the bottom-right corner of the tile and click-and-drag the resize icon. Make the tile as small as you can.
+1. 나머지 필드를 기본값으로 두고 창을 닫려면 **적용**을 클릭합니다.
 
-### Add the SpikeAndDipScore Clustered Bar Chart Tile
+    전화 보기 만들기에 대한 알림이 표시될 경우 무시하면 곧 사라집니다(또는 직접 해제 가능).
 
-1. To add the SpikeAndDipScore Clustered Bar Chart, at the top of the blank dashboard, click **+ Add tile**.
+1. 타일 크기를 줄이려면 마우스를 타일의 오른쪽 아래 모서리 위에 올려놓고 크기 조정 마우스 포인터를 클릭하고 끕니다.
 
-1. In the **Add tile** pane, under **REAL-TIME DATA**, click **Custom Streaming Data** and then click **Next** at the bottom of the pane.
+    타일을 가능한한 작게 만듭니다. 다양한 사전 설정 크기에 스냅됩니다.
 
-1. On the **Add a custom streaming data tile** pane, under **YOUR DATASETS**, click **vibrationDataset** and click **Next**.
+#### 작업 3: SpikeAndDipScore 묶은 가로 막대형 차트 타일 추가
 
-    The pane will refresh to allow you to choose a visualization type and fields.
+1. 빈 대시보드 상단에 SpikeAndDipScore 묶은 가로 막대형 차트를 추가하려면 **+ 타일 추가**를 클릭합니다.
 
-1. Under **Visualization Type**, select **Clustered bar chart**.
+1. **타일 추가** 창의 **실시간 데이터**에서 **사용자 지정 스트리밍 데이터**를 클릭하고 **다음**을 클릭합니다.
 
-    Notice that changing the visualization type changes the fields below.
+1. **사용자 지정 스트리밍 데이터 타일 추가** 창의 **데이터 집합**에서 **vibrationDataset**을 클릭하고 **다음**을 클릭합니다.
 
-1. Skip the **Axis** and **Legend** fields - we don't need them.
+1. **시각화 형식**에서 드롭다운을 열고 **묶은 가로 막대형 차트**를 클릭합니다.
 
-1. Under **Value**, click **+ Add value** and select **SpikeAndDipScore** from the dropdown.
+    시각화 형식을 변경하면 아래 필드가 변경됩니다.
 
-    Notice that the chart appears immediately on the dashboard with a value that begins to update!
+1. **축**과 **범례** 필드를 건너뜁니다. 사용하지 않는 항목입니다.
 
-1. To move to the tile details, click **Next**.
+1. **값**에서 **+ 값 추가**를 클릭하고 드롭다운을 연 다음 **SpikeAndDipScore**를 클릭합니다.
 
-1. This time, we don't need to enter a **Title** as the value label is sufficient.
+1. 타일 세부 정보 창을 표시하려면 **다음**을 클릭합니다.
 
-1. Leave the remaining fields as they are and click **Apply**.
+1. 이번에는 값 레이블이 충분하므로 **제목**을 입력할 필요가 없습니다.
 
-    If you see a notification about creating a phone view, you can ignore it and it will disappear shortly (or dismiss it yourself).
+1. 타일 세부 정보 창을 닫려면 **적용**을 클릭합니다.
 
-1. Again, reduce the size of the tile by moving your mouse over the bottom-right corner of the tile and click-and-drag the resize icon. Make the tile as small as you can.
+    전화 보기 만들기에 대한 알림이 표시될 경우 무시하면 곧 사라집니다(또는 직접 해제 가능).
 
-## Add the IsSpikeAndDipAnomaly Card Tile
+1. 다시 말하지만, 타일의 크기를 줄여 가능한한 작게 만듭니다.
 
-1. To add the IsSpikeAndDipAnomaly Card, at the top of the blank dashboard, click **+ Add tile**.
+#### 작업 4: IsSpikeAndDipAnomaly 카드 타일 추가
 
-1. In the **Add tile** pane, under **REAL-TIME DATA**, click **Custom Streaming Data** and then click **Next** at the bottom of the pane.
+1. 빈 대시보드 상단에 IsSpikeAndDipAnomaly 카드를 추가하려면 **+ 타일 추가**를 클릭합니다.
 
-1. On the **Add a custom streaming data tile** pane, under **YOUR DATASETS**, click **vibrationDatset** and click **Next**.
+1. **타일 추가** 창의 **실시간 데이터**에서 **사용자 지정 스트리밍 데이터**를 클릭하고 **다음**을 클릭합니다.
 
-    The pane will refresh to allow you to choose a visualization type and fields.
+1. **사용자 지정 스트리밍 데이터 타일 추가** 창의 **데이터 집합**에서 **vibrationDatset**을 클릭하고 **다음**을 클릭합니다.
 
-1. Under **Visualization Type**, select **Card**.
+    시각화 형식과 필드를 선택할 수 있도록 창이 새로 고침됩니다.
 
-1. Under **Value**, click **+ Add value** and select **IsSpikeAndDipAnomaly** from the dropdown.
+1. **시각화 형식**에서 드롭다운을 열고 **카드**를 클릭합니다.
 
-    Notice that the chart appears immediately on the dashboard with a value that begins to update!
+1. **값**에서 **+ 값 추가**를 클릭하고, 드롭다운을 열고, **IsSpikeAndDipAnomaly**를 클릭합니다.
 
-1. To move to the tile details, click **Next**.
+1. 타일 세부 정보 창을 표시하려면 **다음**을 클릭합니다.
 
-1. In the **Tile details** pane, under **Title**, enter **Is anomaly?**.
+1. **타일 세부 정보** 창의 **제목**에 **Is anomaly?**을 입력합니다.
 
-1. Leave the remaining fields as they are and click **Apply**.
+1. 타일 세부 정보 창을 닫으려면 **적용**을 클릭합니다.
 
-    If you see a notification about creating a phone view, you can ignore it and it will disappear shortly (or dismiss it yourself).
+    전화 보기 만들기에 대한 알림이 표시될 경우 무시하면 곧 사라집니다(또는 직접 해제 가능).
 
-1. Again, reduce the size of the tile by moving your mouse over the bottom-right corner of the tile and click-and-drag the resize icon. Make the tile as small as you can.
+1. 다시 말하지만, 타일의 크기를 줄여 가능한한 작게 만듭니다.
 
-## Rearrange the Tiles
+#### 작업 5: 타일 재배열
 
-1. Using drag-and-drop, arrange the tiles on the left of the dashboard in the following order:
+1. 끌어서 놓기를 사용하여 대시보드 왼쪽에 있는 타일을 다음 순서에 따라 세로로 정렬합니다.
 
     * SpikeAndDipScore
     * Is Anomaly?
-    * Vibration
+    * 진동
 
-## Add Anomalies Over The Hour Line Chart Tile
+#### 작업 6: 시간에 따른 이상 꺾은선형 차트 타일 추가
 
-Now create a fourth tile, the `Anomalies Over the Hour` line chart.  This one is a bit more complex.
+이제 네 번째 타일인 `Anomalies Over the Hour` 꺾은선형 차트를 만듭니다.  이것은 조금 더 복잡합니다.
 
-1. At the top of the blank dashboard, click **+ Add tile**.
+1. 빈 대시보드 상단에서 **+ 타일 추가**를 클릭합니다.
 
-2. In the **Add tile** pane, under **REAL-TIME DATA**, click **Custom Streaming Data** and then click **Next** at the bottom of the pane.
+2. **타일 추가** 창의 **실시간 데이터**에서 **사용자 지정 스트리밍 데이터**를 클릭하고 **다음**을 클릭합니다.
 
-3. On the **Add a custom streaming data tile** pane, under **YOUR DATASETS**, click **vibrationDataset** and click **Next**.
+3. **사용자 지정 스트리밍 데이터 타일 추가** 창의 **데이터 집합**에서 **vibrationDataset**을 클릭하고 **다음**을 클릭합니다.
 
-    The pane will refresh to allow you to choose a visualization type and fields.
+    시각화 형식과 필드를 선택할 수 있도록 창이 새로 고침됩니다.
 
-4. Under **Visualization Type**, select **Line chart**.
+4. **시각화 형식**에서 드롭다운을 열고 **꺾은선형 차트**를 클릭합니다.
 
-    Notice that changing the visualization type changes the fields below.
+    시각화 형식을 변경하면 아래 필드가 변경됩니다.
 
-5. Under **Axis**, click **+ Add value** and select **time** from the dropdown.
+5. **축**에서 **+ 값 추가**를 클릭하고 드롭다운에서 **시간**을 선택합니다.
 
-6. Under **Values**, click **+ Add value** and select **IsSpikeAndDipAnomaly** from the dropdown.
+6. **값**에서 **+ 값 추가**를 클릭하고 드롭다운에서 **IsSpikeAndDipAnomaly**를 선택합니다.
 
-    Notice that the chart appears immediately on the dashboard with a value that begins to update!
+    값이 업데이트되기 시작하면서 차트가 대시보드에 즉시 나타납니다!
 
-7. Under **Time window to display**, next to **Last**, select **60** from the dropdown and leave the units set to **Minutes**.
+7. **표시할 시간 창**에서 **마지막**의 오른쪽에 있는 드롭다운을 열고 **60**을 클릭합니다.
 
-8. To move to the tile details, click **Next**.
+    단위를 **분**으로 설정된 상태로 둡니다.
 
-9. In the **Tile details** pane, under **Title**, enter **Anomalies over the hour**.
+8. 타일 세부 정보 창을 표시하려면 **다음**을 클릭합니다.
 
-10. Leave the remaining fields as they are and click **Apply**.
+9. **타일 세부 정보** 창의 **제목**에 **시간에 따른 이상**을 입력합니다.
 
-    If you see a notification about creating a phone view, you can ignore it and it will disappear shortly (or dismiss it yourself).
+10. 타일 세부 정보 창을 닫으려면 **적용**을 클릭합니다.
 
-11. This time, stretch the tile so its height matches the 3 tiles to the left and its width fits the remaining space of the dashboard.
+    전화 보기 만들기에 대한 알림이 표시될 경우 무시하면 곧 사라집니다(또는 직접 해제 가능).
 
-12. There's a latency with so many routes and connections, but are you now seeing the vibration data coming through?
+11. 이번에는 높이가 왼쪽의 3 타일과 일치하고 너비가 대시보드의 나머지 공간에 맞도록 타일을 늘립니다.
 
-    > [!NOTE] If no data appears, check you are running the device app and  the analytics job is running.
+    경로와 연결로 너무 많은 대기 시간이 있지만, 시각화에서 진동 데이터를 보기 시작해야 합니다.
 
-13. Let the job run for a while, several minutes at least before the ML model will kick in. Compare the console output of the device app, with the Power BI dashboard. Are you able to correlate the forced and increasing vibrations to a run of anomaly detections?
+    > **참고**:  데이터가 표시되지 않으면 디바이스 앱을 실행 중이고 분석 작업이 실행 중인지 확인합니다.
 
-If you're seeing an active Power BI dashboard, you've just  completed this lab. Great work. 
+    ML 모델이 시작되기 최소 몇 분 전에 작업이 실행되도록 둡니다. 디바이스 앱의 콘솔 출력을 Power BI 대시보드와 비교합니다. 강제 진동 및 증가하는 진동과 이상 감지 실행의 상관 관계를 지정할 수 있습니까?
 
-> [!NOTE] Before you go, don't forget to close Visual Studio Code - this will exit the device app if it is still running.
+활성 Power BI 대시보드가 나타나면 이 랩을 막 완료하신 것입니다. 잘 하셨습니다.
 
+> **참고**:  이동하기 전에 Visual Studio Code를 닫는 것을 잊지 마세요. 디바이스 앱이 실행 중이라면 종료됩니다.

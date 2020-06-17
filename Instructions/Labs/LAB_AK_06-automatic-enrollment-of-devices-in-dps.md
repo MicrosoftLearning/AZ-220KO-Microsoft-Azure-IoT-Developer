@@ -1,74 +1,107 @@
----
+﻿---
 lab:
-    title: 'Lab 06: Automatically provision IoT devices securely and at scale with DPS'
-    module: 'Module 3: Device Provisioning at Scale'
+    title: '랩 06: DPS를 통해 IoT 디바이스를 안전하게 대규모로 자동 프로비전'
+    module: '모듈 3: 대규모로 디바이스 프로비저닝'
 ---
 
-# Automatically provision IoT devices securely and at scale with DPS
+# DPS를 통해 IoT 디바이스를 안전하게 대규모로 자동 프로비전
 
-## Lab Scenario
+## 랩 시나리오
 
-Our asset tracking solution is getting bigger, and provisioning devices one by one cannot scale. We want to use Device Provisioning Service to enroll many devices automatically and securely using x.509 certificate authentication.
+Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 통해 개별 등록을 사용하여 디바이스 프로비저닝 및 프로비저닝 해제 프로세스의 유효성을 검사할 수 있습니다. 지금 관리 팀이 프로세스를 더 큰 규모로 롤아웃하도록 요청했습니다.
 
-## In This Lab
+프로젝트를 계속 진행하려면 X.509 인증서 인증을 사용하여 더 많은 수의 디바이스를 자동으로 안전하게 등록하는 데 디바이스 프로비저닝 서비스를 사용할 수 있다는 것을 입증해야 합니다.
 
-In this lab, you will setup a _group enrollment_ within Device Provisioning Service (DPS) using a CA x.509 certificate. You will also configure a simulated IoT device that will authenticate with DPS using a device certificate signed by the CA Certificate. The IoT device will also be configured to handle changes to the device twin's desired properties as configured initially through DPS, and then modified via Azure IoT Hub. Finally, you will retire the IoT device and the group enrollment with DPS.
+다음의 리소스가 만들어집니다.
 
-This lab includes:
+![랩 6 아키텍처](media/LAB_AK_06-architecture.png)
 
-* Verify Lab Prerequisites
-* Generate and Configure x.509 CA Certificates using OpenSSL
-* Create Group Enrollment in DPS
-* Configure simulated device with x.509 Certificate
-* Handle device twin desired property Changes
-* Automatic Enrollment of simulated device
-* Retire Group Enrollment of simulated device
+## 이 랩에서
 
-## Exercise 1: Verify Lab Prerequisites
+이 랩에서는 다음 활동을 완료할 예정입니다.
 
-This lab assumes the following resources are available:
+* 랩 필수 구성 요소가 충족되는지 확인(필요한 Azure 리소스가 있음)
+* OpenSSL을 사용하여 X.509 CA 인증서 생성 및 구성
+* DPS에서 그룹 등록 만들기
+* X.509 인증서로 시뮬레이션된 디바이스 구성
+* 디바이스 쌍의 필요한 속성 변경 처리
+* 시뮬레이션된 디바이스의 자동 등록
+* 시뮬레이션된 디바이스의 그룹 등록 사용 중지
 
-| Resource Type | Resource Name |
+## 랩 지침
+
+### 연습 1: 랩 필수 구성 요소 확인
+
+이 랩은 다음 Azure 리소스를 사용할 수 있다고 가정합니다.
+
+| 리소스 종류 | 리소스 이름 |
 | :-- | :-- |
-| Resource Group | AZ-220-RG |
+| 리소스 그룹 | AZ-220-RG |
 | IoT Hub | AZ-220-HUB-_{YOUR-ID}_ |
-| Device Provisioning Service | AZ-220-DPS-_{YOUR-ID}_ |
+| 디바이스 프로비저닝 서비스 | AZ-220-DPS-_{YOUR-ID}_ |
 
-If the resources are unavailable, please execute the **lab-setup.azcli** script before starting the lab.
+이러한 리소스를 사용할 수 없는 경우 연습 2로 이동하기 전에 아래 설명에 따라 **lab06-setup.azcli** 스크립트를 실행해야 합니다. 스크립트 파일은 개발자 환경 구성(랩 3)의 일부로 로컬로 복제한 GitHub 리포지토리에 포함됩니다.
 
-The **lab-setup.azcli** script is written to run in a **bash** shell environment - the easiest way to execute this is in the Azure Cloud Shell.
+**lab06-setup.azcli** 스크립트는 **bash** 셸 환경에서 실행되도록 작성되며, Azure Cloud Shell에서 실행하는 것이 가장 쉬운 방법입니다.
 
-1. Using a browser, open the [Azure Shell](https://shell.azure.com/) and login with the Azure subscription you are using for this course.
+1. 브라우저를 사용하여 [Azure Cloud Shell](https://shell.azure.com/)을 열고 이 과정에 사용 중인 Azure 구독으로 로그인합니다.
 
-1. To ensure the Azure Shell is using **Bash**, ensure the dropdown selected value in the top-left is **Bash**.
+    Cloud Shell에 대한 저장소 설정 관련 메시지가 표시되면 기본값을 수락합니다.
 
-1. To upload the setup script, in the Azure Shell toolbar, click **Upload/Download files** (fourth button from the right).
+1. Azure Cloud Shell에서 **Bash**를 사용하고 있는지 확인합니다.
 
-1. In the dropdown, select **Upload** and in the file selection dialog, navigate to the **lab-setup.azcli** file for this lab. Select the file and click **Open** to upload it.
+    Azure Cloud Shell 페이지의 왼쪽 상단에 있는 드롭다운으로 환경을 선택할 수 있습니다. 선택한 드롭다운 값이 **Bash**인지 확인합니다.
 
-    A notification will appear when the file upload has completed.
+1. Azure Shell 도구 모음에서 **파일 업로드/다운로드**(오른쪽에서 네 번째 단추)를 클릭합니다.
 
-1. You can verify that the file has uploaded by listing the content of the current directory by entering the `ls` command.
+1. 드롭다운에서 **업로드**를 클릭합니다.
 
-1. To create a directory for this lab, move **lab-setup.azcli** into that directory, and make that the current working directory, enter the following commands:
+1. 파일 선택 대화 상자에서 개발 환경을 구성할 때 다운로드한 GitHub 랩 파일의 폴더 위치로 이동합니다.
+
+    _랩 3: 개발 환경 설정_, ZIP 파일을 다운로드하고 콘텐츠를 로컬로 추출하여 랩 리소스를 포함하는 GitHub 리포지토리를 복제했습니다. 추출된 폴더 구조는 다음 폴더 경로를 포함합니다.
+
+    * Allfiles
+      * 랩
+          * 06-DPS에 있는 디바이스의 자동 등록계약
+            * 설정
+
+    lab06-setup.azcli 스크립트 파일은 랩 6의 설치 폴더에 있습니다.
+
+1. **lab06-setup.azcli** 파일을 선택한 다음 **열기**를 클릭합니다.
+
+    파일 업로드가 완료되면 알림이 나타납니다.
+
+1. Azure Cloud Shell에 올바른 파일이 업로드되었는지 확인하려면 다음 명령을 입력합니다.
+
+    ```bash
+    ls
+    ```
+
+    `ls` 명령으로 현재 디렉터리의 내용을 나열합니다. lab06-setup.azcli 파일이 나열되어야 합니다.
+
+1. 설치 스크립트가 포함된 이 랩에 대한 디렉터리를 만든 다음 해당 디렉터리로 이동하려면 다음 Bash 명령을 입력합니다.
 
     ```bash
     mkdir lab6
-    mv lab-setup.azcli lab6
+    mv lab06-setup.azcli lab6
     cd lab6
     ```
 
-1. To ensure the **lab-setup.azcli** has the execute permission, enter the following commands:
+1. **lab06-setup.azcli** 스크립트에 실행 권한이 있는지 확인하려면 다음 명령을 입력합니다.
 
     ```bash
-    chmod +x lab-setup.azcli
+    chmod +x lab06-setup.azcli
     ```
 
-1. To edit the **lab-setup.azcli** file, click **{ }** (Open Editor) in the toolbar (second button from the right). In the **Files** list, select **lab5** to expand it and then select **lab-setup.azcli**.
+1. Cloud Shell 도구 모음에서 lab06-setup.azcli 파일을 편집하려면 **편집기 열기**(오른쪽에서 두 번째 단추 - **{ }**)를 클릭합니다.
 
-    The editor will now show the contents of the **lab-setup.azcli** file.
+1. **파일** 목록에서 lab6 폴더를 펼치고 스크립트 파일을 열려면 **lab6**을 클릭한 다음 **lab06-setup.azcli**를 클릭합니다.
 
-1. In the editor, update the values of the `{YOUR-ID}` and `{YOUR-LOCATION}` variables. Set `{YOUR-ID}` to the Unique ID you created at the start of this - i.e. **CAH191211**, and set `{YOUR-LOCATION}` to the location that makes sense for your resources.
+    이제 편집기에 **lab06-setup.azcli** 파일의 콘츠가 표시됩니다.
+
+1. 편집기에서 `{YOUR-ID}` 및 `{YOUR-LOCATION}` 변수의 값을 업데이트하세요.
+
+    아래 샘플을 예로 들어, `{YOUR-ID}`를 이 과정을 시작할 때 만든 고유 ID(예: **CAH191211**)로 설정하고 `{YOUR-LOCATION}`를 리소스에 적합한 위치로 설정해야 합니다.
 
     ```bash
     #!/bin/bash
@@ -79,197 +112,235 @@ The **lab-setup.azcli** script is written to run in a **bash** shell environment
     Location="{YOUR-LOCATION}"
     ```
 
-    > [!NOTE] The `{YOUR-LOCATION}` variable should be set to the short name for the region. You can see a list of the available regions and their short-names (the **Name** column) by entering this command:
-
+    > **참고**:  `{YOUR-LOCATION}` 변수는 해당 지역의 짧은 이름으로 설정되어야 합니다. 이 명령을 입력하면 사용 가능한 지역 목록과 이 지역의 짧은 이름(**이름** 열)을 볼 수 있습니다.
+    >
     > ```bash
     > az account list-locations -o Table
     >
-    > DisplayName           Latitude    Longitude    Name
+    > 표시이름           위도    경도    이름
     > --------------------  ----------  -----------  ------------------
-    > East Asia             22.267      114.188      eastasia
-    > Southeast Asia        1.283       103.833      southeastasia
-    > Central US            41.5908     -93.6208     centralus
-    > East US               37.3719     -79.8164     eastus
-    > East US 2             36.6681     -78.3889     eastus2
+    > 동아시아             22.267      114.188      eastasia
+    > 동남 아시아        1.283       103.833      southeastasia
+    > 미국 중부            41.5908     -93.6208     centralus
+    > 미국 동부               37.3719     -79.8164     eastus
+    > 미국 동부 2             36.6681     -78.3889     eastus2
     > ```
 
-1. To save the changes made to the file and close the editor, click **...** in the top-right of the editor window and select **Close Editor**.
+1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창의 오른쪽 상단에서 ...를 클릭한 다음 **편집기 닫기**를 클릭합니다.
 
-    If prompted to save, click **Save** and the editor will close.
+    저장하라는 메시지가 표시된 경우 **저장**을 클릭하면 편집기가 닫힙니다.
 
-    > [!NOTE] You can use **CTRL+S** to save at any time and **CTRL+Q** to close the editor.
+    > **참고**:  **CTRL+S**를 사용하여 언제든지 저장할 수 있으며 **CTRL+Q**를 사용하여 편집기를 닫을 수 있습니다.
 
-1. To create a resources required for this lab, enter the following command:
+1. 이 랩에 필요한 리소스를 만들려면 다음 명령을 입력합니다.
 
     ```bash
-    ./lab-setup.azcli
+    ./lab06-setup.azcli
     ```
 
-    This will take a few minutes to run. You will see JSON output as each step completes.
+    이 작업을 실행하려면 몇 분 정도 걸립니다. 각 단계가 완료되면 JSON 출력이 표시됩니다.
 
-    Once the script has completed, you will be ready to continue with the lab.
+    스크립트가 완료되면 랩으로 계속할 준비가 끝납니다.
 
-## Exercise 2: Generate and Configure x.509 CA Certificates using OpenSSL
+### 연습 2: OpenSSL을 사용하여 X.509 CA 인증서 생성 및 구성
 
-In this exercise, you will generate an x.509 CA Certificate using OpenSSL within the Azure Cloud Shell. This certificate will be used to configure the Group Enrollment within the Device Provisioning Service (DPS).
+이 연습에서는 Azure Cloud Shell 내에서 OpenSSL을 사용하여 X.509 CA 인증서를 생성합니다. 이 인증서는 DPS(디바이스 프로비저닝 서비스) 내에서 그룹 등록계약을 구성하는 데 사용합니다.
 
-### Task 1: Generate the certificates
+#### 작업 1: 인증서 생성
 
-1. If necessary, log in to your Azure portal using your Azure account credentials.
+1. 필요한 경우 이 과정에서 사용 중인 Azure 계정 자격 증명을 사용하여 [Azure Portal](https://portal.azure.com)에 로그인합니다.
 
-    If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
+    둘 이상의 Azure 계정이 있는 경우에는 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. Open the **Azure Cloud Shell** by clicking the **Terminal** icon within the top header bar of the Azure portal, and select the **Bash** shell option.
+1. Azure Cloud Shell을 열려면 포털 창의 오른쪽 상단에서 **Cloud Shell**을 클릭합니다.
 
-    > [!NOTE] Both *Bash* and *PowerShell* interfaces for the Azure Cloud Shell support the use of **OpenSSL**. In this unit you will use some helper scripts written for the *Bash* shell.
+    Cloud Shell 단추에는 명령 프롬프트를 나타내는 아이콘이 있습니다(`>_`).
 
-1. Within the Azure Cloud Shell, run the following commands that will download a helper script for using *OpenSSL* to generate x.509 CA Certificates. They will be placed within the `~/certificates` directory inside your Cloud Shell storage.
+    Cloud Shell 창이 디스플레이 화면 하단 근처에서 열립니다.
+
+1. Cloud Shell 창의 왼쪽 상단에서 **Bash**가 환경 옵션으로 선택되어 있는지 확인합니다.
+
+    > **참고**:  Azure Cloud Shell에 대한 *Bash* 및 *PowerShell* 인터페이스는 **OpenSSL**의 사용을 지원합니다. 이 연습에서는 *Bash* 셸용으로 작성된 일부 도우미 스크립트를 사용합니다.
+
+1. Cloud Shell 명령 프롬프트에서, 사용 중인 Azure IoT 도우미 스크립트를 다운로드하려면 다음 명령을 입력합니다.
 
     ```sh
-    # create certificates directory
+    # 인증서 디렉터리 만들기
     mkdir certificates
-    # navigate to certificates directory
+    # 인증서 디렉터리로 이동
     cd certificates
 
-    # download helper script files
+    # 도우미 스크립트 파일 다운로드
     curl https://raw.githubusercontent.com/Azure/azure-iot-sdk-c/master/tools/CACertificates/certGen.sh --output certGen.sh
     curl https://raw.githubusercontent.com/Azure/azure-iot-sdk-c/master/tools/CACertificates/openssl_device_intermediate_ca.cnf --output openssl_device_intermediate_ca.cnf
     curl https://raw.githubusercontent.com/Azure/azure-iot-sdk-c/master/tools/CACertificates/openssl_root_ca.cnf --output openssl_root_ca.cnf
 
-    # update script permissions so user can read, write, and execute it
+    # 업데이트 스크립트 사용 권한으로 사용자가 읽고 쓰고 실행할 수 있습니다
     chmod 700 certGen.sh
     ```
 
-    These helper scripts are being downloaded from the `Azure/azure-iot-sdk-c` open source project hosted on Github. This is an open source project that's a part of the Azure IoT SDK. The `certGen.sh` helper script will help demonstrate the purpose of CA Certificates without diving into the specifics of OpenSSL configuration that's outside the scope of this unit.
+    Github에서 호스팅되는 `Azure/azure-iot-sdk-c` 오픈 소스 프로젝트에서 도우미 스크립트 및 지원 파일을 다운로드하고 있습니다. 이 프로젝트는 Azure IoT SDK의 일부인 오픈 소스 프로젝트입니다. `certGen.sh` 도우미 스크립트는 이 랩의 범위를 벗어난 OpenSSL 구성의 세부 사항을 다루지 않고 CA 인증서의 목적을 설명하는 데 도움이 됩니다.
 
-    For additional instructions on using this helper script, and for instructions on how to use PowerShell instead of Bash, please see this link: <https://github.com/Azure/azure-iot-sdk-c/blob/master/tools/CACertificates/CACertificateOverview.md>
+    이 도우미 스크립트 사용에 대한 추가 지침 및 Bash 대신 PowerShell을 사용하는 방법에 대한 지침은 [https://github.com/Azure/azure-iot-sdk-c/blob/master/tools/CACertificates/CACertificateOverview.md](https://github.com/Azure/azure-iot-sdk-c/blob/master/tools/CACertificates/CACertificateOverview.md) 링크를 참조하세요.
 
-    > [!WARNING] Certificates created by this helper script **MUST NOT** be used for Production. They contain hard-coded passwords ("*1234*"), expire after 30 days, and most importantly are provided for demonstration purposes to help you quickly understand CA Certificates. When building products against CA Certificates, you'll need to use your own security best practices for certificate creation and lifetime management.
+    > **경고**: 이 도우미 스크립트로 만든 인증서는 프로덕션에 사용할 수 **없습니다**. 여기에는 하드 코딩된 암호("*1234*")가 포함되어 있고 30일 후에 만료되며, 가장 중요한 것은 CA 인증서를 신속하게 이해할 수 있도록 데모 목적으로 제공됩니다. CA 인증서에 대해 제품을 빌드할 때 인증서 만들기 및 수명 관리를 위해 고유한 보안 모범 사례를 사용해야 합니다.
 
-1. Review the contents of the script you downloaded using whatever tool you'd prefer (`more`, `code`, `vi`, etc.) to validate the code you downloaded.
+    관심이 있다면 Cloud Shell에 내장된 편집기를 사용하여 다운로드한 스크립트 파일의 콘텐츠를 빠르게 검사할 수 있습니다.
 
-1. The first x.509 certificates needed are CA and intermediate certificates. These can be generated using the `certGen.sh` helper script by passing the `create_root_and_intermediate` option.
+    * Cloud Shell에서 편집기를 열려면 **`{}`**를 클릭합니다.
+    * 파일 목록에서 **인증서**를 클릭한 다음 **certGen.sh**를 클릭합니다
 
-    Run the following command within the `~/certificates` directory of the **Azure Cloud Shell** to generate the CA and intermediate certificates:
+    > **참고**: Bash 환경에서 `more` 또는 `vi` 명령과 같은 다른 텍스트 파일 보기 도구가 있는 경우 해당 도구를 사용할 수도 있습니다.
+
+    다음 단계에서는 스크립트를 사용하여 루트 및 중간 인증서를 만듭니다.
+
+1. 루트 및 중간 인증서를 만들려면 다음 명령을 입력합니다.
 
     ```sh
     ./certGen.sh create_root_and_intermediate
     ```
 
-1. The previous command generated a Root CA Certificate named `azure-iot-test-only.root.ca.cert.pem` is located within the `./certs` directory.
+    `create_root_and_intermediate` 옵션을 사용하여 스크립트를 실행했습니다. 이 명령은`~/certificates` 디렉터리 내에서 스크립트를 실행하는 것으로 가정합니다.
 
-    Run the following command within the **Azure Cloud Shell** to download this certificate to your local machine so it can be uploaded to DPS.
+    이 명령은 `azure-iot-test-only.root.ca.cert.pem`이라는 루트 CA 인증서를 생성하고 `./certs` 디렉터리(만든 인증서 디렉터리 아래)에 배치했습니다.
+
+1. DPS에 업로드할 수 있도록 로컬 컴퓨터에 루트 인증서를 다운로드하려면 다음 명령을 입력합니다
 
     ```sh
     download ~/certificates/certs/azure-iot-test-only.root.ca.cert.pem
     ```
 
-### Task 2: Configurate your DPS to trust the root certificate
+    파일을 로컬 컴퓨터에 저장하라는 메시지가 표시됩니다. 다음 작업에 파일이 필요하므로 파일이 저장되는 위치를 기록합니다.
 
-1. Navigate to your **Device Provisioning Service** (DPS) named `AZ-220-DPS-_{YOUR-ID}_` within the Azure portal.
+#### 작업 2: 루트 인증서를 신뢰하도록 DPS 구성
 
-2. On the left side of the **Device Provisioning Service** blade, in the **Settings** section, click the **Certificates** link.
+1. Azure Portal에서 디바이스 프로비저닝 서비스를 엽니다.
 
-3. On the **Certificates** pane, click the **Add** button at the top to start process of uploading the x.509 CA Certificate to the DPS service.
+    이것은 디바이스 프로비저닝 서비스 이름 `AZ-220-DPS-{YOUR-ID}`입니다.
 
-5. On the **Add Certificate** pane, for **Certificate Name**, enter a logical name for the _Root CA Certificate_ into the field. For example, `root-ca-cert`.
+1. **디바이스 프로비저닝 서비스** 블레이드의 왼쪽에 있는 **설정** 섹션에서 **인증서**를 클릭합니다.
 
-    [!NOTE] This name could be the same as the name of the certificate file, or something different. This is a logical name that has no correlation to the _Common Name_ within the x.509 CA Certificate.
+1. **인증서** 창의 창 상단에서 **추가**를 클릭합니다.  
 
-4. For the **Certificate .pem or .cer file.** upload field, select the `azure-iot-test-only.root.ca.cert.pem` CA Certificate that you just downloaded.
+    **추가**를 클릭하면 X.509 CA 인증서를 DPS 서비스에 업로드하는 프로세스가 시작됩니다.
 
-6. Click **Save**.
+1. **인증서 추가** 창에서 **인증서 이름** 아래에 **root-ca-cert**를 입력합니다.
 
-    Once the x.509 CA Certificate has been uploaded, the _Certificates_ pane will display the certificate with the _Status_ of _Unverified_. Before this CA Certificate can be used to authenticate devices to DPS, you will need to verify **Proof of Possession** of the certificate.
+    루트 인증서 및 중간 인증서와 같은 인증서 또는 체인 내의 계층 구조 수준에서 여러 인증서를 구분할 수 있는 이름을 하는 것이 중요합니다.
 
-7. To start the process of verifying **Proof of Possession** of the certificate, click on the **CA Certificate** that was just uploaded to open the **Certificate Details** pane for it.
+    > **참고**: 입력한 루트 인증서 이름은 인증서 파일의 이름과 같거나 다를 수 있습니다. 제공된 이름은 X.509 CA 인증서 내용에 포함된 _일반 이름_과 상관없는 논리적 이름입니다.
 
-8. On the **Certificate Details** pane, click on the **Generate Verification Code** button.  (You may need to scroll to see it.)
+1. **Certificate .pem or .cer file**에서 _파일 선택_ 텍스트 상자 오른쪽의 **열기**를 클릭합니다.
 
-9.  Copy the newly generated **Verification Code** that is displayed above the _Generate Verification Code_ button.  The button to the right of the _Verification Code_ textbox will do this for you.
+    텍스트 필드 오른쪽의 **열기** 단추를 클릭하면 이전에 다운로드한 `azure-iot-test-only.root.ca.cert.pem` CA 인증서로 이동할 수 있는 OPen 파일 대화 상자가 열립니다.
 
-    _Proof of Possession_ of the CA certificate is provided to DPS by uploading a certificate generated from the CA certificate with the verifcation code that was just generated within DPS. This is how you provide proof that you actually own the CA Certificate.
+1. 창 하단에서 **저장**을 클릭합니다.
 
-    > [!IMPORTANT] You will need to leave the **Certificate Details** pane open while you generate the verification certificate. If you close the pane, you will invalidate the verification code, and will need to generate a new one.
+    X.509 CA 인증서가 업로드되면 _인증서_ 창에 _확인되지 않음_ _상태_의 인증서가 표시됩니다. 이 CA 인증서를 사용하여 디바이스를 DPS에 인증하려면 인증서 **보유 증명**을 확인해야 합니다.
 
-10. Open the **Azure Cloud Shell**, if it's not still open from earlier, and navigate to the `~/certificates` directory.
+1. 인증서 **보유 증명**을 확인하는 프로세스를 시작하려면 **root-ca-cert**를 클릭합니다.
 
+1. **인증서 세부 정보** 창에서 **확인 코드 생성**을 클릭합니다.
 
-11. Run the following command, passing in your copied verification code, to create the verification certificate:
+    **확인 코드 생성** 단추를 보려면 아래로 스크롤해야 할 수도 있습니다.
+
+    단추를 클릭하면 생성된 코드가 제출된 확인 코드에 배치됩니다.
+
+1. **확인 코드**의 오른쪽에서 **클립보드에 복사**를 클릭합니다.
+
+    CA 인증서 _보유 증명_은 DPS 내에서 방금 생성된 확인 코드와 함께 CA 인증서에서 생성된 인증서를 업로드하여 DPS에 제공됩니다. 이렇게 하면 CA 인증서를 실제로 보유하고 있다는 증거를 제공할 수 있습니다.
+
+    > **중요**: 확인 인증서를 만드는 동안 **인증서 세부 정보** 창을 열어 두어야 합니다. 창을 닫으면 확인 코드가 무효화되고 새 코드를 생성해야 합니다.
+
+1. **Azure Cloud Shell**을 열고 이전에서 아직 열지 않은 경우 `~/certificates` 디렉터리로 이동합니다.
+
+1. 확인 인증서를 만들려면 다음 명령을 입력합니다.
 
     ```sh
     ./certGen.sh create_verification_certificate <verification-code>
     ```
 
-    Be sure to replace the `<verification-code>` placeholder with the **Verification Code** generated by the Azure portal.
+    `<verification-code>` 자리 표시자를 Azure Portal에서 만든 **확인 코드**로 바꿔야 합니다.
 
-    For example, the command run will look similar to the following:
+    예를 들어, 실행하는 명령은 다음과 유사합니다.
 
     ```sh
     ./certGen.sh create_verification_certificate 49C900C30C78D916C46AE9D9C124E9CFFD5FCE124696FAEA
     ```
 
-    This generates a _verification certificate_ that is chained to the CA certificate.  The subject of the certificate is the verification code. The generated Verification Certificate named `verification-code.cert.pem` is located within the `./certs` directory of the Azure Cloud Shell.
+    이렇게 하면 CA 인증서에 연결된 _확인 인증서_가 생성됩니다. 인증서의 주체는 확인 코드입니다. `verification-code.cert.pem`이라는 이름으로 생성된 확인 인증서는 Azure Cloud Shell의 `./certs` 디렉터리 내에 있습니다.
 
-1. Run the following command within the **Azure Cloud Shell** to download the verification certificate to your local machine so it can be uploaded to DPS.
+    다음 단계에서는 DPS에 업로드할 수 있도록 확인 인증서를 로컬 컴퓨터에 다운로드합니다(이전의 루트 인증서로 수행한 작업과 유사).
+
+1. 확인 인증서를 로컬 컴퓨터에 다운로드하려면 다음 명령을 입력합니다.
 
     ```sh
     download ~/certificates/certs/verification-code.cert.pem
     ```
 
-    [!NOTE] Depending on the web browser, you may be prompted to allow multiple downloads at this point.  If there appears to be no response to your download command, make sure there's not a prompt elsewhere on the screen asking for permission to allow the download.
+    > **참고**: 웹 브라우저에 따라 이 시점에서 여러 다운로드를 허용하라는 메시지가 표시될 수 있습니다. 다운로드 명령에 대한 응답이 없는 것으로 보이면 다운로드 허용 권한을 요청하는 메시지가 화면에 표시되지 않는지 확인합니다.
 
-12. Go back to the **Certificate Details** pane for the CA certificate within DPS.
+1. **인증서 세부 정보** 창으로 돌아갑니다.
 
-13. For **Verification Certificate .pem or .cer file.**, select the newly created, and downloaded, verification certificate file, named `verification-code.cert.pem`.
+    기억한다면, DPS 내에서 CA 인증서를 작업하는 동안 Azure Portal에서 이 창을 열어 두었습니다.
 
-14. Click **Verify**.
+1. **인증서 세부 정보** 창 하단의 **확인 인증서 .pem 또는 .cer 파일** 오른쪽에 있는 **열기**를 클릭합니다.
 
-15. Verify that in the **Certificates** pane, the **Status** for the certificate is now displayed as _Verified_.  You may need to use the **Refresh** button at the top of the pane (to the right of the **Add** button) to see this change.
+1. 파일 열기 대화 상자에서 다운로드 폴더로 이동한 다음 **verification-code.cert.pem**을 클릭하고 **열기**를 클릭합니다.
 
-## Exercise 3: Create Group Enrollment (x.509 Certificate) in DPS
+1. **인증서 세부 정보** 창 하단에서 **확인**을 클릭합니다.
 
-In this exercise, you will create a new individual enrollment for a device within the Device Provisioning Service (DPS) using _certificate attestation_.
+1. **인증서** 창에서, 이제 인증서 **상태**가 _확인됨_으로 표시되는지 확인합니다.
 
-### Task 1: Create the enrollment
+    이 변경 내용을 보려면 창의 상단에 있는 **새로 고침** 단추(**추가** 단추 오른쪽)를 사용해야 할 수 있습니다.
 
-1. If necessary, log in to your Azure portal using your Azure account credentials.
+### 연습 3: DPS에서 그룹 등록계약(X.509 인증서) 만들기
 
-    If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
+이 연습에서는 _인증서 증명_을 사용하는 DPS(Device Provisioning Service) 내에서 새 등록 그룹을 만듭니다.
 
-1. On your resource group tile, click **AZ-220-DPS-_{YOUR-ID}_**.
+#### 작업 1: 등록계약 만들기
 
-1. On the left side of the Device Provisioning Service blade, under **Settings**, click **Manage enrollments**.
+1. 필요한 경우 Azure 계정 자격 증명을 사용하여 Azure Portal에 로그인합니다.
 
-1. At the top of the blade, click **Add enrollment group**.
+    둘 이상의 Azure 계정이 있는 경우에는 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. On the **Add Enrollment Group** blade, for **Group name**, enter "**simulated-devices**".
+1. 리소스 그룹 타일에서 **AZ-220-DPS-_{YOUR-ID}_**를 클릭합니다.
 
-1. Ensure that the **Attestation Type** is set to **Certificate**.
+1. 디바이스 프로비저닝 서비스 블레이드의 왼쪽에 있는 **설정**에서 **등록 관리**를 클릭합니다.
 
-1. Ensure the **Certificate Type** field is set to **CA Certificate**.
+1. 블레이드 상단에서 **등록 그룹 추가**를 클릭합니다.
 
-1. In the **Primary Certificate** dropdown, select the CA certificate that was uploaded to DPS previously, likely **root-ca-cert**.
+    등록 그룹은 기본적으로 자동 프로비저닝을 통해 등록할 수 있는 디바이스의 레코드입니다.
 
-1. Leave the **Secondary Certificate** dropdown set to **No certificate selected**.
+1. **등록 그룹 추가** 블레이드에서 **그룹 이름**에 **simulated-devices**를 입력합니다.
 
-2. Leave **Select how you want to assign devices to hubs** as **Evenly weighted distribution**.
-   
-   As you only have one IoT Hub associated with the enrollment, this setting is somewhat unimportant.  In larger environments where you have multiple distributed hubs, this setting will control how to choose what IoT Hub should receive this device enrollment.
+1. **증명 유형**이 **인증서**로 설정되어 있는지 확인합니다.
 
-3. Notice that the **AZ-220-HUB-_{YOUR-ID}_** IoT Hub is selected within the **Select the IoT hubs this device can be assigned to:** dropdown.
-   
-   This field specifies the IoT Hub(s) this device can be assigned to.
+1. **인증서 유형** 필드가 **CA 인증서**로 설정되어 있는지 확인합니다.
 
-4. Leave **Select how you want device data to be handled on re-provisioning** as the default value of **Re-provision and migrate data**.
+1. **기본 인증서** 드롭다운에서 이전에 DPS에 업로드한 CA 인증서를 선택합니다(**root-ca-cert**와 유사).
 
-    This field gives you high-level control over the re-provisioning behavior, where the same device (as indicated through the same Registration ID) submits a later provisioning request after already being provisioned successfully at least once.
+1. **보조 인증서** 드롭다운을 **선택한 인증서 없음**으로 설정한 상태로 둡니다.
 
-2. Notice the **Select the IoT hubs this group can be assigned to** dropdown has the **AZ-220-HUB-*{YOUR-ID}*** IoT Hub selected. This will ensure when the device is provisioned, it gets added to this IoT Hub.
+    보조 인증서는 일반적으로 만료 인증서 또는 손상된 인증서를 수용하기 위해 인증서 회전에 사용됩니다. 롤링 인증서에 대한 자세한 내용은 여기에서 확인할 수 있습니다. [https://docs.microsoft.com/ko-kr/azure/iot-dps/how-to-roll-certificates](https://docs.microsoft.com/ko-kr/azure/iot-dps/how-to-roll-certificates)
 
-5. In the **Initial Device Twin State** field, modify the `properties.desired` JSON object to include a property named `telemetryDelay` with the value of `"1"`. This will be used by the Device to set the time delay for reading sensor telemetry and sending events to IoT Hub.
+1. **허브에 디바이스를 **균등하게 가중치 분포**로 할당하는 방법을 선택**한 상태로 둡니다.
 
-    The final JSON will be like the following:
+   여러 분산 허브가 있는 대규모 환경에서는 이 설정에서 이 디바이스 등록계약을 받을 IoT Hub를 선택하는 방법을 제어합니다. 이 랩의 등록과 연관된 단일 IoT Hub가 있으므로 IoT Hub에 디바이스를 할당하는 방법은 이 랩 시나리오에는 실제로 적용되지 않습니다. 
+
+1. **AZ-220-HUB-_{YOUR-ID}_** IoT Hub는 **이 디바이스를 할당할 수 있는 IoT Hub 선택:** 드롭다운 내에서 선택됩니다.
+
+   이 필드에서는 이 디바이스를 할당할 수 있는 IoT Hub를 지정합니다.
+
+1. **재프로비저닝에서 디바이스 데이터를 처리할 방법 선택**을 기본값인 **데이터 재프로비저닝 및 마이그레이션**으로 둡니다.
+
+    이 필드는 동일한 디바이스(동일한 등록 ID를 통해 표시된 대로)가 이미 한 번 이상 성공적으로 프로비저닝된 후 나중에 프로비저닝 요청을 제출하는 재프로비저닝 동작에 높은 수준의 제어를 제공합니다.
+
+1. **이 그룹에 할당할 수 있는 IoT Hub 선택** 드롭다운에 **AZ-220-HUB-*{YOUR-ID}*** IoT Hub가 선택되어 있습니다.
+
+    이렇게 하면 디바이스가 프로비전될 때 이 IoT Hub에 추가됩니다.
+
+1. **초기 디바이스 쌍 상태** 필드에서 다음과 같이 JSON 개체를 수정합니다.
 
     ```json
     {
@@ -282,89 +353,123 @@ In this exercise, you will create a new individual enrollment for a device withi
     }
     ```
 
-    This field contains JSON data that represents the initial configuration of desired properties for the device.
+    이 JSON 데이터는 이 등록 그룹에 참여하는 모든 디바이스의 디바이스 쌍에 대한 원하는 속성의 초기 구성을 나타냅니다.
 
-1. Leave **Enable entry** set to **Enable**.
+    디바이스는 `properties.desired.telemetryDelay` 속성을 사용하여 원격 분석을 읽고 IoT Hub로 보내는 시간 지연을 설정합니다.
 
-    Generally, you'll want to enable new enrollment entries and keep them enabled.
+1. **항목 사용**을 **사용**으로 설정한 상태로 둡니다.
 
-2. At the top of the **Add Enrollment** blade, click **Save**.
+    일반적으로 새 등록 항목을 사용하도록 설정하고 사용 상태로 유지하려고 합니다.
 
-### Task 2: Validate the enrollment
+1. **등록 추가** 블레이드 맨 위에 있는 **저장**을 클릭합니다.
 
-1. In the **Manage enrollments** pane, click on the **Enrollment Groups** tab to view the list of enrollment groups in DPS.
+#### 작업 2: 등록 유효성 검사
 
-4. In the list, click on the **simulated-devices** enrollment group that was just created to view the enrollment group details.
+1. **등록계약 그룹** 탭이 표시되고 새 등록계약 그룹이 나열되었는지 확인합니다.
 
-5. In the **Enrollment Group Details** blade, locate the **Certificate Type**, and notice it's set to **CA Certificate**. Also, notice the **Primary Certificate** information is displayed, including the ability to update the certificates if needed.
+    등록계약 그룹이 나열되지 않은 경우 블레이드 상단에서 **새로 고침**을 클릭합니다.
 
-6. Locate the **Initial Device Twin State**, and notice the JSON for the Device Twin Desired State contains the `telemetryDelay` property set to the value of `"1"`.
+1. 그룹 이름 목록에서 **simulated-devices**를 클릭합니다.
 
-7.  Close the **Enrollment Group Details** pane.
+1. **등록 그룹 세부 정보** 블레이드에서 다음을 확인합니다.
 
-## Exercise 4: Configure simulated device with x.509 certificate
+    * **인증서 유형**이 **CA 인증서**로 설정됩니다.
+    * **기본 인증서**가 **root-ca-cert**로 설정됩니다.
+    * **보조 인증서**가 **선택된 인증서 없음**으로 설정됨
+    * **허브에 디바이스를 할당할 방법 선택**이 **균등하게 가중치 분포**로 설정됨
+    * **이 그룹에 할당할 수 있는 IoT Hub 선택**이 **AZ-220-HUB-{YOUR-ID}.azure-devices.net**으로 설정됨
+    * **초기 디바이스 쌍 상태**에는 `"1"`의 값으로 설정된 `telemetryDelay` 속성이 있습니다.
 
-In this exercise, you will configure a simulated device written in C# to connect to your Azure IoT Hub via your Device Provisioning Service (DPS) using an x.509 certificate. This exercise will also introduce you to the workflow within the **simulated device** source code within the `/LabFiles` directory, and how it works to authenticate with DPS and send messages to IoT Hub.
+1. 등록계약 그룹 설정을 확인한 후 **등록계약 그룹 세부 정보** 블레이드를 닫습니다.
 
-1. If necessary, log in to your Azure portal using your Azure account credentials.
+### 연습 4: X.509 인증서로 시뮬레이션된 디바이스 구성
 
-    If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
+이 연습에서는 X.509 인증서를 사용하여 DPS(디바이스 프로비저닝 서비스)를 통해 Azure IoT Hub에 연결하도록 C#으로 작성된 시뮬레이션된 디바이스를 구성합니다. 또한 이 연습에서는 **시뮬레이션된 디바이스** 소스 코드 내의 워크플로와 DPS로 인증하고 IoT Hub로 메시지를 보내는 방법을 소개합니다.
 
-1. Open the Azure Cloud Shell by clicking the **Terminal** icon within the top header bar of the Azure portal, and select the **Bash** shell option.
+1. 필요한 경우 Azure 계정 자격 증명을 사용하여 Azure Portal에 로그인합니다.
 
-1. Within the **Azure Cloud Shell**, navigate to the `~/certificates` directory by running the following command:
+    둘 이상의 Azure 계정이 있는 경우에는 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
+
+1. Azure Portal 창 상단의 도구 모음에서 **Cloud Shell**을 클릭합니다.
+
+    Cloud Shell의 왼쪽 상단에서 **Bash**셸 옵션이 선택되어 있는지 확인합니다.
+
+1. **Cloud Shell** 내에서 다음 명령을 실행하여 `~/certificates` 디렉터리로 이동합니다.
 
     ```sh
     cd ~/certificates
     ```
 
-    The `~/certificates` directory is where the `certGen.sh` helper scripts was downloaded to and used to generate the CA Certificate for DPS previously. This helper script will also be used to generate a device certificate within the CA Certificate chain.
+    `~/certificates` 디렉터리는 `certGen.sh` 도우미 스크립트가 다운로드된 위치입니다. 이전에 DPS에 대한 CA 인증서를 생성하는 데 사용했습니다. 이 도우미 스크립트는 CA 인증서 체인 내에서 디바이스 인증서를 생성하는 데에도 사용됩니다.
 
-1. Run the following command to generate an _x.509 device certificate_ within the CA certificate chain with the device name of `simulated-device1`. This certificate will generate a leaf device x.509 certificate for your simulated device. This certificate will be signed by the CA certificate generated previously, and will be used to authenticate the device with the Device Provisioning Service (DPS).
+1. CA 인증서 체인 내에서 _X.509 디바이스 인증서_를 생성하려면 다음 명령을입력합니다.
 
     ```sh
     ./certGen.sh create_device_certificate simulated-device1
     ```
 
-    Notice the device id of `simulated-device1` is passed to the `create_device_certificate` command of the `certGen.sh` script. This command will create a new x.509 certificate that's signed by the CA certificate and has the specified device id set within the _common name_, or `CN=`, value of the device certificate.
+    이 명령은 이전에 생성된 CA 인증서에 의해 서명된 새 X.509 인증서를 만듭니다. 디바이스 ID(``simulated-device1``)가 `certGen.sh` 스크립트의 `create_device_certificate` 명령으로 전달됩니다. 이 디바이스 ID는 디바이스 인증서의 _공통 이름_ 또는 `CN=` 값 내에서 설정됩니다. 이 인증서는 시뮬레이션된 디바이스에 대한 리프 디바이스 X.509 인증서를 만들며 DPS(디바이스 프로비저닝 서비스)를 사용하여 디바이스를 인증하는 데 사용됩니다.
 
-    Once the `create_device_certificate` command has completed, the generated x.509 device certificate will be named `new-device.cert.pfx`, and will be located within the `/certs` sub-directory.
+    `create_device_certificate` 명령이 완료되면 만들어진 X.509 디바이스 인증서의 이름이 `new-device.cert.pfx`가 되며 `/certs` 하위 디렉터리 내에 있습니다.
 
-    > [!NOTE] This command overwrites the existing certificate. If you want to create a certificate for multiple devices, ensure you copy the `new-device.cert.pfx` each time.
+    > **참고**: 이 명령은 `/certs` 하위 디렉터리의 기존 디바이스 인증서를 덮어씁니다. 여러 디바이스에 대한 인증서를 만들려면 명령을 실행할 때마다 `new-device.cert.pfx`의 복사본을 저장해야 합니다.
 
-1. Run the following command to download the generated x.509 device certificate from the Cloud Shell to your local machine:
+1. Cloud Shell에서 생성된 X.509 디바이스 인증서를 로컬 컴퓨터로 다운로드하려면 다음 명령을 입력합니다.
 
     ```sh
     download ~/certificates/certs/new-device.cert.pfx
     ```
 
-    The simulated device will be configured to use this x.509 device certificate to authenticate with the Device Provisioning Service.
+    시뮬레이션된 디바이스는 이 X.509 디바이스 인증서를 사용하여 디바이스 프로비저닝 서비스로 인증하도록 구성됩니다.
 
-1. Within the Azure portal, navigate to the **Device Provisioning Service** blade, and the **Overview** pane.
+1. Azure Portal 내에서 **디바이스 프로비저닝 서비스** 블레이드 및 **개요** 창으로 이동합니다.
 
-1. Within the **Overview** pane, copy the **ID Scope** for the Device Provisioning Service, and save it for reference later.  (There is a copy button to the right of the value that will appear when you hover over the value.)
+1. **개요** 창에서 디바이스 프로비저닝 서비스의 **ID 범위**를 복사하고 나중에 참조하기 위해 저장합니다.
 
-    The **ID Scope** will be similar to this value: `0ne0004E52G`
+    값 위로 마우스를 가져가면 표시되는 값의 오른쪽에 복사 단추가 있습니다.
 
-1. Copy the downloaded `new-device.cert.pfx` x.509 device certificate file to the `/LabFiles` directory; within the root directory along-side the `Program.cs` file. The **simulated device** project will need to access this certificate file when authenticating to the Device Provisioning Service.
+    **ID 범위**는 다음 값과 유사합니다. `0ne0004E52G`
 
-    After copied, the certificate file will be located in the following location:
+1. Windows 파일 탐색기를 연 다음 `new-device.cert.pfx`가 다운로드된 폴더로 이동합니다.
 
-    ```text
-    /LabFiles/new-device.cert.pfx
-    ```
+1. 파일 탐색기를 사용하여 `new-device.cert.pfx` 파일의 복사본을 만듭니다.
 
-1. Using **Visual Studio Code**, open the `/LabFiles` folder.
+1. 파일 탐색기에서 랩 6(DPS에서 디바이스의 자동 등록계약)에 대한 시작 폴더로 이동합니다.
 
-1. Open the `SimulatedDevice.csproj` file.
+    _랩 3: 개발 환경 설정_, ZIP 파일을 다운로드하고 콘텐츠를 로컬로 추출하여 랩 리소스를 포함하는 GitHub 리포지토리를 복제했습니다. 추출된 폴더 구조는 다음 폴더 경로를 포함합니다.
 
-1. Within the `SimulatedDevice.csproj` file, ensure the following block of XML exists within the `<ItemGroup>` tag of the file. This configuration ensures that the `new-device.cert.pfx` certificate file is copied to the build folder when the C# code is compiled, and made available for the program to access when it executes.
+    * Allfiles
+      * 랩
+          * 06-DPS에 있는 디바이스의 자동 등록계약
+            * 시작
+
+1. `new-device.cert.pfx` 파일을 시작 폴더에 붙여넣습니다.
+
+    랩 6 시작 폴더의 루트 디렉터리에는 `Program.cs` 파일이 포함되어 있습니다. **시뮬레이션된 디바이스** 프로젝트는 디바이스 프로비저닝 서비스에 인증할 때 이 인증서 파일에 액세스해야 합니다.
+
+1. **Visual Studio Code**를 엽니다.
+
+1. **파일** 메뉴에서 **폴더 열기**를 클릭합니다.
+
+1. 폴더 열기 대화 상자에서 **06-DPS에서 디바이스 자동 등록계약 ** 폴더로 이동합니다.
+
+1. **시작**을 클릭한 다음 **폴더 선택**을 클릭합니다.
+
+    Visual Studio Code의 EXPLORER 창에 다음 파일이 나열되어야 합니다.
+
+    * new-device.cert.pfx
+    * Program.cs
+    * SimulatedDevice.csproj
+
+1. `SimulatedDevice.csproj` 파일을 엽니다.
+
+1. `SimulatedDevice.csproj` 파일에서 `<ItemGroup>` 태그에 다음이 포함되어 있는지 확인합니다. 
 
     ```xml
         <None Update="new-device.cert.pfx" CopyToOutputDirectory="PreserveNewest" />
     ```
 
-    If it's not there, then paste it in before the closing `</Project>` tag. The end of the file should look similar to the following:
+    거기에 없는 경우 추가합니다. 작업이 완료되면 `<ItemGroup>` 태그는 다음과 유사해야 합니다.
 
     ```xml
             <ItemGroup>
@@ -377,84 +482,120 @@ In this exercise, you will configure a simulated device written in C# to connect
         </Project>
     ```
 
-    The exact `PackageReference` entries may be a bit different, depending on the exact version of the lab code you are using.
+    이 구성을 사용하면 C# 코드가 컴파일될 때 `new-device.cert.pfx` 인증서 파일이 빌드 폴더에 복사되고 실행될 때 프로그램에 액세스할 수 있습니다.
 
-1. Open the `Program.cs` file.
+    > **참고**: 사용 중인 랩 코드의 정확한 버전에 따라 정확한 `PackageReference` 항목이 약간 다를 수 있습니다.
 
-1. Locate the `GlobalDeviceEndpoint` variable, and notice it's value is set to `global.azure-devices-provisioning.net`. This is the **Global Device Endpoint** for the Azure Device Provisioning Service (DPS) within the Public Azure Cloud. All devices connecting to Azure DPS will be configured with this Global Device Endpoint DNS name.
+1. Visual Studio Code **파일** 메뉴에서 **저장**을 클릭합니다.
+
+1. `Program.cs` 파일을 엽니다.
+
+1. `GlobalDeviceEndpoint` 변수를 찾아 해당 값이 Azure 디바이스 프로비저닝 서비스의 전역 디바이스 엔드포인트(`global.azure-devices-provisioning.net`)로 설정되어 있음을 확인합니다. 
+
+    공용 Azure Cloud 내에서 `global.azure-devices-provisioning.net`은 DPS(디바이스 프로비저닝 서비스)의 전역 디바이스 엔드포인트입니다. Azure DPS에 연결하는 모든 디바이스는 이 글로벌 디바이스 엔드포인트 DNS 이름으로 구성됩니다. 다음과 유사한 코드가 표시됩니다.
 
     ```csharp
     private const string GlobalDeviceEndpoint = "global.azure-devices-provisioning.net";
     ```
 
-1. Locate the `dpsIdScope` variable, and replace the value with the **ID Scope** of the Device Provisioning Service.
+1. `dpsIdScope` 변수를 찾아 할당된 값을 디바이스 프로비저닝 서비스의 개요 창에서 복사한 **ID 범위**로 바꿉니다.
 
-   ```csharp
-   private static string dpsIdScope = "<DPS-ID-Scope>";
-   ```
+    코드를 업데이트한 경우 다음과 유사하게 보입니다.
 
-2. Locate the `s_certificateFileName` variable. Notice the value to this variable is set to `new-device.cert.pfx`. This is the name of the x.509 device certificate file that was copied to the `/LabFiles` directory after it was previously generated using the `certGen.sh` helper script within the Cloud Shell. This variable tells the simulated device program code what file contains the x.509 device certificate to use when authenticating with the Device Provisioning Service.
+    ```csharp
+    private static string dpsIdScope = "0ne000CBD6C";
+    ```
 
-3. Locate the `s_certificatePassword` variable. This variable contains the password for the x.509 device certificate. Notice that it's already set to `1234`, as this is the default password used by the `certGen.sh` helper script when generating the x.509 certificates.
+1. `s_certificateFileName` 변수를 찾아 해당 값이 만들어진 디바이스 인증서 파일(`new-device.cert.pfx`)로 설정되어 있는지 확인합니다.
 
-    > [!NOTE] For the purpose of this unit, the password is hard coded. In a _production_ device, the password will need to be stored in a more secure manner, such as in an Azure Key Vault. Additionally, the certificate file (PFX) should be stored securely on a production device using a Hardware Security Module (HSM).
+    `new-device.cert.pfx` 파일은 Cloud Shell 내의 `certGen.sh` 도우미 스크립트를 사용하여 만든 X.509 디바이스 인증서 파일입니다. 이 변수는 디바이스 프로비저닝 서비스로 인증할 때 사용할 X.509 디바이스 인증서를 포함하는 파일을 디바이스 코드에 알려줍니다.
+
+1. `s_certificatePassword` 변수를 찾아 해당 값이 `certGen.sh` 스크립트의 기본 암호로 설정되어 있는지 확인합니다.
+
+    `s_certificatePassword` 변수에는 X.509 디바이스 인증서용 암호가 포함되어 있습니다. 이 암호는 X.509 인증서를 생성할 때 `certGen.sh` 도우미 스크립트에서 사용하는 기본 암호이기 때문에 `1234`로 설정됩니다.
+
+    > **참고**: 이 랩을 위해 암호는 하드 코딩됩니다. _프로덕션_ 시나리오에서 암호는 Azure Key Vault와 같이 더 안전한 방식으로 저장되어야 합니다. 또한 인증서 파일(PFX)은 HSM(하드웨어 보안 모듈)을 사용하여 프로덕션 디바이스에 안전하게 저장되어야 합니다.
     >
-    > An HSM (Hardware Security Module), is used for secure, hardware-based storage of device secrets, and is the most secure form of secret storage. Both X.509 certificates and SAS tokens can be stored in the HSM. HSMs can be used with all attestation mechanisms the provisioning service supports.
+    > HSM(하드웨어 보안 모듈)은 디바이스 보안의 안전한 하드웨어 기반 저장에 사용되며 가장 안전한 보안 스토리지 형태입니다. X.509 인증서와 SAS 토큰은 모두 HSM에 저장할 수 있습니다. HSM은 프로비저닝 서비스가 지원하는 모든 증명 메커니즘과 함께 사용할 수 있습니다.
 
-4. Locate the `public static int Main` method. This is the execution entry for the simulated device.
+1. `public static int Main` 메서드를 찾은 다음 코드를 잠시 검토합니다. 
 
-    This method contains code that initiates the use of the x.509 device certificate by calling the `LoadProvisioningCertificate` method to load the certificate. The `LoadProvisioningCertificate` method returns an `X509Certificate2` object that contains the x.509 device certificate from the `new-device.cert.pfx` file.
+    Main 메서드는 시뮬레이션된 디바이스 앱의 진입점입니다. 가장 먼저 `X509Certificate2` 개체를 반환하는 `LoadProvisioningCertificate` 메서드를 호출합니다.
 
-5. Locate the `LoadProvisioningCertificate` method, and review the necessary code to load an x.509 certificate from the `new-device.cert.pfx` file.
+1. 아래로 스크롤하여 `LoadProvisioningCertificate` 메서드를 찾은 다음 `X509Certificate2` 개체를 생성하는 데 사용되는 코드를 잠시 검토합니다.
 
-6. Notice the `public static int Main` method also contains code that initiates a `security` `SecurityProviderX509Certificate` object for the x.509 Device Certificate. It also creates a `transport` `ProvisioningTransportHandlerAmqp` object that defines the simulated device will be using AMQP as the communications protocol when connecting to Azure IoT Hub.
+    `LoadProvisioningCertificate`은 `s_certificateFileName`을 사용하여 (`new-device.cert.pfx` 파일에서) X.509 디바이스 인증서를 로드합니다.
 
-7. Notice the `ProvisioningDeviceClient.Create` method is passed the `security` and `transport` objects, as well as the DPS ID scope and DPS global device endpoint, that will be used to register the device with the Device Provisioning Service.
+1. 다시 `public static int Main` 메서드까지 다시 위로 스크롤한 다음, 중첩된 `using` 문 코드를 잠시 리뷰합니다.
 
-8. Notice the `ProvisioningDeviceLogic` object is instantiated by passing it the `ProvisioningDeviceClient` (`provClient`) and `security` objects.
+    이 코드는 X.509 디바이스 인증서에 대한 `security` `SecurityProviderX509Certificate` 개체를 시작하고, 시뮬레이션된 디바이스가 Azure IoT Hub에 연결할 때 AMQP를 통신 프로토콜로 사용할 것을 정의하는 `transport` `ProvisioningTransportHandlerAmqp` 개체를 만듭니다.
 
-    The `ProvisioningDeviceLogic` is a class define within the simulated device that contains code for the device logic. It contains code for running the device by reading from the simulated device sensors, and sending device-to-cloud messages to Azure IoT Hub. It will also be modified later to contain code that updates the device according to changes to device twin desired properties that are sent to the device from the cloud.
+    DPS ID 범위 및 DPS 전역 디바이스 엔드포인트와 함께 `security` 및 `transport` 개체가 `ProvisioningDeviceClient.Create` 메서드로 전달됩니다. ProvisioningDeviceClient 개체, `provClient`는 디바이스 프로비저닝 서비스에 디바이스를 등록하는 데 사용됩니다.
 
-9. Locate the `ProvisioningDeviceLogic.RunAsync` method.
+    `ProvisioningDeviceLogic`은 `provClient` 및 `security` 개체를 전달하여 인스턴스화됩니다. `ProvisioningDeviceLogic` 클래스는 디바이스(시뮬레이션된 디바이스)에 대한 논리를 정의하는 데 사용됩니다. 여기에는 시뮬레이션된 디바이스 센서에서 읽고 Azure IoT Hub로 디바이스-클라우드 메시지를 전송하여 실행 중인 디바이스를 시뮬레이션하기 위한 코드가 포함되어 있습니다. 또한 클라우드에서 디바이스로 전송되는 디바이스 쌍이 원하는 속성의 변경 사항에 따라 디바이스를 업데이트하는 코드를 포함하도록 나중에 수정됩니다.
 
-10. Notice the code that calls the `ProvisioningDeviceClient.RegisterAsync` method. This method Registers the device using the Device Provisioning Service and assigns it to an Azure IoT Hub.
+1. `ProvisioningDeviceLogic` 클래스까지 스크롤한 다음 `RunAsync` 메서드를 찾습니다.
+
+    몇 가지 핵심 포인트를 지적하면서 `RunAsync` 메시지를 검토하는 데에는 잠시 시간이 걸립니다.
+
+1. `RunAsync` 메서드 내에서 ProvisioningDeviceClient.RegisterAsync 메서드가 포함된 코드를 확인합니다(아래 표시).
 
     ```csharp
     DeviceRegistrationResult result = await _provClient.RegisterAsync().ConfigureAwait(false);
     ```
 
-11. Notice the code that instantiates a new `DeviceAuthenticationWithX509Certificate` object. This is a Device Authentication object that will be used to authenticate the simulated device to Azure IoT Hub using the x.509 Device Certificate. The constructor is being passed the device ID for the device that was registered in DPS, as well as the x.509 device certificate to authenticate the device.
+    RegisterAsync 메서드는 디바이스 프로비저닝 서비스를 사용하여 디바이스를 등록하고 Azure IoT Hub에 할당하는 데 사용됩니다.
+
+1. 새 `DeviceAuthenticationWithX509Certificate` 개체를 인스턴스화하는 코드를 확인합니다(아래 표시). 
 
     ```csharp
     var auth = new DeviceAuthenticationWithX509Certificate(result.DeviceId, (_security as SecurityProviderX509).GetAuthenticationCertificate());
     ```
 
-12. Notice the code that calls the `DeviceClient.Create` method to create a new IoT `DeviceClient` object that is used to communicate with the Azure IoT Hub service.
+    이 개체는 X.509 디바이스 인증서를 사용하여 시뮬레이션된 디바이스를 Azure IoT Hub에 인증하는 데 사용되는 디바이스 인증 개체입니다. 생성자는 DPS에 등록된 디바이스에 대한 디바이스 ID와 디바이스를 인증하기 위한 X.509 디바이스 인증서를 전달합니다.
+
+1. `DeviceClient.Create` 메서드를 호출하는 코드를 확인합니다.
 
     ```csharp
     using (iotClient = DeviceClient.Create(result.AssignedHub, auth, TransportType.Amqp))
     {
     ```
 
-    Notice this code also passes the value of `TransportType.Amqp`, telling the `DeviceClient` to communicate with the Azure IoT Hub using the AMQP protocol. Alternatively, Azure IoT Hub can be connected to and communicated with using the MQTT or HTTP protocols, depending on network architecture, device requirements, etc.
+    `DeviceClient.Create` 메서드는 Azure IoT Hub 서비스와 통신하는 데 사용되는 새 IoT `DeviceClient` 개체를 만드는 데 사용됩니다. 이 코드는 `TransportType.Amqp`의 값을 전달하여 `DeviceClient`가 AMQP 프로토콜을 사용하여 Azure IoT Hub와 통신하도록 지시합니다. 또는 Azure IoT Hub는 네트워크 아키텍처, 디바이스 요구 사항 등에 따라 MQTT 또는 HTTP 프로토콜을 사용하여 연결하고 통신할 수 있습니다.
 
-13. Notice the call to the `SendDeviceToCloudMessagesAsync` method. This is a method defined within the simulated device code, and is where the device logic is located to read from simulated sensors and to send device-to-cloud messages to Azure IoT Hub. This method also contains a loop that continues to execute while the simulated device is running.
+1. `SendDeviceToCloudMessagesAsync` 메서드에 대한 호출을 확인합니다. 
 
     ```csharp
     await SendDeviceToCloudMessagesAsync(iotClient);
     ```
 
-14. Notice the call to the `DeviceClient.CloseAsync` method. This method closes the `DeviceClient` object, thus closing the connection with Azure IoT Hub. This is the last line of code executed when the simulated device shuts down.
+    `SendDeviceToCloudMessagesAsync` 메서드는 코드에서 추가로 정의된 별도의 메서드입니다. 이 메서드에는 시뮬레이션된 센서에서 읽고 Azure IoT Hub로 디바이스-클라우드 메시지를 보내는 데 사용되는 코드가 포함되어 있습니다. 이 메서드에는 시뮬레이션된 디바이스가 실행되는 동안 계속 실행되는 루프도 포함되어 있습니다.
+
+1. 여전히 RunAsync 메서드 내에서 `DeviceClient.CloseAsync` 메서드에 대한 호출을 확인합니다.
 
     ```csharp
     await iotClient.CloseAsync().ConfigureAwait(false);
     ```
 
-15. Locate the `SendDeviceToCloudMessagesAsync` method.
+    이 메서드는 `DeviceClient` 개체를 닫아 Azure IoT Hub와의 연결을 닫습니다. 시뮬레이션된 디바이스가 종료될 때 실행되는 마지막 코드 줄입니다.
 
-16. Notice the code within the `SendDeviceToCloudMessagesAsync` method contains a `while` loop that has code to generate simulated sensor readings, and then send that data to Azure IoT Hub in a device-to-cloud message.
+1. `SendDeviceToCloudMessagesAsync` 메서드를 찾을 때까지 아래로 스크롤합니다.
 
-17. Next, notice the simulated sensor readings are combined into a JSON object using the following code:
+    다시 한 번 몇 가지 주요 세부 사항을 이야기하겠습니다.
+
+1. 시뮬레이션된 센서 판독값을 생성하는 코드를 확인합니다(아래 표시).
+
+    ```csharp
+    double currentTemperature = minTemperature + rand.NextDouble() * 15;
+    double currentHumidity = minHumidity + rand.NextDouble() * 20;
+    double currentPressure = minPressure + rand.NextDouble() * 12;
+    double currentLatitude = minLatitude + rand.NextDouble() * 0.5;
+    double currentLongitude = minLongitude + rand.NextDouble() * 0.5;
+    ```
+
+    각 센서 형식마다 임의 값이 while 반복 안의 최소 센서 값에 추가됩니다. 최소값은 반복 외부에서 초기화됩니다. 이렇게 하면 IoT Hub에 보고할 수 있는 다양한 센서 값 기록이 생성됩니다.
+
+1. 센서 판독값을 JSON 개체로 결합하는 데 사용되는 코드를 확인합니다.
 
     ```csharp
         var telemetryDataPoint = new
@@ -467,55 +608,69 @@ In this exercise, you will configure a simulated device written in C# to connect
         };
         var messageString = JsonConvert.SerializeObject(telemetryDataPoint);
         var message = new Message(Encoding.ASCII.GetBytes(messageString));
-
     ```
 
-18. Moving on, notice that there is a line of code that adds a `temperatureAlert` property to the device-to-cloud `Message`. The value of the property is being set to a `boolean` value representing whether the _temperature_ sensor reading is greater than 30.
+    IoT Hub에는 적절한 형식의 메시지가 필요합니다.
+
+1. 디바이스-클라우드 `Message`에 `temperatureAlert` 속성을 추가하는 코드 줄을 확인합니다.
 
     ```csharp
-    message.Properties.Add("temperatureAlert", (currentTemperature > 30) ? "true" : "false");
+    message.Properties.Add("temperatureAlert", (currentTemperature > 30) ? "true", "false");
     ```
 
-    This code is a simple example of how to add properties to the `Message` object before sending it to the Azure IoT Hub. This can be used to add additional metadata to the messages that are being send, in addition to the message body content.
+    `temperatureAlert` 속성의 값은 _온도_센서 판독값이 30보다 큰지 여부를 나타내는 `부울` 값으로 설정됩니다. 온도 판독값은 20~35 범위이므로 온도 경고는 시간의 약 3분의 1에 대해 "true"여야 합니다. 
 
-19. After that is the call to the `DeviceClient.SendEventAsync` method. This method accepts the `Message` to send as a parameter, then does the work of sending the device-to-cloud message to Azure IoT Hub.
+    이 코드는 Azure IoT Hub로 보내기 전에 `Message` 개체에 속성을 추가하는 방법의 간단한 예입니다. 메시지 본문 콘텐츠 외에 전송 중인 메시지에 추가적인 메타데이터를 추가하는 데 사용할 수 있습니다.
+
+1. `DeviceClient.SendEventAsync` 메서드에 대한 호출을 확인합니다.
 
     ```csharp
     await deviceClient.SendEventAsync(message);
     ```
 
-20. Notice the last line of code within the `SendDeviceToCloudMessagesAsync` method, that performs a simply delay using the `_telemetryDelay` variable to define how many seconds to wait until sending the next simulated sensor reading.
+    `SendEventAsync` 메서드는 생성된 `message`를 매개 변수로 전송한 다음 Azure IoT Hub로 디바이스-클라우드 메시지를 보냅니다.
 
-## Exercise 5: Handle device twin desired property Changes
+1. 디바이스-클라우드 원격 분석 메시지 간의 시간을 설정하는 데 사용되는 `Delay` 메서드에 대한 호출을 확인합니다.
 
-In this exercise, you will modify the simulated device source code to include an event handler to update device configurations based on device twin desired property changes sent to the device from Azure IoT Hub.
+    이 간단한 지연은 `_telemetryDelay` 변수를 사용하여 다음 시뮬레이션된 센서 판독값을 보낼 때까지 기다려야 하는 시간(초)을 정의합니다. 다음 연습에서는 디바이스 쌍 속성을 사용하여 지연 시간을 제어합니다.
 
-Device twins are JSON documents that store device state information including metadata, configurations, and conditions. Azure IoT Hub maintains a device twin for each device that you connect to IoT Hub.
+### 연습 5: 디바이스 쌍의 필요한 속성 변경 처리
 
-The Device Provisioning Service (DPS) contains the initial device twin desired properties for devices that are registered using Group Enrollment. Once the devices are registered they are created within IoT Hub using this initial device twin configuration from DPS. After registration, the Azure IoT Hub maintains a device twin (and its properties) for each device within the IoT Hub Device Registry.
+디바이스 쌍은 메타데이터, 구성 및 조건 등 디바이스 상태 정보를 저장하는 JSON 문서입니다. Azure IoT Hub는 IoT Hub에 연결하는 각 디바이스를 디바이스 쌍으로 유지 관리합니다.
 
-When the device twin desired properties are updated for a device within Azure IoT Hub, the desired changes are sent to the IoT Device using the `DesiredPropertyUpdateCallback` event using the C# SDK. Handling this event within device code enables the devices configuration and properties to be updated as desired by easily managing the Device Twin state for the device within Azure IoT Hub.
+DPS(디바이스 프로비저닝 서비스)에는 그룹 등록을 사용하여 등록된 디바이스에 초기 디바이스 쌍의 필요한 속성이 포함되어 있습니다. 디바이스를 등록하면 DPS에 있는 이 초기 디바이스 쌍 구성을 사용하여 IoT Hub 내에 디바이스가 만들어집니다. 등록 후 Azure IoT Hub는 IoT Hub 디바이스 레지스트리 내의 각 디바이스에 대해 디바이스 쌍(및 해당 속성)을 유지 관리합니다.
 
-This set of steps will be very similar to steps in earlier labs for working with a simulated device, because the concepts and processes are the same.  The method used for authentication of the provisioning process doesn't change the handing of device twin property changes once the device is provisioned. 
+Azure IoT Hub 내의 디바이스에 대해 디바이스 쌍이 원하는 속성이 업데이트되면 IoT SDK에 포함된 `DesiredPropertyUpdateCallback` 이벤트(이 경우 C# SDK)를 사용하여 원하는 변경 내용이 IoT 디바이스로 전송됩니다. 디바이스 코드 내에서 이 이벤트를 처리하면 디바이스에 대한 디바이스 쌍 상태를 쉽게 관리하여 디바이스의 구성 및 속성을 원하는 대로 업데이트할 수 있습니다(IoT Hub에서 액세스 제공).
 
-1. Using **Visual Studio Code**, open the `/LabFiles` folder if it's not still open.
+이 연습에서는 Azure IoT Hub에서 디바이스로 전송되는 디바이스 쌍이 원하는 속성 변경 내용을 기반으로 디바이스 구성을 업데이트하는 이벤트 처리기를 포함하도록 시뮬레이션된 디바이스 소스 코드를 수정합니다.
 
-1. Open the `Program.cs` file if it's not still open.
+> **참고**: 여기에서 사용되는 단계 집합은 개념과 프로세스가 동일하기 때문에 시뮬레이션된 디바이스로 작업할 때 이전 랩의 단계와 매우 유사합니다.  프로비저닝 프로세스 내에서 인증에 사용되는 메서드는 디바이스가 프로비전된 후 디바이스 쌍 속성 변경 처리를 변경하지 않습니다.
 
-1. Locate the `RunAsync` method.
-   This is the method that connects the simulated device to Azure IoT Hub using a `DeviceClient` object. You will be adding code immediately after the device connects to Azure IoT Hub that integrates an `DesiredPropertyUpdateCallback` event handler for the device to receive to device twin desired property changes.
+1. **Visual Studio Code**를 사용하여 랩 6의 **Starter** 폴더를 엽니다.
 
-2. Locate the `// TODO 1` comment within the **RunAsync** method, and paste in the following code that calls the `SetDesiredPropertyUpdateCallbackAsync` method to setup the `DesiredPropertyUpdateCallback` event handler to receive device twin desired property changes.
+    이전 연습에서의 코드 프로젝트가 열려 있는 경우 동일한 코드 파일에서 작업을 계속합니다.
+
+1. `Program.cs` 파일을 엽니다.
+
+1. `ProvisioningDeviceLogic` 클래스를 찾은 다음 `RunAsync` 메서드까지 아래로 스크롤합니다.
+
+   이는 `DeviceClient` 개체를 사용하여 시뮬레이션된 디바이스를 Azure IoT Hub에 연결하는 방법입니다. 디바이스가 디바이스 쌍이 원하는 속성 변경 내용에 수신할 `DesiredPropertyUpdateCallback` 이벤트 처리기를 통합하는 코드를 추가합니다. 이 코드는 디바이스가 Azure IoT Hub에 연결된 직후에 실행됩니다. 
+
+1. `// TODO 1` 댓글을 찾은 후 다음 코드를 붙여넣습니다.
 
     ```csharp
-    // TODO 1: Setup OnDesiredPropertyChanged Event Handling to receive Desired Properties changes
+    // TODO 1: OnDesiredPropertyChanged 이벤트 처리가 원하는 속성 변경 내용을 수신하도록 설정합니다
     Console.WriteLine("Connecting SetDesiredPropertyUpdateCallbackAsync event handler...");
     await iotClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertyChanged, null).ConfigureAwait(false);
     ```
 
-    Notice this code is configuring the `DeviceClient` to call a method named `OnDesiredPropertyChanged` when device twin property change events are received.
+    `iotClient` 개체는 `DeviceClient`의 인스턴스입니다. `SetDesiredPropertyUpdateCallbackAsync` 메서드는 `DesiredPropertyUpdateCallback` 이벤트 처리기를 설정하여 디바이스 쌍이 원하는 속성 변경 내용을 수신하는 데 사용됩니다. 이 코드는 디바이스 쌍 속성 변경 이벤트가 수신될 때 `OnDesiredPropertyChanged`라는 메서드를 호출하기 위해 `iotClient`를 구성합니다.
 
-3. Now that the `SetDesiredPropertyUpdateCallbackAsync` method was used to setup the event handler, the method named `OnDesiredPropertyChanged` that it's configured to call needs to be defined.  To define the `OnDesiredPropertyChanged` method, paste in the following code to the `ProvisioningDeviceLogic` class, below the `RunAsync` method:
+    이제 이벤트 처리기를 설정할 수 있는 `SetDesiredPropertyUpdateCallbackAsync` 메서드가 있으므로 호출하는 `OnDesiredPropertyChanged` 메서드를 만들어야 합니다.
+
+1. 커서를 `RunAsync` 메서드 바로 아래에 있는 빈 코드 줄에 둡니다.
+
+1. `OnDesiredPropertyChanged` 메서드를 정의하려면 다음 코드에 붙여넣습니다.
 
     ```csharp
         private async Task OnDesiredPropertyChanged(TwinCollection desiredProperties, object userContext)
@@ -523,7 +678,7 @@ This set of steps will be very similar to steps in earlier labs for working with
             Console.WriteLine("Desired Twin Property Changed:");
             Console.WriteLine($"{desiredProperties.ToJson()}");
 
-            // Read the desired Twin Properties
+            // 필요한 쌍 속성 읽기
             if (desiredProperties.Contains("telemetryDelay"))
             {
                 string desiredTelemetryDelay = desiredProperties["telemetryDelay"];
@@ -531,11 +686,11 @@ This set of steps will be very similar to steps in earlier labs for working with
                 {
                     this._telemetryDelay = int.Parse(desiredTelemetryDelay);
                 }
-                // if desired telemetryDelay is null or unspecified, don't change it
+                // 필요한 telemetryDelay가 null이거나 지정되지 않은 경우 변경하지 마세요.
             }
 
 
-            // Report Twin Properties
+            // 쌍 속성 보고
             var reportedProperties = new TwinCollection();
             reportedProperties["telemetryDelay"] = this._telemetryDelay;
             await iotClient.UpdateReportedPropertiesAsync(reportedProperties).ConfigureAwait(false);
@@ -544,50 +699,66 @@ This set of steps will be very similar to steps in earlier labs for working with
         }
     ```
 
-    Notice the first block of code within the `OnDesiredPropertyChanged` event handler method that reads the `telemetryDelay` property value from the device twin desired properties. This code also take the value specified and modifies the `this._telemetryDelay` variable with the desired value to reconfigure the delay time between sending simulated sensor readings to Azure IoT Hub. Remember, this `this._telemetryDelay` variable is used within the `Task.Delay` call inside the `while` loop of the `SendDeviceToCloudMessagesAsync` method.
+    `OnDesiredPropertyChanged` 이벤트 처리기는 `TwinCollection` 형식의 `desiredProperties` 매개 변수를 허용합니다. 
 
-    Also notice the second block of the code within the `OnDesiredPropertyChanged` event handler method that reports the current state of the device to Azure IoT Hub. This code calls the `DeviceClient.UpdateReportedPropertiesAsync` method and passes it a **TwinCollection** method that contains the current state of the device properties. This code is how the device reports back to IoT Hub that it received the device twin desired properties changed event, and has now updates it's configurations accordingly. It also reports what the properties are now set to, in case they would be different than the desired state received, so that IoT Hub can maintain an accurate Device Twin that reflects the state of the device.
+    `desiredProperties` 매개 변수의 값에 `telemetryDelay`(디바이스 쌍이 원하는 속성)가 포함되어 있는 경우, 코드는 디바이스 쌍 속성의 값을 `this._telemetryDelay` 변수에 할당합니다. `SendDeviceToCloudMessagesAsync` 메서드에는 IoT Hub로 전송된 메시지 간의 지연 시간을 설정하기 위해 `this._telemetryDelay` 변수를 사용하는 `Task.Delay` 호출이 포함되어 있습니다.
 
-1. Now that the device can receive updates to the device twin desired properties from Azure IoT Hub, it also needs to be coded to configure it's initial setup when the simulated device begins execution. To do this the device will need to load the current device twin desired properties from Azure IoT Hub, and configure itself accordingly. Locate the `// TODO 2` comment within the `RunAsync` method, and paste in the following code that loads the current device twin desired properties from Azure IoT Hub for the device, and then uses the same `OnDesiredPropertyChanged` method defined previously to configure the device accordingly.
+    다음 코드 블록은 디바이스 백업의 현재 상태를 Azure IoT Hub에 보고하는 데 사용됩니다. 이 코드는 `DeviceClient.UpdateReportedPropertiesAsync` 메서드를 호출하고 디바이스 속성의 현재 상태를 포함하는 **TwinCollection**을 전달합니다. 이는 디바이스가 디바이스 쌍이 원하는 속성 변경 이벤트를 수신하고 이제 그에 따라 구성을 업데이트 했음을 IoT Hub에 다시 보고하는 방법입니다. 이제 원하는 속성의 반복이 아닌, 설정된 속성을 보고합니다. 디바이스에서 전송된 보고 속성이 디바이스가 수신한 원하는 상태와 다른 경우, IoT Hub는 디바이스의 상태를 반영하는 정확한 디바이스 쌍을 유지합니다.
+
+    이제 디바이스가 Azure IoT Hub에서 디바이스 쌍이 원하는 속성에 대한 업데이트를 받을 수 있으므로 디바이스가 시작될 때 초기 설정을 구성하도록 코딩해야 합니다. 이를 위해 디바이스가 Azure IoT Hub에서 현재 디바이스 쌍이 원하는 속성을 로드하고 그에 따라 자체적으로 구성해야 합니다. 
+
+1. `RunAsync` 메서드 내에서 `//TODO 2` 주석을 찾습니다.
+
+1. 디바이스 시작 시 `OnDesiredPropertyChanged` 메서드를 실행하는 코드를 구현하려면 다음 코드를 입력합니다.
 
     ```csharp
-    // TODO 2: Load Device Twin Properties since device is just starting up
+    // TODO 2: 장치가 막 시작되었으므로 디바이스 쌍 속성을 로드합니다
     Console.WriteLine("Loading Device Twin Properties...");
     var twin = await iotClient.GetTwinAsync().ConfigureAwait(false);
-    // Use OnDesiredPropertyChanged event handler to set the loaded Device Twin Properties (re-use!)
+    // OnDesiredPropertyChanged 이벤트 처리기를 사용하여 로드한 디바이스 쌍 속성을 설정합니다(재사용!)
     await OnDesiredPropertyChanged(twin.Properties.Desired, null);
     ```
 
-    Notice the call to the `DeviceClient.GetTwinAsync` method. This method can be used by the device to retrieve the current Device Twin state at any time. It's used in this case so the device can configure itself to match the device twin desired properties when the device first starts execution.
+    `DeviceClient.GetTwinAsync` 메서드에 대한 호출을 확인합니다. 이 메서드는 디바이스에서 언제든지 현재 디바이스 쌍 상태를 검색하는 데 사용할 수 있습니다. 디바이스가 처음 실행을 시작할 때 디바이스 쌍이 원하는 속성과 일치하도록 구성하는 경우에 사용됩니다.
 
-    In this case, the `OnDesiredPropertyChanged` event handler method is being reused to keep the configuration of the `telemetryDelay` property based on the device twin desired properties to a single place. This will help make the code easier to maintain over time.
+    이 경우 `OnDesiredPropertyChanged` 이벤트 처리기 메서드는 디바이스 쌍이 원하는 속성을 기반으로 `telemetryDelay` 속성의 구성을 단일 위치에 유지하기 위해 재사용되고 있습니다. 이렇게 하면 시간이 지남에 따라 코드를 더 쉽게 유지 관리할 수 있습니다.
 
-## Exercise 6: Test the Simulated Device
+1. Visual Studio Code **파일** 메뉴에서 **저장**을 클릭합니다.
 
-In this exercise, you will run the simulated device. When the device is started for the first time, it will connect to the Device Provisioning Service (DPS) and automatically be enrolled using the configured group enrollment. Once enrolled into the DPS group enrollment, the device will be automatically registered within the Azure IoT Hub device registry. Once enrolled and registered, the device will begin communicating with Azure IoT Hub securely using the configured x.509 certificate authentication.
+### 연습 6: 시뮬레이션된 디바이스 테스트
 
-### Task 1: Build and run the device
+이 연습에서는 시뮬레이션된 디바이스를 실행합니다. 디바이스가 처음 시작되면 DPS(디바이스 프로비저닝 서비스)에 연결되고 구성된 그룹 등록을 사용하여 자동으로 등록됩니다. DPS 그룹 등록에 등록하면 Azure IoT Hub 디바이스 레지스트리에 디바이스가 자동으로 등록됩니다. 등록되면 디바이스는 구성된 X.509 인증서 인증을 사용하여 Azure IoT Hub와 안전하게 통신합니다.
 
-1. Using **Visual Studio Code**, open the `/LabFiles` folder if it's not still open.
+#### 작업 1: 디바이스 빌드 및 실행
 
-1. Within **Visual Studio Code**, click the **View** menu, then select **Terminal** to open the Visual Studio Code Terminal window.
+1. **Visual Studio Code**를 사용하여 랩 6의 **Starter** 폴더를 엽니다.
 
-1. Navigate to `/LabFiles` directory within the **Terminal**.
+    이전 연습에서의 코드 프로젝트가 열려 있는 경우 동일한 코드 파일에서 작업을 계속합니다.
 
-1. Build and execute the **SimulatedDevice** project by running the `dotnet run` command.
+1. Visual Studio Code **보기** 메뉴에서 **터미널**을 클릭합니다.
+
+    이렇게 하면 Visual Studio Code 창 하단에 통합 터미널이 열립니다.
+
+1. 터미널 명령 프롬프트에서 현재 디렉터리 경로가 `/Starter` 폴더로 설정되어 있는지 확인합니다.
+
+    다음과 유사한 내용이 표시됩니다.
+
+    `Allfiles\Labs\06-Automatic Enrollment of Devices in DPS\Starter>`
+
+1. **SimulatedDevice** 프로젝트를 빌드하고 실행하려면 다음 명령을 입력합니다.
 
     ```cmd/sh
     dotnet run
     ```
 
-    > [!NOTE] When running `dotnet run` for the simulated device, if a `ProvisioningTransportException` exception is displayed, the most common cause is an _Invalid certificate_ error. If this happens, ensure the CA Certificate in DPS, and the Device Certificate for the simulated device application are configured correctly.
+    > **참고**:  시뮬레이션된 디바이스에 대해 `dotnet run`을 실행할 때 `ProvisioningTransportException` 예외가 표시되는 경우 가장 일반적인 원인은 _잘못된 인증서_ 오류입니다. 이 경우 DPS의 CA 인증서와 시뮬레이션된 디바이스 애플리케이션에 대한 디바이스 인증서가 올바르게 구성되었는지 확인합니다.
     >
     > ```text
     > localmachine:LabFiles User$ dotnet run
-    > Found certificate: AFF851ED016CA5AEB71E5749BCBE3415F8CF4F37 CN=simulated-device1; PrivateKey: True
+    > 발견된 인증서: AFF851ED016CA5AEB71E5749BCBE3415F8CF4F37 CN=simulated-device1; PrivateKey: True
     > Using certificate AFF851ED016CA5AEB71E5749BCBE3415F8CF4F37 CN=simulated-device1
     > RegistrationID = simulated-device1
-    > ProvisioningClient RegisterAsync . . . Unhandled exception. Microsoft.Azure.Devices.Provisioning.Client.ProvisioningTransportException: {"errorCode":401002,"trackingId":"2e298c80-0974-493c-9fd9-6253fb055ade","message":"Invalid certificate.","timestampUtc":"2019-12-13T14:55:40.2764134Z"}
+    > ProvisioningClient RegisterAsync . . . 처리되지 않은 예외. Microsoft.Azure.Devices.Provisioning.Client.ProvisioningTransportException: {"errorCode":401002,"trackingId":"2e298c80-0974-493c-9fd9-6253fb055ade","message":"Invalid certificate.","timestampUtc":"2019-12-13T14:55:40.2764134Z"}
     >   at Microsoft.Azure.Devices.Provisioning.Client.Transport.ProvisioningTransportHandlerAmqp.ValidateOutcome(Outcome outcome)
     >   at Microsoft.Azure.Devices.Provisioning.Client.Transport.ProvisioningTransportHandlerAmqp.RegisterDeviceAsync(AmqpClientConnection client, String correlationId, DeviceRegistration deviceRegistration)
     >   at Microsoft.Azure.Devices.Provisioning.Client.Transport.ProvisioningTransportHandlerAmqp.RegisterAsync(ProvisioningTransportRegisterMessage message, CancellationToken cancellationToken)
@@ -596,60 +767,68 @@ In this exercise, you will run the simulated device. When the device is started 
     > ...
     > ```
 
-1. When the simulated device application runs, the **Terminal** will display the Console output from the app. Notice the x.509 certificate was loaded, the device was registered with the Device Provisioning Service, it was assigned to connect to the **AZ-220-HUB-_{YOUR-ID}_** IoT Hub, and the device twin desired properties are loaded.
+1. 터미널 창에 표시되는 시뮬레이션된 디바이스 앱의 콘솔 출력을 확인합니다.
+
+    시뮬레이션된 디바이스 애플리케이션이 실행되면 **터미널**에 앱의 콘솔 출력이 표시됩니다. 
+
+    터미널 창에 표시된 정보의 위쪽까지 스크롤합니다.
+
+    X.509 인증서가 로드되고, 디바이스가 디바이스 프로비저닝 서비스에 등록되었으며, **AZ-220-HUB-_{YOUR-ID}_** IoT Hub에 연결하도록 할당되었고 디바이스 쌍이 원하는 속성이 로드됩니다.
 
     ```text
     localmachine:LabFiles User$ dotnet run
-    Found certificate: AFF851ED016CA5AEB71E5749BCBE3415F8CF4F37 CN=simulated-device1; PrivateKey: True
+    발견된 인증서: AFF851ED016CA5AEB71E5749BCBE3415F8CF4F37 CN=simulated-device1; PrivateKey: True
     Using certificate AFF851ED016CA5AEB71E5749BCBE3415F8CF4F37 CN=simulated-device1
     RegistrationID = simulated-device1
-    ProvisioningClient RegisterAsync . . . Device Registration Status: Assigned
+    ProvisioningClient RegisterAsync . . . 디바이스 등록 상태: 할당됨
     ProvisioningClient AssignedHub: AZ-220-HUB-CP1119.azure-devices.net; DeviceID: simulated-device1
-    Creating X509 DeviceClient authentication.
-    simulated device. Ctrl-C to exit.
+    X509 DeviceClient 인증 만들기.
+    시뮬레이션된 디바이스. Ctrl C를 눌러 종료.
     DeviceClient OpenAsync.
-    Connecting SetDesiredPropertyUpdateCallbackAsync event handler...
-    Loading Device Twin Properties...
-    Desired Twin Property Changed:
+    SetDesiredPropertyUpdateCallbackAsync 이벤트 처리기 연결 중...
+    디바이스 쌍 속성 로드 중...
+    필요한 쌍 속성 변경됨:
     {"$version":1}
-    Reported Twin Properties:
+    보고된 쌍 속성:
     {"telemetryDelay":1}
-    Start reading and sending device telemetry...
+    디바이스 원격 분석을 읽고 보내기 시작...
     ```
 
-    To review the source code for the simulated device, open the `/LabFiles/Program.cs` source code file. Look for several `Console.WriteLine` statements that are used to output the messages seen to the console.
+    시뮬레이션된 디바이스의 소스 코드를 검토하려면 `Program.cs` 소스 코드 파일을 엽니다. 콘솔에 표시된 메시지를 출력하는 데 사용되는 여러 `Console.WriteLine` 문을 찾습니다.
 
-1. Once the simulated device starts executing, it will begin sending simulated sensor telemetry messages to Azure IoT Hub. Notice the output to the console that displays the JSON of the sensor readings that are being sent to Azure IoT Hub.
-
-    Also, notice the delay, as defined by the `telemetryDelay` Device Twin Property, between each message sent to IoT Hub is currently delaying **1 second** between sending sensor telemetry messages.
+1. JSON 형식의 원격 분석 메시지가 Azure IoT Hub로 전송되고 있습니다.
 
     ```text
-    Start reading and sending device telemetry...
+    디바이스 원격 분석을 읽고 보내기 시작...
     12/9/2019 5:47:00 PM > Sending message: {"temperature":24.047539159212047,"humidity":67.00504162675004,"pressure":1018.8478924248358,"latitude":40.129349260196875,"longitude":-98.42877188146265}
     12/9/2019 5:47:01 PM > Sending message: {"temperature":26.628804161040485,"humidity":68.09610794675355,"pressure":1014.6454375411363,"latitude":40.093269544242695,"longitude":-98.22227128174003}
     ```
 
-    Keep the simulated device running for the next task.
+    시뮬레이션된 디바이스가 초기 시작을 통과하면 Azure IoT Hub로 시뮬레이션된 센서 원격 분석 메시지를 보내기 시작합니다.
 
-### Task 2: Change the device configuration through its twin
+    IoT Hub로 전송되는 각 메시지 간의 `telemetryDelay` 디바이스 쌍 속성에 정의된 지연이 현재 센서 원격 분석 메시지를 보내는 사이에 **1초** 지연되고 있습니다.
 
-With the simulated device running, the `telemetryDelay` configuration can be updated by editing the device twin Desired State within Azure IoT Hub. This can be done by configuring the Device in the Azure IoT Hub within the Azure portal.
+    시뮬레이션된 디바이스를 다음 작업을 위해 계속 실행합니다.
 
-1. Open the **Azure Portal** if it is not already open, and navigate to your **Azure IoT Hub** service.
+#### 작업 2: 쌍을 통해 디바이스 구성 변경
 
-2. On the IoT Hub blade, on the left side of the blade, under the **Explorers** section, click on **IoT devices**.
+시뮬레이션된 디바이스가 실행되면 Azure IoT Hub에서 디바이스 쌍의 원하는 상태를 편집하여 `telemetryDelay` 구성을 업데이트할 수 있습니다. 이 작업은 Azure Portal의 Azure IoT Hub에서 디바이스를 구성하여 수행할 수 있습니다.
 
-3. Within the list of IoT devices, click on the **Device ID** (likely **simulated-device1**) for the Simulated Device.
+1. **Azure Portal**을 연 다음 **Azure IoT Hub** 서비스로 이동합니다.
 
-    > [!IMPORTANT] Make sure you select the device from this lab.
+1. 블레이드의 왼쪽에 있는 IoT Hub 블레이드의 **탐색기** 섹션에서 **IoT 디바이스**를 클릭합니다.
 
-1. On the device blade, click the **Device Twin** button at the top of the blade.
+1. IoT 디바이스 목록에서 **simulated-device1**을 클릭합니다.
 
-    Within the **Device twin** blade, there is an editor with the full JSON for the device twin. This enables you to view and/or edit the device twin state directly within the Azure portal.
+    > **중요**: 이 랩에서 디바이스를 선택해야 합니다. 이전 랩에서 만든 _SimulatedDevice1_이라는 디바이스가 표시될 수도 있습니다.
 
-1. Locate the `properties.desired` node within the Device Twin JSON. Add, or update if it already exists, the `telemetryDelay` property to have the value of `"2"`. This will update the `telemetryDelay` of the simulated device to send sensor telemetry every **2 seconds**.
+1. 디바이스 블레이드에서 블레이드 상단의 **디바이스 쌍**을 클릭합니다.
 
-    The resulting JSON for this section of the device twin desired properties will look similar to the following:
+    **디바이스 쌍** 블레이드 내에 디바이스 쌍에 대한 전체 JSON이 있는 편집기가 있습니다. 이렇게 하면 Azure Portal에서 디바이스 쌍 상태를 직접 보거나 편집할 수 있습니다.
+
+1. 디바이스 쌍 JSON 내에서 `properties.desired` 노드를 찾습니다. `telemetryDelay` 속성을 `"2"`의 값으로 업데이트합니다. 저장되면 시뮬레이션된 디바이스의 `telemetryDelay`가 업데이트되어 **2초**마다 센서 원격 분석을 전송합니다.
+
+    디바이스 쌍이 원하는 속성의 이 섹션에 대한 결과 JSON이 다음과 유사합니다.
 
     ```json
     "properties": {
@@ -667,101 +846,129 @@ With the simulated device running, the `telemetryDelay` configuration can be upd
         },
     ```
 
-    Leave the `$metadata` and `$version` value of the `properties.desired` node within the JSON. You should only update the `telemetryDelay` value to set the new device twin desired property value.
+    JSON 내에서 `properties.desired` 노드의 `$metadata` 및 `$version` 값을 그대로 둡니다. `telemetryDelay` 값을 업데이트하여 새 디바이스 쌍이 원하는 속성 값을 설정해야 합니다.
 
-1. Click **Save** at the top of the blade to set the new device twin desired properties for the device. Once saved, the updated device twin desired properties will automatically be sent to the simulated device.
+1. 블레이드 상단에서 디바이스에 대한 새 디바이스 쌍이 원하는 속성을 설정하려면 **저장**을 클릭합니다. 
 
-1. Go back to the **Visual Studio Code Terminal** window, where the simulated device is running, and notice the application has been notified of the updated device twin `telemetryDelay` desired property setting.
+    일단 저장되면, 업데이트된 디바이스 쌍이 원하는 속성은 자동으로 시뮬레이션된 디바이스로 전송됩니다.
 
-    The application outputs to the Console some messages that display that the new device twin desired properties have been loaded, and the changes have been set and reported back to the Azure IoT Hub.
+1. 시뮬레이션된 디바이스가 실행되는 **Visual Studio Code 터미널** 창으로 돌아가서 애플리케이션이 디바이스 쌍 `telemetryDelay`가 원하는 속성 설정에 대한 알림을 받았는지 확인합니다.
+
+    애플리케이션은, 새 디바이스 쌍이 원하는 속성이 로드되었으며 변경 내용이 설정되어 Azure IoT Hub에 다시 보고되었음을 보여주는 메시지를 콘솔에 출력합니다.
 
     ```text
-    Desired Twin Property Changed:
+    필요한 쌍 속성 변경됨:
     {"telemetryDelay":2,"$version":2}
-    Reported Twin Properties:
+    보고된 쌍 속성:
     {"telemetryDelay":2}
     ```
 
-1. Notice the simulated device sensor telemetry messages are now being sent to Azure IoT Hub every _2_ seconds, now that the updated device twin desired properties have been sent to the device and the device has updated it's internal state accordingly.
+1. 이제 시뮬레이션된 디바이스 센서 원격 분석 메시지가 _2_초마다 Azure IoT Hub로 전송됩니다.
 
     ```text
-    12/9/2019 5:48:06 PM > Sending message: {"temperature":33.89822140284731,"humidity":78.34939097908763,"pressure":1024.9467544610131,"latitude":40.020042418755764,"longitude":-98.41923808825841}
+    2019년 12월 9일 오후 5:48:06 > 메시지 전송: {"temperature":33.89822140284731,"humidity":78.34939097908763,"pressure":1024.9467544610131,"latitude":40.020042418755764,"longitude":-98.41923808825841}
     12/9/2019 5:48:09 PM > Sending message: {"temperature":27.475786026323114,"humidity":64.4175510594703,"pressure":1020.6866468579678,"latitude":40.2089999240047,"longitude":-98.26223221770334}
     12/9/2019 5:48:11 PM > Sending message: {"temperature":34.63600901637041,"humidity":60.95207713588703,"pressure":1013.6262313688063,"latitude":40.25499096898331,"longitude":-98.51199886959347}
     ```
 
-1. To exit the simulated device app within the **Terminal** window, press **Ctrl-C**.
+1. **터미널** 창 내에서 시뮬레이션된 디바이스 앱을 종료하려면 **Ctrl-C**를 누릅니다.
 
-6. In the Azure Portal, close the **Device twin** blade. 
+1. Azure Portal에서 **디바이스 쌍** 블레이드를 닫습니다.
 
-1. Still in the Azure Portal, on the Simulated Device blade, again click the **Device Twin** button.
+1. Azure Portal의 simulated-device1 블레이드에서 **디바이스 쌍**을 클릭합니다.
 
-1. This time, locate the JSON for the `properties.reported` object.
-   
-    This contains the state reported by the device. Notice the `telemetryDelay` property exists here as well, and is also set to `2`.  There is also a `$metadata` value that shows you when the value was reported data was last updated and when the specific reported value was last updated.
+1. 아래로 스크롤하여 `properties.reported` 개체에 대한 JSON을 찾습니다.
 
-1. Again close the **Device twin** blade.
+    여기에는 디바이스에서 보고한 상태가 포함됩니다. `telemetryDelay` 속성도 여기에 있으며 `2`로 설정되어 있습니다.  또한 보고된 데이터 값이 마지막으로 업데이트된 시점과 특정 보고된 값이 마지막으로 업데이트된 시기를 표시하는 `$metadata` 값도 있습니다.
 
-1. Close the simulated device blade to return back to the IoT Hub blade.
+1. **디바이스 쌍** 블레이드를 다시 닫습니다.
 
-## Exercise 7: Retire Group Enrollment
+1. 시뮬레이션된 simulated-device1 블레이드를 닫은 다음 Azure Portal 대시보드로 다시 이동합니다.
 
-In this exercise, you will retire the enrollment group and its devices from both the Device Provisioning Service and Azure IoT Hub.
+### 연습 7: 그룹 등록계약 폐기
 
-### Task 1: Retire the enrollment group from the DPS
+이 연습에서는 디바이스 프로비저닝 서비스 및 Azure IoT Hub에서 등록계약 그룹과 디바이스를 모두 사용 중지합니다.
 
-1. If necessary, log in to your Azure portal using your Azure account credentials.
+#### 작업 1: DPS에서 등록계약 그룹 폐기
 
-    If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
+1. 필요한 경우 Azure 계정 자격 증명을 사용하여 Azure Portal에 로그인합니다.
 
-1. On your resource group tile, click **AZ-220-DPS-_{YOUR-ID}_** to navigate to the Device Provisioning Service.
+    둘 이상의 Azure 계정이 있는 경우에는 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. On the Device Provisioning Service settings pane on the left side, click **Manage enrollments**.
+1. 리소스 그룹 타일에서 디바이스 프로비저닝 서비스로 이동하려면 **AZ-220-DPS-_{YOUR-ID}_**를 클릭합니다.
 
-2. Click on **simulated-devices** in the list of **Enrollment Groups**.
+1. 왼쪽 메뉴의 **설정**에서 **등록 관리**를 클릭합니다.
 
-3. On the **Enrollment Group Details** blade, locate the **Enable entry** option and set it to **Disable**, then click **Save** at the top of the blade.
+1. **등록 그룹** 목록에서 **simulated-devices**를 클릭합니다.
 
-    Disabling the Group Enrollment within DPS allows you to temporarily disable devices within this Enrollment Group. This provides a temporary blacklist of the x.509 certificate used by these devices.
+1. **등록 그룹 세부 정보** 블레이드에서 아래로 스크롤하여 **항목 사용** 필드를 찾은 다음 **사용 중지**를 클릭합니다.
 
-4. To permanently delete the Enrollment Group, you must delete the enrollment group from DPS. To do this, check the box next to the **simulated-devices** **Group Name** on the **Manage enrollments** pane if it is not already checked, then click the **Delete** button at the top.
+    DPS 내에서 그룹 등록계약을 사용 중지하면 이 등록계약 그룹 내의 디바이스를 일시적으로 사용 중지할 수 있습니다. 이렇게 하면 이러한 디바이스에서 사용하는 X.509 인증서의 임시 블랙리스트가 제공됩니다.
 
-5. When prompted to confirm the action to **Remove enrollment**, click **Yes**.
-   
-   Once deleted, the Group Enrollment is completely removed from DPS, and would need to be recreated to add it back.
+1. 블레이드 상단에서 **저장**을 클릭합니다.
 
-    > [!NOTE] If you delete an enrollment group for a certificate, devices that have the certificate in their certificate chain might still be able to enroll if a different, enabled enrollment group still exists for the root certificate or another intermediate certificate higher up in their certificate chain.
+    등록 그룹을 영구적으로 삭제하려면 DPS에서 등록 그룹을 삭제해야 합니다. 
 
-### Task 2: Retire the device from the IoT Hub
+1. **등록 관리** 창의 **그룹 이름**에서 **simulated-devices**의 왼쪽에 있는 확인란을 선택합니다.
 
-Once the enrollment group has been removed from the Device Provisioning Service (DPS), the device registration will still exist within Azure IoT Hub. To fully retire the devices, you will need to remove that registration as well.
+    **simulated-devices**의 왼쪽에 있는 확인란이 이미 선택된 경우 그 상태로 둡니다.
 
-1. Within the Azure portal, on your resource group tile, click **AZ-220-HUB-_{YOUR-ID}_** to navigate to the Azure IoT Hub.
+1. **등록 관리** 창 상단에서 **삭제**를 클릭합니다.
 
-8.  On the **IoT Hub** blade, on the left side, under the **Explorers** section, click on the **IoT devices** link.
+1. **등록 제거** 작업을 확인하라는 메시지가 표시되면 **예**를 클릭합니다.
 
-9.  Notice that the **simulated-device1** device ID still exists within the Azure IoT Hub device registry.
+   그룹 등록계약을 삭제하면 DPS에서 완전히 제거되고 다시 추가하려면 다시 만들어야 합니다.
 
-10. To remove the device, check box next to it in the list, then click the **Delete** button at the top of the pane.
+    > **참고**:  인증서에 대한 등록 그룹을 삭제하는 경우 인증서 체인에 인증서가 있는 디바이스는 루트 인증서 또는 인증서 체인의 상위에 있는 다른 중간 인증서에 대해 활성화된 다른 등록 그룹이 여전히 존재하는 경우에도 등록할 수 있습니다.
 
-11. When prompted with "_Are you certain you wish to delete selected device(s)_", click **Yes** to confirm and perform the deletion.
+1. Azure Portal 대시보드로 돌아옵니다.
 
-### Task 3: Verify the retirement
+#### 작업 2: IoT Hub에서 디바이스 사용 중지
 
-With the group enrollment deleted from the Device Provisioning Service, and the device deleted from the Azure IoT Hub device registry, the device(s) have fully been removed from the solution.
+등록 그룹이 DPS(디바이스 프로비저닝 서비스)에서 제거된 후에도 디바이스 등록은 Azure IoT Hub 내에 계속 존재합니다. 디바이스를 완전히 폐기하려면 해당 등록도 제거해야 합니다.
 
-1.  Run the simulated device again by executing the `dotnet run` command within the Visual Studio Code **Terminal** window.
+1. Azure Portal 내의 리소스 그룹 타일에서 **AZ-220-HUB-_{YOUR-ID}_**를 클릭합니다.
 
-    Now that the group enrollment and registered device have been deleted, the simulated device will no longer be able to provision nor connect. When the application attempts to use the configured x.509 certificate to connect to DPS, it will return a `ProvisioningTransportException` error message.
+1. **탐색기** 아래의 **IoT Hub** 블레이드의 왼쪽에서 **IoT 디바이스**를 클릭합니다.
+
+1. **simulated-device1** 디바이스 ID는 여전히 Azure IoT Hub 디바이스 레지스트리 내에 존재합니다.
+
+1. 디바이스를 제거하려면 **simulated-device1** 왼쪽에 있는 확인란을 선택한 다음 **삭제**를 클릭합니다.
+
+    디바이스(확인란)를 선택하면 블레이드 상단에 있는 **삭제** 단추가 활성화됩니다.
+
+1. "_선택한 디바이스를 삭제하시겠습니까?-"라는 메시지가 표시되면 **예**를 클릭합니다.
+
+#### 작업 3: 사용 중지 확인
+
+디바이스 프로비저닝 서비스에서 그룹 등록이 삭제되고 Azure IoT Hub 디바이스 레지스트리에서 디바이스가 삭제되면 디바이스가 솔루션에서 완전히 제거됩니다.
+
+1. SimulatedDevice 코드 프로젝트가 포함된 Visual Studio Code 창으로 전환합니다.
+
+    이전 연습 후에 Visual Studio Code를 닫은 경우 Visual Studio Code를 사용하여 랩 6 시작 폴더를 엽니다.
+
+1. Visual Studio Code **보기** 메뉴에서 **터미널**을 클릭합니다.
+
+1. 명령 프롬프트가 **시작** 폴더 위치에 있는지 확인
+
+1. 시뮬레이션된 디바이스 앱 실행을 시작하려면 다음 명령을 입력합니다.
+
+    ```cmd/sh
+    dotnet run
+    ```
+
+1. 디바이스에서 프로비전할 때 나열된 예외를 확인합니다.
+
+    그룹 등록 및 등록된 디바이스가 삭제되었으므로 시뮬레이션된 디바이스는 더 이상 프로비전하거나 연결할 수 없습니다. 애플리케이션이 구성된 X.509 인증서를 사용하여 DPS에 연결하려고 하면  `ProvisioningTransportException` 오류 메시지가 반환됩니다.
 
     ```txt
-    Found certificate: AFF851ED016CA5AEB71E5749BCBE3415F8CF4F37 CN=simulated-device1; PrivateKey: True
+    발견된 인증서: AFF851ED016CA5AEB71E5749BCBE3415F8CF4F37 CN=simulated-device1; PrivateKey: True
     Using certificate AFF851ED016CA5AEB71E5749BCBE3415F8CF4F37 CN=simulated-device1
     RegistrationID = simulated-device1
-    ProvisioningClient RegisterAsync . . . Unhandled exception. Microsoft.Azure.Devices.Provisioning.Client.ProvisioningTransportException: {"errorCode":401002,"trackingId":"df969401-c766-49a4-bab7-e769cd3cb585","message":"Unauthorized","timestampUtc":"2019-12-20T21:30:46.6730046Z"}
+    ProvisioningClient RegisterAsync . . . 처리되지 않은 예외. Microsoft.Azure.Devices.Provisioning.Client.ProvisioningTransportException: {"errorCode":401002,"trackingId":"df969401-c766-49a4-bab7-e769cd3cb585","message":"Unauthorized","timestampUtc":"2019-12-20T21:30:46.6730046Z"}
        at Microsoft.Azure.Devices.Provisioning.Client.Transport.ProvisioningTransportHandlerAmqp.ValidateOutcome(Outcome outcome)
        at Microsoft.Azure.Devices.Provisioning.Client.Transport.ProvisioningTransportHandlerAmqp.RegisterDeviceAsync(AmqpClientConnection client, String correlationId, DeviceRegistration deviceRegistration)
        at Microsoft.Azure.Devices.Provisioning.Client.Transport.ProvisioningTransportHandlerAmqp.RegisterAsync(ProvisioningTransportRegisterMessage message, CancellationToken cancellationToken)
     ```
 
-    You have completed the registration, configuration, and retirement as part of the IoT devices life cycle with Device Provisioning Service.
+    디바이스 프로비저닝 서비스를 통해 IoT 디바이스 수명 주기의 일부로 등록, 구성 및 사용 중지를 완료했습니다.

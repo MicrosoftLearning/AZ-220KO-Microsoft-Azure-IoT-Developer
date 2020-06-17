@@ -1,194 +1,249 @@
----
+﻿---
 lab:
-    title: 'Lab 14: Run an IoT Edge device in restricted network and offline'
-    module: 'Module 7: Azure IoT Edge Module'
+    title: '랩 14: 제한된 네트워크 및 오프라인에서 IoT Edge 디바이스 실행'
+    module: '모듈 7: Azure IoT Edge 모듈'
 ---
 
-# Run an IoT Edge device in restricted network and offline
+# 제한된 네트워크 및 오프라인에서 IoT Edge 디바이스 실행
 
-## Lab Scenario
+## 랩 시나리오
 
-The conveyor belt system monitors vibrations, telemetry, and counts objects. We want our system to be resilient to network outages and also optimize the bulk upload of telemetry data at specific times in the day (load balancing network usage). We will configure IoT Edge to support offline in case network drops and we will look into storing telemetry from sensors locally and configure for regular syncs at given times.
+Contoso의 치즈 포장과 운송 사업장에 구축한 컨베이어 벨트 모니터링 시스템이 성과를 내고 있습니다. 이제 시스템은 컨베이터 벨트의 진동 수준 관리를 지원하는 Azure IoT Hub로 원격 분석 데이터를 전송하고 있으며, 새로운 IoT Edge 디바이스는 해당 시스템을 통과하는 포장된 치즈의 수를 추적하여 재고를 관리에 도움을 줍니다.
 
-You will learn the different scenarios where IoT Edge device is on an enterprise network (needs proxy settings) or needs extended offline capabilities. 
+치즈 처리 시설 중에서는 아직도 가끔씩 네트워크가 중단되는 구역이 있으므로 관리자는 그러한 상황에서도 복원이 가능한 시스템을 원합니다. 또한, IT 부서는 네트워크의 부하를 분산하기 위해 하루 중 특정 시간에 중요하지 않은 원격 분석 데이터를 일괄 업로드하도록 시스템을 최적화할 것을 요청했습니다.
 
-## In this Lab
+이에 따라 네트워크 중단될 경우 오프라인 시나리오를 지원하도록 IoT Edge를 구성하는 것을 제안하고, 센서의 원격 분석을 로컬(디바이스에서)로 저장하고, Edge 디바이스가 지정된 시간에 정기적으로 동기화하도록 구성하려 합니다.
 
-In this lab, you will:
+다음의 리소스가 만들어집니다.
 
-* Verify Lab Prerequisites
-* Create an IoT Hub and Device ID
-* Deploy Azure IoT Edge Enabled Linux VM
-* Setup IoT Edge Parent with Child IoT Devices
-* Configure IoT Edge Device as Gateway
-* Open IoT Edge Gateway Device Inbound Ports using Azure CLI
-* Configure IoT Edge Device Time-to-Live and Message Storage
-* Connect Child IoT Device to IoT Edge Gateway
-* Test Device Connectivity and Offline Support
- 
+![랩 14 아키텍처](media/LAB_AK_14-architecture.png)
 
-## Exercise 1: Verify Lab Prerequisites
+## 이 랩에서는
 
-This lab assumes the following resources are available:
+이 랩에서는 다음 활동을 완료할 예정입니다.
 
-| Resource Type | Resource Name |
+* 랩 필수 구성 요소 확인
+* IoT Hub 및 장치 ID 만들기
+* Azure IoT Edge 사용 Linux VM 배포
+* 자식 IoT 디바이스로 IoT Edge 부모 설정
+* IoT Edge 디바이스를 게이트웨이로 구성
+* Azure CLI를 사용하여 IoT Edge 게이트웨이 디바이스 인바운드 포트 열기
+* IoT Edge 디바이스 TTL(Time to Live) 및 메시지 저장소 구성
+* 자식 IoT 디바이스를 IoT Edge 게이트웨이에 연결
+* 디바이스 연결 및 오프라인 지원 테스트
+
+## 랩 지침
+
+### 연습 1: 랩 필수 구성 요소 확인
+
+이 랩에서는 다음과 같은 Azure 리소스를 사용할 수 있다고 가정합니다.
+
+| 리소스 종류 | 리소스 이름 |
 | :-- | :-- |
-| Resource Group | AZ-220-RG |
-| IoT Hub | AZ-220-HUB-{YOUR-ID} |
-| IoT Device | SimulatedThermostat |
+| 리소스 그룹 | AZ-220-RG |
+| IoT Hub | AZ-220-HUB-_{YOUR-ID}_ |
+| IoT 디바이스 | SimulatedThermostat |
 
-If the resources are unavailable, please execute the **lab-setup.azcli** script before starting the lab.
+이러한 리소스를 사용할 수 없는 경우 연습 2로 이동하기 전에 아래 설명에 따라 **lab14-setup.azcli** 스크립트를 실행해야 합니다. 스크립트 파일은 개발자 환경 구성(랩 3)의 일부로 로컬로 복제한 GitHub 리포지토리에 포함됩니다.
 
->**Note:** You will need the **SimulatedDevice** connection string. You can obtain that by running the following command in the Azure Cloud Shell"
-> 
+**lab14-setup.azcli** 스크립트는 **bash** 셸 환경에서 실행되도록 작성되었습니다. Azure Cloud Shell에서 실행하는 것이 가장 쉽습니다.
+
+>**참고:** **SimulatedThermostat** 디바이스의 연결 문자열이 필요합니다. 이 디바이스가 Azure IoT Hub에 이미 등록된 경우, Azure Cloud Shell에서 다음 명령을 실행하여 연결 문자열을 가져올 수 있습니다."
+>
 > ```bash
 > az iot hub device-identity show-connection-string --hub-name AZ-220-HUB-{YOUR-ID} --device-id SimulatedThermostat -o tsv
 > ```
 
-## Execute Setup Script
+#### 작업 1: 설치 스크립트 실행
 
-1. If necessary, log in to your Azure portal using your Azure account credentials.
+1. 브라우저를 사용하여 [Azure Shell](https://shell.azure.com/)을 열고 이 과정에 사용 중인 Azure 구독으로 로그인합니다.
 
-    If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
+    Cloud Shell에 대한 저장소 설정 관련 메시지가 표시되면 기본값을 수락합니다.
 
-1. Open the Azure Cloud Shell by clicking the **Terminal** icon within the top header bar of the Azure portal, and select the **Bash** shell option.
+1. Azure Cloud Shell에서 **Bash**를 사용하고 있는지 확인합니다.
 
-1. Before the Azure CLI can be used with commands for working with Azure IoT Hub, the **Azure IoT Extensions** need to be installed. To install the extension, run the following command:
+    Azure Cloud Shell 페이지의 왼쪽 상단에 있는 드롭다운으로 환경을 선택할 수 있습니다. 선택한 드롭다운 값이 **Bash**인지 확인합니다.
 
-    ```sh
-    az extension add --name azure-cli-iot-ext
+1. Azure Shell 도구 모음에서 **파일 업로드/다운로드**(오른쪽에서 네 번째 단추)를 클릭합니다.
+
+1. 드롭다운에서 **업로드**를 클릭합니다.
+
+1. 파일 선택 대화 상자에서 개발 환경을 구성할 때 다운로드한 GitHub 랩 파일의 폴더 위치로 이동합니다.
+
+    _랩 3: 개발 환경 설정_, ZIP 파일을 다운로드하고 콘텐츠를 로컬로 추출하여 랩 리소스를 포함하는 GitHub 리포지토리를 복제했습니다. 추출된 폴더 구조는 다음 폴더 경로를 포함합니다.
+
+    * Allfiles
+      * 랩
+          * 14-제한된 네트워크 및 오프라인에서 IoT Edge 디바이스 실행
+            * 설정
+
+    lab14-setup.azcli 스크립트 파일은 랩 14의 설치 폴더에 있습니다.
+
+1. **lab14-setup.azcli** 파일을 선택한 다음 **열기**를 클릭합니다.
+
+    파일 업로드가 완료되면 알림이 나타납니다.
+
+1. Azure Cloud Shell에 올바른 파일이 업로드되었는지 확인하려면 다음 명령을 입력합니다.
+
+    ```bash
+    ls
     ```
 
-1. To upload the setup script, in the Azure Cloud Shell toolbar, click **Upload/Download files** (fourth button from the right).
+    `ls` 명령으로 현재 디렉터리의 내용을 나열합니다. lab14-setup.azcli 파일이 나열되어 있습니다.
 
-1. In the dropdown, select **Upload** and in the file selection dialog, navigate to the **lab-setup.azcli** file for this lab. Select the file and click **Open** to upload it.
-
-    A notification will appear when the file upload has completed.
-
-1. You can verify that the file has uploaded by listing the content of the current directory by entering the `ls` command.
-
-1. To create a directory for this lab, move **lab-setup.azcli** into that directory, and make that the current working directory, enter the following commands:
+1. 설치 스크립트가 포함된 이 랩에 대한 디렉터리를 만든 다음 해당 디렉터리로 이동하려면 다음 Bash 명령을 입력합니다.
 
     ```bash
     mkdir lab14
-    mv lab-setup.azcli lab14
+    mv lab14-setup.azcli lab14
     cd lab14
     ```
 
-1. To ensure the **lab-setup.azcli** has the execute permission, enter the following commands:
+1. **lab14-setup.azcli**에 실행 권한이 있는지 확인하려면 다음 명령을 입력합니다.
 
     ```bash
-    chmod +x lab-setup.azcli
+    chmod +x lab14-setup.azcli
     ```
 
-1. To edit the **lab-setup.azcli** file, click **{ }** (Open Editor) in the toolbar (second button from the right). In the **Files** list, select **lab14** to expand it and then select **lab-setup.azcli**.
+1. Cloud Shell 도구 모음에서 lab14-setup.azcli 파일을 편집하려면 **편집기 열기**(오른쪽에서 두 번째 단추 - {})를 클릭합니다.
 
-    The editor will now show the contents of the **lab-setup.azcli** file.
+1. **파일** 목록에서 lab14 폴더를 펼치고 스크립트 파일을 열려면 **lab14**를 클릭한 다음 **lab14-setup.azcli**를 클릭합니다.
 
-1. In the editor, update the values of the `{YOUR-ID}` and `Location` variables. Set `{YOUR-ID}` to the Unique ID you created at the start of this course - i.e. **CP123019**, and set `Location` to the location that makes sense for your resources.
+    이제 편집기에서 **lab14-setup.azcli** 파일의 내용을 표시합니다.
 
-    > [!NOTE] The `Location` variable should be set to the short name for the location. You can see a list of the available locations and their short-names (the **Name** column) by entering this command:
+1. 편집기에서 `{YOUR-ID}` 및 `{YOUR-LOCATION}`의 할당된 값을 업데이트합니다.
+
+    아래 샘플을 예로 들어, `{YOUR-ID}`를 이 과정을 시작할 때 만든 고유 ID(예: **CAH191211**)로 설정하고 `{YOUR-LOCATION}`를 리소스에 적합한 위치로 설정해야 합니다.
+
+    ```bash
+    #!/bin/bash
+
+    RGName="AZ-220-RG"
+    IoTHubName="AZ-220-HUB-{YOUR-ID}"
+
+    Location="{YOUR-LOCATION}"
+    ```
+
+    > **참고**:  `{YOUR-LOCATION}` 변수는 해당 지역의 짧은 이름으로 설정되어야 합니다. 이 명령을 입력하면 사용 가능한 지역 목록과 이 지역의 짧은 이름(**이름** 열)을 볼 수 있습니다.
     >
     > ```bash
     > az account list-locations -o Table
-    > ```
     >
-    > ```text
-    > DisplayName           Latitude    Longitude    Name
+    > 표시이름           위도    경도    이름
     > --------------------  ----------  -----------  ------------------
-    > East Asia             22.267      114.188      eastasia
-    > Southeast Asia        1.283       103.833      southeastasia
-    > Central US            41.5908     -93.6208     centralus
-    > East US               37.3719     -79.8164     eastus
-    > East US 2             36.6681     -78.3889     eastus2
+    > 동아시아             22.267      114.188      eastasia
+    > 동남 아시아        1.283       103.833      southeastasia
+    > 미국 중부            41.5908     -93.6208     centralus
+    > 미국 동부               37.3719     -79.8164     eastus
+    > 미국 동부 2             36.6681     -78.3889     eastus2
     > ```
 
-1. To save the changes made to the file and close the editor, click **...** in the top-right of the editor window and select **Close Editor**.
+1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창의 오른쪽 상단에서 ...를 클릭한 다음 **편집기 닫기**를 클릭합니다.
 
-    If prompted to save, click **Save** and the editor will close.
+    저장하라는 메시지가 표시된 경우 **저장**을 클릭하면 편집기가 닫힙니다.
 
-    > [!NOTE] You can use **CTRL+S** to save at any time and **CTRL+Q** to close the editor.
+    > **참고**:  **CTRL+S**를 사용하여 언제든지 저장할 수 있으며 **CTRL+Q**를 사용하여 편집기를 닫을 수 있습니다.
 
-1. To create a resource group named **AZ-220-RG**, create an IoT Hub named **AZ-220-HUB-{YourID}**, add a device with a Device ID of **SimulatedThermostat**, and display the device connection string, enter the following command:
+1. 이 랩에 필요한 리소스를 만들려면 다음 명령을 입력합니다.
 
     ```bash
-    ./lab-setup.azcli
+    ./lab14-setup.azcli
     ```
 
-    This will take a few minutes to run. You will see JSON output as each step completes.
+    이 스크립트를 실행하는 데 몇 분이 걸릴 수 있습니다. 각 단계가 완료되면 JSON 출력이 표시됩니다.
 
-1. Once complete, the connection string for the device, starting with "HostName=", is displayed. Copy this connection string into a text document and note that it is for the **SimulatedThermostat** device.
+    스크립트는 먼저 **AZ-220-RG**라는 리소스 그룹과 **AZ-220-HUB-{YourID}**라는 IoT Hub를 만듭니다. 이미 있는 경우 해당 메시지가 표시됩니다. 그런 다음, 스크립트는 IoT Hub에 **SimulatedThermostat** ID가 있는 디바이스를 추가하고 디바이스 연결 문자열을 표시합니다.
 
-## Exercise 2: Deploy Azure IoT Edge enabled Linux VM
+1. 스크립트가 완료되면 디바이스의 연결 문자열이 표시됩니다.
 
-In this unit you will deploy an Ubuntu Server VM with Azure IoT Edge runtime support from the Azure Marketplace. In previous labs you have created the VM using the Azure Portal. This time around, we will create the VM using the Azure CLI.
+    연결 문자열은 "HostName="으로 시작합니다.
 
-1. If necessary, log in to your Azure portal using your Azure account credentials.
+1. 연결 문자열을 텍스트 문서에 복사합니다. 이것은 **SimulatedThermostat** 디바이스용입니다.
 
-    If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
+    연결 문자열을 쉽게 찾을 수 있는 위치에 저장하셨다면, 랩을 계속할 준비가 되었습니다.
 
-1. Open the Azure Cloud Shell by clicking the **Terminal** icon within the top header bar of the Azure portal, and select the **Bash** shell option.
+### 연습 2: Azure IoT Edge 사용 Linux VM 배포
 
-1. To create a resource group for the Azure IoT Edge enabled VM, enter the following command:
+이 연습에서는 Azure Marketplace에서 Azure IoT Edge 런타임 지원 Ubuntu Server VM을 배포합니다.
 
-    ```bash 
+이전 랩에서는 Azure Portal을 사용하여 VM을 만들었습니다. 이 랩에서는 Azure CLI를 사용하여 VM을 만듭니다.
+
+1. 필요한 경우 Azure 계정 자격 증명을 사용하여 Azure Portal에 로그인합니다.
+
+    둘 이상의 Azure 계정이 있는 경우에는 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
+
+1. Azure Portal 도구 모음에서 **Cloud Shell**을 클릭합니다.
+
+    환경이 셸에서 **Bash**로 설정되어 있는지 확인합니다.
+
+1. Azure IoT Edge 지원 VM용 리소스 그룹을 만들려면 다음 명령을 입력합니다.
+
+    ```bash
     az group create --name AZ-220-IoTEdge-RG --location {YOUR-LOCATION}
     ```
 
-    Remember to replace `{YOUR-LOCATION}` with a location close to you.
+    `{YOUR-LOCATION}`을 가까운 지역으로 바꿔야 합니다.
 
-1. To create a Linux VM, enter the following commands:
+1. Linux VM을 만들려면 다음 두 명령을 입력합니다.
 
     ```bash
     az vm image terms accept --urn microsoft_iot_edge:iot_edge_vm_ubuntu:ubuntu_1604_edgeruntimeonly:latest
     az vm create --resource-group AZ-220-IoTEdge-RG --name AZ220EdgeVM{YOUR-ID} --image microsoft_iot_edge:iot_edge_vm_ubuntu:ubuntu_1604_edgeruntimeonly:latest --admin-username vmadmin --admin-password {YOUR-PASSWORD-HERE} --authentication-type password
     ```
 
-    The first command above accepts the terms and conditions of use for VM image. The second command  actually creates the VM within the resource group specified above. Remember to update `AZ220EdgeVM{YOUR-ID}` with your unique id and replace `{YOUR-PASSWORD-HERE}` with a suitably secure password.
+    > **참고**: 반드시 두 번째 명령에 있는 자리 표시자를 바꿔야 합니다.
 
-    >**Note**: In production, you may elect to generate SSH keys rather than use the username/password approach. You can learn more about Linux VMs and SSH here: [https://docs.microsoft.com/en-us/azure/virtual-machines/linux/create-ssh-keys-detailed](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/create-ssh-keys-detailed).
+    위의 첫 번째 명령은 VM 이미지의 사용 약관을 수락합니다.
 
-    > [!NOTE] Deployment will take approximately 5 minutes to complete. You can continue on to the next unit while it is deploying.
+    두 번째 명령은 위에서 지정된 리소스 그룹 내에서 실제로 VM을 만듭니다. `AZ220EdgeVM{YOUR-ID}`를 고유 ID로 업데이트하고 `{YOUR-PASSWORD-HERE}`를 안전한 암호로 바꾸는 것을 잊지 마세요.
 
-## Exercise 3: Setup IoT Edge Parent with Child IoT Devices
+    > **참고**: 프로덕션 중에는 사용자 이름/암호 접근 방식 대신 SSH 키 생성을 선택할 수 있습니다. Linux VM 및 SSH에 대한 자세한 내용은 여기를 참조하세요. [https://docs.microsoft.com/ko-kr/azure/virtual-machines/linux/create-ssh-keys-detailed](https://docs.microsoft.com/ko-kr/azure/virtual-machines/linux/create-ssh-keys-detailed).
+    >
+    > **참고**:  배포가 끝나기까지 5분 정도 걸립니다. 배포하는 동안 다음 단원으로 이동할 수 있습니다.
 
-In this exercise, you will register an IoT Edge Device within Azure IoT Hub, and an IoT Device that is configured in a child relationship. This will enable the scenario to the the child IoT Device send messages through the IoT Edge Device as a gateway before communicating to the Azure IoT Hub in the cloud.
+### 연습 3: 자식 IoT 디바이스로 IoT Edge 부모 설정
 
-The use of Parent / Child relationships including an IoT Edge Gateway (the parent) and other IoT Devices (the child or leaf devices) enables the use of Offline capabilities within an Azure IoT solution.
+IoT Edge 게이트웨이(부모) 및 기타 IoT 디바이스(자식 또는 리프 디바이스)를 포함하는 부모/자식 관계를 이용하면 Azure IoT 솔루션 내에서 오프라인 기능을 구현할 수 있습니다. IoT Edge 디바이스가 IoT Hub에 연결할 수 있는 기회가 한 번 있다면 해당 디바이스와 모든 자식 디바이스는 간헐적으로 또는 인터넷 연결이 없이 작동을 계속할 수 있습니다.
 
-The following diagram shows the relationship between the Azure IoT Edge Device as the parent, and a child device:
+다음 다이어그램은 IoT Edge 디바이스 부모와 자식 디바이스 간의 관계를 보여줍니다.
 
-![IoT Edge Parent with Child Device Diagram](images/IoTEdge-Parent-Child-Relationship.jpg "IoT Edge Parent with Child Device Diagram")
+![자식 디바이스가 있는 IoT Edge 부모 다이어그램](media/LAB_AK_14-IoTEdge-Parent-Child-Relationship.jpg "IoT Edge Parent with Child Device Diagram")
 
-In this scenario, the child device connects to, and authenticate against the parent IoT Edge Device using their Azure IoT Hub credentials. Once authenticated, the child IoT Device sends messages to the Edge Hub (`$edgeHub`) on the IoT Edge Device. Once messages reach the parent IoT Edge Device, the IoT Edge Modules and Routing will handle the messages as configured; including sending the messages to the Azure IoT Hub when connected.
+이 다이어그램에서 자식 디바이스는 부모 IoT Edge 디바이스에 연결하고 인증합니다. 자식 디바이스는 인증 시 Azure IoT Hub 자격 증명을 사용합니다. 인증이 되면 자식 IoT 디바이스는 IoT Edge 디바이스의 Edge 허브(`$edgeHub`)로 메시지를 보냅니다. 메시지가 부모 IoT Edge 디바이스에 도달하면 IoT Edge 모듈과 라우팅은 구성된 대로 메시지를 처리합니다(연결할 때 Azure IoT Hub로 메시지를 보내는 것 포함).
 
-When the parent IoT Edge Device is disconnected (or loses connection to the Azure IoT Hub) it will automatically store all device messages to the IoT Edge Device. Once the connection is restored, the IoT Edge Device will resume connectivity and send any stored messages to Azure IoT Hub. Messages stored on the IoT Edge Device may expire according to the Time-to-Live (TTL) configurations for the device; which defaults to store messages for up to `7200` seconds (two hours).
+부모 IoT Edge 디바이스의 연결이 끊어지거나 Azure IoT Hub에 연결되지 않을 경우 모든 디바이스 메시지가 IoT Edge 디바이스에 자동으로 저장됩니다. 연결이 복원되면 IoT Edge 디바이스는 다시 연결하고 저장된 메시지를 Azure IoT Hub로 보냅니다. IoT Edge 디바이스에 저장된 메시지는 디바이스의 TTL(Time-to-Live) 구성에 따라 만료될 수 있습니다(기본적으로 메시지를 최대 `7200`초(2시간)까지 저장하도록 설정되어 있음).
 
-1. If necessary, log in to your Azure portal using your Azure account credentials.
+이 연습에서는 Azure IoT Hub에 IoT Edge 디바이스를 등록한 후 IoT 디바이스를 만들고 이를 IoT Edge 디바이스의 자식으로 구성합니다. 이렇게 하면 위에서 설명한 시나리오를 사용할 수 있습니다. 해당 시나리오에서는 자식 IoT 디바이스는 클라우드의 Azure IoT Hub로 통신을 보내기 전에 부모 IoT Edge 게이트웨이 디바이스를 통해 메시지를 보냅니다. Edge 게이트웨이 디바이스와 IoT Hub 간의 연결이 끊어지면 연결이 복원될 때까지 Edge 게이트웨이 디바이스가 (지정된 제한 내에서) 메시지를 저장합니다.
 
-    If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
+1. 필요한 경우 Azure 계정 자격 증명을 사용하여 Azure Portal에 로그인합니다.
 
-1. At the top of the Azure Portal click on the **Cloud Shell** icon to open up the **Azure Cloud Shell** within the Azure Portal. When the pane opens, choose the option for the **Bash** terminal within the Cloud Shell.
+    둘 이상의 Azure 계정이 있는 경우에는 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. First the IoT Edge Device Identity needs to be created. This will be the **IoT Edge Gateway**, or the Parent IoT Device. Run the following command to create a new **IoT Edge Device Identity** within Azure IoT Hub:
+1. Azure Portal 도구 모음에서 **Cloud Shell**을 클릭합니다.
+
+    환경이 **Bash**를 사용하고 있는지 확인합니다.
+
+1. Azure IoT Hub 내에서 새 **IoT Edge 디바이스 ID**를 만들려면 다음 명령을 입력합니다.
 
     ```sh
-    az iot hub device-identity create --edge-enabled --hub-name AZ-220-HUB-{YOUR_ID} --auth-method shared_private_key --device-id IoTEdgeGateway
+    az iot hub device-identity create --edge-enabled --hub-name AZ-220-HUB-{YOUR-ID} --auth-method shared_private_key --device-id IoTEdgeGateway
     ```
 
-    > [!NOTE] Be sure to replace the **AZ-220-HUB-{YOUR-ID}** IoT Hub name with the name of your Azure IoT Hub.
+    > **참고**:  **AZ-220-HUB-_{YOUR-ID}_** IoT Hub 이름을 Azure IoT Hub 이름으로 바꾸어야 합니다.
 
-    Notice the `az iot hub device-identity create` command is called by passing in several parameters:
+    다음 매개 변수는 `az iot hub device-identity create` 명령에 포함됩니다.
 
-    - `--hub-name`: This required parameter is used to specify the name of the **Azure IoT Hub** to add the new device to.
+    * `--hub-name`: 이 필수 매개 변수는 새 디바이스를 추가하는 **Azure IoT Hub**의 이름을 지정하는 데 사용됩니다.
 
-    - `--device-id`: This required parameter is used to specify the **Device ID** of the IoT Device being created.
+    * `--device-id`: 이 필수 매개 변수는 생성 중인 IoT 디바이스의 **장치 ID**를 지정하는 데 사용됩니다.
 
-    - `--edge-enabled`: This specifies the IoT Device being created is an **IoT Edge Device** and it will be enabled for IoT Edge.
+    * `--edge-enabled`: 이는 생성 중인 IoT 디바이스가 **IoT Edge 디바이스**이며 IoT Edge에서 사용할 수 있음을 명시합니다.
 
-    - `--auth-method`: This specifies the authentication method used for the IoT device. The value of `shared_private_key` specifies to use Symmetric Key Encryption. Other options available are `x509_ca` and `x509_thumbprint`.
+    * `--auth-method`: 이것은 IoT 디바이스에 사용되는 인증 방법을 지정합니다. `shared_private_key` 값은 대칭 키 암호화를 사용하도록 지정합니다. 다른 옵션은 `x509_ca`과 `x509_thumbprint`입니다.
 
-1. Notice when the command completes, there is a blog of JSON returned to the terminal. This JSON includes a few details for the configuration of the **IoT Edge Device** that was just created. Among the device details is the **symmetric keys** that were auto-generated by the service for the device.
+1. 잠시 시간을 내어 명령으로 생성된 JSON 출력을 리뷰합니다.
+
+    명령이 완료되면 터미널로 반환된 JSON의 블로그가 있는 것을 확인하세요. 이 JSON에는 방금 만든 **IoT Edge 디바이스**의 구성에 대한 몇 가지 세부 정보가 포함되어 있습니다. 디바이스 세부 정보 중에는 디바이스용 서비스가 자동 생성한 **대칭 키**가 있습니다.
 
     ```json
         {
@@ -220,49 +275,53 @@ When the parent IoT Edge Device is disconnected (or loses connection to the Azur
         }
     ```
 
-1. Run the following command to retrieve the **Connection String** from IoT Hub for the **IoTEdgeGateway** Device, and **copy** the connection string value for reference later:
+1. IoT Hub에서 **IoTEdgeGateway** 디바이스의 **연결 문자열**을 검색하려면 다음 명령을 입력합니다.
 
     ```cmd/sh
     az iot hub device-identity show-connection-string --hub-name AZ-220-HUB-{YOUR-ID} --device-id IoTEdgeGateway -o tsv
     ```
 
-    > [!NOTE] Be sure to replace the **AZ-220-HUB-{YOUR-ID}** IoT Hub name with the name of your Azure IoT Hub.
+    > **참고**:  **AZ-220-HUB-_{YOUR-ID}_** IoT Hub 이름을 Azure IoT Hub 이름으로 바꾸어야 합니다.
 
-    Notice the `az iot hub device-identity show-connection-string` command is called by passing in several parameters:
+    `az iot hub device-identity show-connection-string` 명령은 여러 매개 변수를 전달하여 호출됩니다.
 
-    - `--hub-name`: This required parameter is used to specify the name of the **Azure IoT Hub** to add the new device to.
+    * `--hub-name`: 이 필수 매개 변수는 새 디바이스를 추가하는 **Azure IoT Hub**의 이름을 지정하는 데 사용됩니다.
 
-    - `--device-id`: This required parameter is used to specify the **Device ID** of the IoT Device being created.
+    * `--device-id`: 이 필수 매개 변수는 생성 중인 IoT 디바이스의 **장치 ID**를 지정하는 데 사용됩니다.
 
-    The IoT Hub connection string output from the **IoTEdgeGateway** device will be in the following format:
+    **IoTEdgeGateway** 디바이스의 IoT Hub 연결 문자열 출력은 다음과 같은 형식으로 표시됩니다.
 
     ```text
     HostName={iot-hub-name}.azure-devices.net;DeviceId=IoTEdgeGateway;SharedAccessKey={shared-access-key}
     ```
 
-1. The next step is to create the Child IoT Device. These will be **IoT Devices** registered with the Azure IoT Hub, and will connect directly to the Parent IoT Device for communications with the cloud.
+1. 이 랩의 후반부에 참조할 수 있도록 연결 문자열 값의 복사본을 저장합니다.
 
-1. To create the first child device, run the following command:
+    다음 단계는 IoT Hub와의 통신을 위해 부모 IoT Edge 게이트웨이 디바이스에 직접 연결되는 자식 IoT 디바이스를 만드는 것입니다.
+
+1. IoT 디바이스를 만들고 IoT Edge 디바이스의 자식으로 구성하려면 다음 명령을 실행합니다.
 
     ```sh
     az iot hub device-identity create -n AZ-220-HUB-{YOUR-ID} --device-id ChildDevice1 --pd IoTEdgeGateway
     ```
 
-    > [!NOTE] Be sure to replace the **AZ-220-HUB-{YOUR-ID}** IoT Hub name with the name of your Azure IoT Hub.
+    > **참고**:  **AZ-220-HUB-_{YOUR-ID}_** IoT Hub 이름을 Azure IoT Hub 이름으로 바꾸어야 합니다.
 
-    This command is passed the following parameters:
+    이 명령은 다음 매개 변수를 전달합니다.
 
-    - `-n`: This required parameter is the shorthand for `--hub-name` and is used to specify the name of the **Azure IoT Hub** to add the new device to.
+    * `-n`: 이 필수 매개 변수는 `--hub-name`의 약자이며 새 디바이스를 추가하는 **Azure IoT Hub**의 이름을 지정하는 데 사용됩니다.
 
-    - `--device-id`: This required parameter is used to specify the **Device ID** of the IoT Device being created.
+    * `--device-id`: 이 필수 매개 변수는 생성 중인 IoT 디바이스의 **장치 ID**를 지정하는 데 사용됩니다.
 
-    - `--pd`: This parameter specifies the **Parent Device** for the IoT Device being created. The value passed in must be the **Device ID** of the **Parent Device** to assign this **Child Device** to.
+    * `--pd`: 이 매개 변수는 생성 중인 IoT 디바이스의 **부모 디바이스**를 지정합니다. 전달된 값은 이 **자식 디바이스**를 할당할 **부모 디바이스**의 **장치 ID**여야 합니다.
 
-    Notice that this command is not passing in the `--auth-method`. By omitting this parameter, the default value of `shared_private_key` will be used.
+    이 명령은 `--auth-method`에서 전달되지 않습니다. 이 매개 변수를 생략하면 `shared_private_key`의 기본값이 사용됩니다.
 
-1. Notice when the command completes, there is a blog of JSON returned to the terminal. This JSON includes a few details for the configuration of the **IoT Device** that was just created. Notice the `symmetricKey` node that contains the Symmetric Keys that can be used to authenticate the device with Azure IoT Hub, or when the child device connects to the parent IoT Edge Gateway.
+1. 잠시 시간을 내어 이 명령의 JSON 출력을 검토합니다.
 
-    Copy the **primaryKey** for this IoT Device so it can be used later.
+    명령이 완료되면 JSON의 블로그가 터미널로 반환됩니다. 이 JSON에는 방금 만든 **IoT 디바이스**의 구성에 대한 몇 가지 세부 정보가 포함되어 있습니다. Azure IoT Hub로 디바이스를 인증하거나 자식 디바이스가 부모 IoT Edge 게이트웨이에 연결될 때 사용할 수 있는 대칭 키가 포함된 `symmetricKey` 노드를 확인합니다.
+
+    나중에 사용할 수 있도록 이 IoT 디바이스의 **primaryKey**가 필요합니다.
 
     ```json
         {
@@ -294,203 +353,285 @@ When the parent IoT Edge Device is disconnected (or loses connection to the Azur
         }
     ```
 
-1. Run the following command to retrieve the **Connection String** from IoT Hub for the **IoTEdgeGateway** Device, and **copy** the connection string value for reference later:
+1. 이 랩의 후반부에서 참조할 수 있도록 `primaryKey` 값의 복사본을 저장합니다.
+
+1. IoT Hub에서 **ChildDevice1** 디바이스의 **연결 문자열**을 검색하려면 다음 명령을 입력합니다.
 
     ```cmd/sh
     az iot hub device-identity show-connection-string --hub-name AZ-220-HUB-{YOUR-ID} --device-id ChildDevice1 -o tsv
     ```
 
-    > [!NOTE] Be sure to replace the **AZ-220-HUB-{YOUR-ID}** IoT Hub name with the name of your Azure IoT Hub.
+    > **참고**:  **AZ-220-HUB-_{YOUR-ID}_** IoT Hub 이름을 Azure IoT Hub 이름으로 바꾸어야 합니다.
 
-1. Now you have an IoT Edge Device and a Child IoT Device registered within Azure IoT Hub. The **IoT Device** is configured with the **IoT Edge Device** as its parent. This configuration will enable the Child IoT Device to connect to and communicate with the Parent IoT Edge Device; instead of connecting directly with Azure IoT Hub. Configuring the IoT device topology this way enables Offline capable scenarios where the IoT Device and IoT Edge Device can keep working even when connectivity to Azure IoT Hub is broken.
+1. 이 랩의 후반부에 참조할 수 있도록 연결 문자열 값의 복사본을 저장합니다.
 
-## Exercise 4: Configure IoT Edge Device as Gateway
+1. 방금 완료한 작업의 결과를 생각해봅니다.
 
-In this exercise, you will configure the Azure IoT Edge on Ubuntu virtual machine that was created previously to be an IoT Edge Transparent Gateway device. The configuration will be handled by a helper script that is part of this unit to make the process quicker.
+    이제 Azure IoT Hub에 등록된 IoT Edge 디바이스와 자식 IoT 디바이스가 있습니다. **IoT 디바이스**는 **IoT Edge 디바이스**를 부모로 구성합니다.
 
-1. Locate the labfiles for this lab, and open the `setup-iot-edge-gateway.sh` helper script within **Visual Studio Code**.
+    이 구성을 사용하면 Azure IoT Hub와 직접 연결하는 대신에 자식 IoT 디바이스가 부모 IoT Edge 디바이스에 연결하고 통신할 수 있습니다. 이러한 방식으로 IoT 디바이스 토폴로지를 구성하면 Azure IoT Hub의 연결이 끊어진 경우에도 IoT 디바이스와 IoT Edge 디바이스가 계속 작동할 수 있는 오프라인 지원 시나리오를 사용할 수 있습니다.
 
-1. Edit the `setup-iot-edge-gateway.sh` script to replace the following variable placeholders with the necessary values so the **IoT Edge on Ubuntu VM** can be configured as an **IoT Edge Transparent Gateway**:
+1. Azure Portal에서 Azure 대시보드로 이동합니다.
 
-    | Placeholder | Value to replace with |
-    | :--- | :--- |
-    | `{iot-edge-device-connection-string}` | Paste in the **Connection String** for the `IoTEdgeGateway` device that was created within Azure IoT Hub.
-    | `{iot-edge-device-hostname}` | Paste in the **Public IP Address** of the **IoT Edge on Ubuntu VM**. This is the DNS Hostname that the Client IoT Device will use to connect to the IoT Edge Transparent Gateway.
+1. Azure Portal 메뉴에서 **리소스 그룹**을 클릭합니다.
 
-    The variables these placeholders are associated with are located at the top of the `setup-iot-edg-gateway.sh` script, and are similar to the following before the placeholders are replaced:
+1. **리소스 그룹** 블레이드의 **이름**에서 **AZ-220-IoTEdge-RG** 리소스 그룹을 찾습니다.
+
+1. **AZ-220-IoTEdge-RG** 행에서 블레이드의 오른쪽에 있는 ...을 클릭하고 **대시보드에 고정**을 클릭합니다.
+
+    대시보드를 편집하여 RG 타일 및 나열된 리소스에 보다 쉽게 액세스하게 만들고 싶을 수 있습니다.
+
+### 연습 4: IoT Edge 디바이스를 게이트웨이로 구성
+
+이 연습에서는 (이전에 만들었던) Ubuntu 가상 머신의 Azure IoT Edge를 IoT Edge 투명 게이트웨이 디바이스로 구성합니다.
+
+IoT Edge 투명 게이트웨이는 다운스트림 디바이스에 자체 IoT Hub ID가 있고 이론상 IoT Hub에 자체적으로 연결할 수 있을 때 사용한다는 것을 떠올려 보십시오. 게이트웨이는 단순히 디바이스와 IoT Hub 간 통신을 전달합니다. 네트워크 연결이 끊어지면 발생하는 오프라인 시나리오를 지원하기 위해 이 게이트웨이 디바이스를 구현하고 있습니다.
+
+> **참고**: 도우미 스크립트를 사용하여 IoT Edge 디바이스를 투명 게이트웨이로 구성할 것입니다. 이렇게 하면 프로세스를 더 빨리 완료할 수 있습니다.
+
+1. Visual Studio Code의 새 인스턴스를 엽니다.
+
+1. Visual Studio Code의 **파일** 메뉴에서 **폴더 열기**를 클릭합니다.
+
+1. 폴더 열기 대화 상자에서 **Allfile\Labs\14-Run an IoT Edge device in restricted network and offline\Setup** 폴더로 이동합니다. 
+
+    _랩 3: 개발 환경 설정_, ZIP 파일을 다운로드하고 콘텐츠를 로컬로 추출하여 랩 리소스를 포함하는 GitHub 리포지토리를 복제했습니다. 추출된 폴더 구조는 다음 폴더 경로를 포함합니다.
+
+    * Allfiles
+      * 랩
+          * 14-제한된 네트워크 및 오프라인에서 IoT Edge 디바이스 실행
+            * 설정
+
+1. **설정**을 클릭한 다음 **폴더 선택**을 클릭합니다.
+
+1. **Explorer** 창에서 **setup-iot-edge-gateway.sh**를 클릭합니다. 
+
+1. 코드 편집기에서 자리 표시자 값을 다음과 같이 바꿉니다.
+
+    업데이트해야 하는 변수는 `setup-iot-edg-gateway.sh` 스크립트의 맨 위 근처에 있으며, 자리 표시자를 대체하기 전에 다음과 유사합니다.
 
     ```sh
     connectionstring="{iot-edge-device-connection-string}"
     hostname="{iot-edge-device-hostname}"
     ```
 
-1. Save the file.
+    자리 표시자 값에 대한 지침: 
 
-1. Locate the labfiles for this lab, and open the `setup-remote-iot-edge-gateway.sh` helper script within **Visual Studio Code**.
-
-1. Edit the `setup-remote-iot-edge-gateway.sh` script to replace the following variable placeholders with the necessary values so the **IoT Edge on Ubuntu VM** can be configured as an **IoT Edge Transparent Gateway**:
-
-    | Placeholder | Value to replace with |
+    | 자리 표시자 | 대체할 값 |
     | :--- | :--- |
-    | `{iot-edge-username}` | Enter the admin **username** to connect to the **IoT Edge on Ubuntu VM**. This is used to connect tot he VM via SSH.
-    | `{iot-edge-ipaddress}` | Enter the **Public IP Address** for the **IoT Edge on Ubuntu VM**. This is used to connect to the VM via SSH.
+    | `{iot-edge-device-connection-string}` | Azure IoT Hub에서 생성된 **IoTEdgeGateway** IoT Edge 디바이스의 **연결 문자열**에 붙여넣습니다.
+    | `{iot-edge-device-hostname}` | 위에서 만든 Ubuntu VM에서 **AZ220EdgeVM{Your ID}** IoT Edge의 **공용 IP 주소**에 붙여넣습니다. 공용 IP 주소는 자식 IoT 디바이스에서 IoT Edge 투명 게이트웨이에 연결하는 데 필요한 DNS 호스트 이름으로 사용됩니다. Azure Portal에서 **AZ220EdgeVM{Your ID}** 가상 머신의 개요 창에 나열된 공용 IP 주소를 찾을 수 있습니다.
 
-    The variables these placeholders are associated with are located at the top of the `setup-remote-iot-edg-gateway.sh` script, and are similar to the following before the placeholders are replaced:
+1. **파일** 메뉴에서 **저장**을 클릭합니다.   
+
+1. **탐색기** 창에서 **setup-remote-iot-edge-gateway.sh**를 클릭합니다. 
+
+1. 코드 편집기에서 자리 표시자 값을 다음과 같이 바꿉니다.
+
+    업데이트해야 하는 변수는 `setup-remote-iot-edg-gateway.sh` 스크립트의 맨 위에 있으며, 자리 표시자를 교체하기 전에 다음과 유사합니다.
 
     ```sh
     username="{iot-edge-username}"
     ipaddress="{iot-edge-ipaddress}"
     ```
 
-1. Save the file.
+    자리 표시자 값에 대한 지침: 
 
-1. If necessary, log in to your Azure portal using your Azure account credentials.
+    | 자리 표시자 | 대체할 값 |
+    | :--- | :--- |
+    | `{iot-edge-username}` | 관리자의 **사용자 이름**을 입력하여 Ubuntu VM에서 **AZ220EdgeVM{Your ID}** IoT Edge에 연결합니다. 이 사용자 이름은 SSH를 통해 VM에 연결하는 데 사용합니다. 이 사용자 이름은 이 랩의 앞부분에서 (VM을 만들기 위해) 제공한 Azure CLI 명령에서 **vmadmin**으로 지정되어 있습니다. 
+    | `{iot-edge-ipaddress}` | Ubuntu VM에서 **AZ220EdgeVM{Your ID}** IoT Edge의 **공용 IP 주소**를 입력합니다. 이 IP 주소는 SSH를 통해 VM에 연결하는 데 사용됩니다.
 
-    If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
+1. **파일** 메뉴에서 **저장**을 클릭합니다.   
 
-1. Open the Azure Cloud Shell by clicking the **Terminal** icon within the top header bar of the Azure portal, and select the **Bash** shell option.
+1. 필요한 경우 Azure 계정 자격 증명을 사용하여 Azure Portal에 로그인합니다.
 
-1. To upload the setup scripts, in the Azure Cloud Shell toolbar, click **Upload/Download files** (fourth button from the right).
+    둘 이상의 Azure 계정이 있는 경우에는 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. In the dropdown, select **Upload** and in the file selection dialog, navigate to the directory for this lab. Select the following _bash_ scripts and click **Open** to upload them.
+1. Azure Portal 도구 모음에서 **Cloud Shell**을 클릭합니다.
 
-    - `setup-iot-edge-gateway.sh`
-    - `setup-remote-iot-edge-gateway.sh`
+    환경이 **Bash**를 사용하도록 설정되어 있는지 확인합니다.
 
-    A notification will appear when the file upload has completed.
+1. 설치 스크립트를 업로드하려면 Azure Cloud Shell 도구 모음에서 **파일 업로드/다운로드**(오른쪽에서 네 번째 단추)를 클릭합니다.
 
-    > [!NOTE] These two scripts are helper scripts that will assist in setting up the Azure IoT Edge on Ubuntu VM to be a Transparent Gateway device. These scripts are meant to be used for development purposes in this lab, and are not meant for production use.
+1. 드롭다운에서 **업로드**를 클릭합니다.
 
-1. You can verify that the files have been uploaded by listing the content of the current directory by entering the `ls` command.
+1. 파일 선택 대화 상자에서 개발 환경을 구성할 때 다운로드한 GitHub 랩 파일의 폴더 위치로 이동합니다.
 
-    **Make sure both scripts have been uploaded to Azure Cloud Shell before continuing.**
+    이 과정의 랩 3 "개발 환경 설정"에서 ZIP 파일을 다운로드하고 그 내용물을 로컬에서 추출하여 랩 리소스를 포함하는 GitHub 리포지토리를 복제했습니다. 추출된 폴더 구조는 다음 폴더 경로를 포함합니다.
 
-1. Run the following command within the **Azure Cloud Shell** to make sure the `setup-remote-iot-edge-gateway.sh` script is executable:
+    * Allfiles
+      * 랩
+          * 14-제한된 네트워크 및 오프라인에서 IoT Edge 디바이스 실행
+            * 설정
+
+    setup-iot-edge-gateway.sh 및 setup-remote-iot-edge-gateway.sh 스크립트 파일은 랩 14의 설치 폴더에 있습니다.
+
+1. **setup-iot-edge-gateway.sh** 및 **setup-remote-iot-edge-gateway.sh** 스크립트 파일을 선택하고 **열기**를 클릭합니다.
+
+    업로드가 완료되면 알림이 표시됩니다.
+
+    > **참고**:  이 두 도우미 스크립트는 Ubuntu VM에서 Azure IoT Edge를 투명 게이트웨이 디바이스로 설정하는 데 도움이 됩니다. 이러한 스크립트는 이 랩에서 개발 목적으로 사용되며, 프로덕션용으로는 사용되지 않습니다.
+
+1. 두 파일이 모두 업로드되었는지 확인하려면 다음 명령을 입력합니다.
+
+    ```bash
+    ls
+    ```
+
+    `ls` 명령으로 현재 디렉터리의 내용을 나열합니다. 계속하기 전에 두 파일이 모두 있는지 확인합니다.
+
+1. **setup-remote-iot-edge-gateway.sh**에 읽기/쓰기/실행 권한이 있는지 확인하려면 다음 명령을 입력합니다.
 
     ```sh
     chmod 700 setup-remote-iot-edge-gateway.sh
     ```
 
-1. To setup the **IoT Edge on Ubuntu VM** as an **IoT Edge Transparent Gateway**, run the `setup-remote-iot-edge-gateway.sh` script using the following command within the **Azure Cloud Shell**:
+1. Ubuntu VM에서 IoT Edge를 IoT Edge 투명 게이트웨이로 설정하려면 다음 명령을 입력합니다.
 
     ```sh
     ./setup-remote-iot-edge-gateway.sh
     ```
 
-    Enter the **password** for the **IoT Edge on Ubuntu VM** when prompted. There will be a total of 3 prompts to enter the password. These prompts are due to the `ssh` and `scp` commands used to upload the `setup-iot-edge-gateway.sh` helper script to the VM, run the script, and then download the x.509 certificate that will be used later to authenticate the Child IoT Device to the IoT Edge Transparent Gateway.
+    호스트의 신뢰성을 설정할 수 없다는 메시지가 표시되고 계속 연결할 것인지 묻는 메시지가 표시되면 **예**를 입력합니다.
 
-1. Once the helper script has finished configuring the IoT Edge on Ubuntu VM to be an IoT Edge Transparent Gateway, the **Azure Cloud Shell** will download the `azure-iot-test-only.root.ca.cert.pem` x.509 certificate.
+1. 메시지가 표시되면 Ubuntu VM에서 IoT Edge에 대한 **암호**를 입력합니다.
 
-    If the x.509 certificate isn't downloaded automatically within the web browser, then run the following command within the **Azure Cloud Shell** to manually download the file:
+    암호를 입력하라는 메시지가 총 3개 표시됩니다. 이 프롬프트가 표시되는 이유는 `setup-iot-edge-gateway.sh` 도우미 스크립트를 VM에 업로드하고 스크립트를 실행한 다음 나중에 사용할 x.509 인증서를 다운로드하여 자식 IoT 디바이스를 IoT Edge 투명 게이트웨이에 인증하는 데 사용되는 `ssh`와 `scp` 명령 때문입니다.
+
+    도우미 스크립트가 Ubuntu VM의 IoT Edge를 IoT Edge 투명 게이트웨이로 구성하면 Cloud Shell은 `azure-iot-test-only.root.ca.cert.pem` x.509 인증서를 다운로드합니다.
+
+1. 메시지가 표시되면 x.509 인증서를 다운로드 폴더에 저장합니다. 
+
+    이 인증서는 자식 IoT 디바이스 인증을 구성하는 데 사용됩니다.
+
+    > **참고**: x.509 인증서가 웹 브라우저에서 자동으로 다운로드되지 않으면 Cloud Shell 명령 프롬프트를 열고 다음 명령을 실행합니다.
 
     ```sh
     download azure-iot-test-only.root.ca.cert.pem
     ```
 
-1. Save the x.509 certificate that was downloaded to the `downloads` folder for your web browser. This will be used to configure the Child IoT Device authentication.
+    이 연습에서는 도우미 스크립트를 사용하여 Ubuntu VM의 IoT Edge를 IoT Edge 투명 게이트웨이 디바이스로 설정하고 구성했습니다. 스크립트 파일을 사용하면 랩 활동 시 Azure IoT Edge의 제한된 네트워크 및 오프라인 기능을 이해하는 더 큰 시나리오에 중점을 둘 수 있습니다. Ubuntu VM에서 IoT Edge를 IoT Edge 투명 게이트웨이로 설정하는 방법에 대한 단계별 지침은 이 과정의 랩 12를 참조하세요. 
 
-This unit used the helper scripts to setup and configure the IoT Edge on Ubuntu VM as an IoT Edge Transparent Gateway Device. This is done to keep the labs focus on the Restricted Network and Offline capabilities of Azure IoT Edge.
+### 연습 5: Azure CLI를 사용하여 IoT Edge 게이트웨이 디바이스 인바운드 포트 열기
 
-_Please reference the **Setup an IoT Edge Gateway** lab for the specific steps and instruction on setting up an **IoT Edge Gateway Device**._
+이 연습에서는 Azure CLI를 사용하여 인터넷에서 Azure IoT Edge 게이트웨이에 대한 액세스를 보호하는 NSG(네트워크 보안 그룹)를 구성합니다. 다운스트림 IoT 디바이스가 게이트웨이와 통신할 수 있도록 MQTT, AMQP 및 HTTPS 통신에 필요한 포트를 열어야 합니다.
 
-## Exercise 5: Open IoT Edge Gateway Device Inbound Ports using Azure CLI
+Azure IoT Edge 게이트웨이가 자식 IoT 디바이스와 통신하려면 **인바운드** 통신에 대해 디바이스 프로토콜용 TCP/IP 포트가 열려 있어야 합니다. 디바이스는 지원되는 세 가지 프로토콜 중 하나를 사용하여 IoT 게이트웨이와 통신할 수 있습니다.
 
-In this exercise, you will use the Azure CLI to configure the Network Security Group (NSG) that secures access to the Azure IoT Edge Gateway from the Internet. The necessary ports for MQTT, AMQP, and HTTPS communications need to be opened so the downstream IoT device(s) can communicate with the gateway.
+지원되는 프로토콜에 대한 TCP/IP 포트 번호는 다음과 같습니다.
 
-For the Azure IoT Edge Gateway to communicate with Child IoT Devices, the TCP/IP port for the devices protocol must be open for **Inbound** communication. The device could use one of three supported protocols to communicate with the IoT Gateway.
-
-These are the TCP/IP port numbers for the supported protocols:
-
-| Protocol | Port Number |
+| 프로토콜 | 포트 번호 |
 | --- | --- |
 | MQTT | 8883 |
 | AMQP | 5671 |
 | HTTPS<br/>MQTT + WS (Websocket)<br/>AMQP + WS (Websocket) | 443 |
 
-1. If necessary, log in to your Azure portal using your Azure account credentials.
+1. 필요한 경우 Azure 계정 자격 증명을 사용하여 Azure Portal에 로그인합니다.
 
-    If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
+    둘 이상의 Azure 계정이 있는 경우에는 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. Within the **Azure portal**, navigate to the **IoTEdgeGateway** resource group.
+1. 대시보드에서 **AZ220EdgeVM{ID}**가상 머신을 포함하는 리소스 그룹 타일을 찾습니다.
 
-1. Make note of the resource name of the **Network security group** (NSG) that was created for the **IoTEdgeGateway** virtual machine.
+    이 RG 타일에는 **AZ220EdgeVM{Your ID}** 가상 머신을 위해 만든 **AZ220EdgeVM{ID}NSG** NSG(네트워크 보안 그룹)가 포함되어야 합니다.
 
-    The name of the NSG should match the format of `{vm-name}-nsg`.
+1. Azure Portal 도구 모음에서 **Cloud Shell**을 클릭합니다.
 
-1. Open the Azure Cloud Shell by clicking the **Terminal** icon within the top header bar of the Azure portal, and select the **Bash** shell option.
+    환경이 **Bash**를 사용하도록 설정되어 있는지 확인합니다.
 
-1. Within the **Azure Cloud Shell**, to find the name of the Network Security Group (NSG) in use by the Azure ioT Edge Gateway VM, enter the following command:
+1. Azure IoT Edge 게이트웨이 VM에서 사용 중인 NSG(네트워크 보안 그룹)의 이름을 나열하려면 Cloud Shell 명령 프롬프트에서 다음 명령을 입력합니다.
 
     ```bash
-    az network nsg list --resource-group AZ-220-IoTEdgeResources -o table
+    az network nsg list --resource-group AZ-220-IoTEdge-RG -o table
+    ```
 
+    다음과 유사한 출력이 표시됩니다.
+
+    ```text
     Location    Name                     ProvisioningState    ResourceGroup            ResourceGuid
     ----------  -----------------------  -------------------  -----------------------  ------------------------------------
-    westus2     AZ220EdgeVM{YOUR-ID}NSG  Succeeded            AZ-220-IoTEdgeResources  <GUID> 
+    westus2     AZ220EdgeVM{YOUR-ID}NSG  Succeeded            AZ-220-IoTEdge-RG        <GUID>
     ```
 
-1. Within the **Azure Cloud Shell**, run the following commands to add **Inbound rules** to the NSG for MQTT, AMQP, and HTTPS communication protocols:
+1. Cloud Shell 명령 프롬프트에서 MQTT, AMQP 및 HTTPS 통신 프로토콜용 NSG에 **인바운드 규칙**을 추가하려면 다음 명령을 입력합니다.
 
     ```cmd/sh
-    az network nsg rule create --name MQTT --nsg-name AZ220EdgeVM{YOUR-ID}NSG --resource-group AZ-220-IoTEdgeResources --destination-port-ranges 8883 --priority 101
-    az network nsg rule create --name AMQP --nsg-name AZ220EdgeVM{YOUR-ID}NSG --resource-group AZ-220-IoTEdgeResources --destination-port-ranges 5671 --priority 102
-    az network nsg rule create --name HTTPS --nsg-name AZ220EdgeVM{YOUR-ID}NSG --resource-group AZ-220-IoTEdgeResources --destination-port-ranges 443 --priority 103
+    az network nsg rule create --name MQTT --nsg-name AZ220EdgeVM{YOUR-ID}NSG --resource-group AZ-220-IoTEdge-RG --destination-port-ranges 8883 --priority 101
+    az network nsg rule create --name AMQP --nsg-name AZ220EdgeVM{YOUR-ID}NSG --resource-group AZ-220-IoTEdge-RG --destination-port-ranges 5671 --priority 102
+    az network nsg rule create --name HTTPS --nsg-name AZ220EdgeVM{YOUR-ID}NSG --resource-group AZ-220-IoTEdge-RG --destination-port-ranges 443 --priority 103
     ```
 
-    Be sure to replace the placeholders with the appropriate values before running the commands:
+    명령을 실행하기 전에 위의 **{YOUR-ID}** 자리 표시자를 적절한 값으로 바꿔야 합니다.
 
-    | Placeholder | Value to replace |
-    | :--- | :--- |
-    | `{nsg-name}` | Enter the name of the **Network Security Group**.
-    | `{resource-group}` | Enter the name of the **Resource group** for the virtual machine.
+    > **참고**:  프로덕션 환경에서는 IoT 디바이스에서 사용 중인 통신 프로토콜에 대해서만 인바운드 통신을 여는 것이 좋습니다. 디바이스에서 MQTT만 사용하는 경우 해당 포트에 대해 인바운드 통신만 엽니다. 이렇게 하면 악용될 수 있는 열린 포트의 표면 공격 영역을 제한하는 데 도움이 됩니다.
 
-    > [!NOTE] In production, it's best practice to only open inbound communication to the communication protocol(s) in use by your IoT devices. If your devices only use MQTT, then only open inbound communication for that port. This will help limit the surface attack area of open ports that could be exploited.
+    **NSG(네트워크 보안 그룹)**에 **인바운드 규칙**이 추가되면 자식 IoT 디바이스가 IoT Edge 게이트웨이 가상 머신과 통신할 수 있습니다.
 
-1. With the **Inbound rules** added to the **Network Security Group** (NSG), the Child IoT Device will be allowed to communicate with the IoT Edge Gateway virtual machine.
+### 연습 6: IoT Edge 디바이스 TTL(Time to Live) 및 메시지 저장소 구성
 
-## Exercise 6: Configure IoT Edge Device Time-to-Live and Message Storage
+이 연습에서는 Azure IoT Edge 게이트웨이 디바이스에서 Edge Hub 모듈의 TTL(Time-to-Live) 메시지를 기본값보다 길게 구성합니다. 메시지를 저장할 IoT Edge 디바이스의 저장소 위치도 구성합니다.
 
-In this exercise, you will configure the message Time-to-Live (TTL) of the Edge Hub module on the Azure IoT Edge Gateway device to be longer than the default. You will also configure the storage location on the IoT Edge Device where the messages are to be stored.
+TTL의 기본값은 `7200`(2시간)이며, 빠른 서비스 중단에 충분합니다. 그러나, 장시간 오프라인 모드에서 작동해야 하는 디바이스나 솔루션에는 2시간이 충분하지 않을 수도 있습니다. 장시간 연결이 끊긴 상태에서 원격 분석 데이터 손실 없이 작동하는 솔루션의 경우 IoT Edge 허브 모듈의 TTL 속성을 최대 1,209,600초(2주 TTL 기간)로 구성할 수 있습니다.
 
-The default value of `7200` (2 hours) is not long enough for a device or solution that may need to function in Offline mode for extended periods of time. For the device and solution to operate for more extended periods of being disconnected, you will configure the Time-to-Live (TTL) property of the IoT Edge Hub module to the value of 1,209,600 seconds, for a 2 week TTL period.
+IoT Edge 허브 모듈(`$edgeHub`)은 디바이스에서 실행되는 IoT Edge 허브와 Azure IoT Hub 서비스 간의 통신을 조정하는 데 사용됩니다. 모듈 쌍에 대한 필요한 속성에서 `storeAndForwardConfiguration.timeToLiveSecs` 속성은 Azure IoT Hub와 같은 라우팅 엔드포인트에서 연결이 끊어진 상태로 IoT Edge 허브가 메시지를 유지하는 시간을 초 단위로 지정합니다.
 
-The Module Twin for the IoT Edge Hub is called `$edgeHub` and is used to coordinate communications between the IoT Edge Hub running on the device and the Azure IoT Hub service. Within the Desired Properties for the Module Twin, the `storeAndForwardConfiguration.timeToLiveSecs` property specifies the time in seconds that IoT Edge Hub keeps messages when in a state disconnected from routing endpoints, like Azure IoT Hub.
+Edge 허브에 대한 `timeToLiveSecs` 속성은 단일 디바이스 또는 대규모 배포의 일부로 특정 디바이스의 배포 매니페스트에 지정할 수 있습니다. 이 연습에서는 Azure IoT Hub용 Azure Portal 사용자 인터페이스를 사용하여 단일 IoT Edge 게이트웨이 디바이스에서 Edge 허브(`$edgeHub`) 모듈에 대한 `timeToLiveSecs` 속성을 수정합니다.
 
-The `timeToLiveSecs` property for the Edge Hub can be specified in the Deployment Manifest on a specific device as part of a single-device or at-scale deployment. In this unit, you will use the Azure Portal user interface for Azure IoT Hub to modify the `timeToLiveSecs` property for the Edge Hub (`$edgeHub`) module on the single IoT Edge Gateway device.
+#### 작업 1: 모듈 쌍 구성
 
-1. If necessary, log in to your Azure portal using your Azure account credentials.
+1. 필요한 경우 Azure 계정 자격 증명을 사용하여 Azure Portal에 로그인합니다.
 
-    If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
+    둘 이상의 Azure 계정이 있는 경우에는 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. On your Resource group tile, click **AZ-220-HUB-{YOUR-ID}** to navigate to the Azure IoT Hub.
+1. 리소스 그룹 타일에서 **AZ-220-HUB-{YOUR-ID}**를 클릭합니다.
 
-1. On the IoT Hub summary blade, click **IoT Edge** under the Automatic Device Management section. This section of the IoT Hub blade allows you to manage the IoT Edge devices connected to the IoT Hub.
+1. **AZ-220-HUB-{YOUR-ID}** 블레이드의 왼쪽 탐색 메뉴의 **자동 장치 관리**에서 **IoT Edge**를 클릭합니다.
 
-1. In the list of **Device IDs**, click on the **IoTEdgeGateway** device.
+    이 창을 사용하면 IoT Hub에 연결된 IoT Edge 디바이스를 관리할 수 있습니다.
 
-1. In the list of **Modules**, click on the **$edgeHub** module. This is the Module Twin for the **Edge Hub** module configured for the **IoT Edge Device**.
+1. **장치 ID**에서 **IoTEdgeGateway**를 클릭합니다.
 
-1. On the **IoT Edge Module Details** pane, click the **Module Identity Twin** to view the Module Twin JSON.
+1. **모듈**에서 **$edgeHub**를 클릭합니다.
 
-  You will note that the `"desired"` properties are essentially empty for this new device.
+    **Edge 허브** 모듈의 모듈 ID 세부 정보 블레이드는 IoT Edge 디바이스의 모듈 ID 쌍 및 기타 리소스에 대한 액세스를 제공합니다.
 
-1. Close the **Module Identity Twin** pane. 
+1. **모듈 ID 세부 정보** 블레이드에서 **모듈 ID 쌍**을 클릭합니다.
 
-1. Go back to the **IoT Edge Device** pane displaying the **IoTEdgeGateway** IoT Edge device.
+    이 블레이드에는 편집기 창에 JSON으로 표시되는 `IoTEdgeGateway/$edgeHub`의 모듈 ID 쌍이 포함되어 있습니다. 
+    
+1. 잠시 $edgeHub 모듈 ID 쌍의 내용을 살펴봅니다.
 
-1. Click the **Set Modules** button at the top. This will open up an interface that allows you to set and configure the IoT Edge Modules deployed to this IoT Edge Device.
+    새 디바이스이기 때문에 필요한 속성은 기본적으로 비어 있습니다.
 
-1. On the **Set modules** pane, click the the **Runtime Settings** button under the **Iot Edge Modules** section.
+1. **모듈 ID 쌍** 블레이드를 닫습니다.
 
-1. On the **Runtime Settings** pane, locate the **Store and forward configuration - time to live (seconds)** field for the **Edge Hub** module, then change the value to `1209600`. This specifies a message time to live of 2 weeks on the IoT Edge Device.
+1. **IoTEdgeGateway** 블레이드로 돌아갑니다.
 
-    > [!NOTE] There are several considerations to make when configuring the **Message Time-to-Live** (TTL) for the Edge Hub (`$edgeHub`) module. When the IoT Edge Device is disconnected, the messages are stored on the local device. You need to calculate how much data will be stored during the TTL period, and make sure there is enough storage on the device for that much data. The amount of storage and TTL configured will need to meet the solutions requirements so that important data is not lost; if possible.
+1. 블레이드 상단에서 **모듈 설정**을 클릭합니다.
+
+    **디바이스에서 모듈 설정** 블레이드를 사용하면 이 IoT Edge 디바이스에 배포된 IoT Edge 모듈을 만들고 구성할 수 있습니다.
+
+1. **모듈 설정** 블레이드의 **IoT Edge 모듈**에서 **런타임 설정**을 클릭합니다.
+
+1. **런타임 설정** 창의 **Edge 허브**에서 **저장소 및 전달 구성 - TTL(Time to Live)(초)** 필드를 찾습니다.
+
+1. **저장소 및 전달 구성 - TTL(Time to Live)(초)**에서 값을 **1209600**으로 변경합니다.
+
+    이렇게 하면 IoT Edge 디바이스에 2주의 메시지 TTL(Time to Live)이 지정됩니다.
+
+    > **참고**:  Edge 허브(`$edgeHub`) 모듈에 **메시지 TTL**(Time to Live)을 구성할 때 고려해야 할 것이 몇 가지 있습니다. IoT Edge 디바이스의 연결이 끊어지면 메시지가 로컬 디바이스에 저장됩니다. TTL 기간 동안 저장될 데이터 양을 계산하고 해당 데이터를 저장할 수 있는 충분한 저장소가 디바이스에 있는지 확인해야 합니다. 중요한 데이터의 손실을 방지하려면 구성된 저장소와 TTL 양이 솔루션 요구 사항을 충족해야 합니다.
     >
-    >If the device does not have enough storage, then you need to configure a shorter TTL. Once the age of a message reaches the TTL time limit, it will be deleted if it has not yet been sent to Azure IoT Hub.
+    > 디바이스에 충분한 저장소가 없는 경우 더 짧은 TTL을 구성해야 합니다. 메시지 처리 기간이 TTL 시간 제한에 도달할 경우 아직 Azure IoT Hub로 보내지지 않았다면 삭제됩니다.
 
-1. The IoT Edge Device will automatically be able to store messages when in a disconnected / offline state. However, this location can be overridden by configuring a `HostConfig.Binds` setting.
+    IoT Edge 디바이스는 연결이 끊어졌거나 오프라인 된 상태에서 메시지를 자동으로 저장합니다. 저장소 위치는 `HostConfig` 개체를 사용하여 구성할 수 있습니다.
 
-1. On the **Runtime Settings** pane, beneath **Edge Hub**, within the **Create Options** box, add the following `Binds` property to the `HostConfig` object in the JSON.
+1. **Edge 허브**에서 **옵션 만들기** 필드를 찾습니다.
+
+    이 필드에는 구성할 수 있는 `HostConfig` JSON 개체가 포함되어 있습니다.
+
+1. **옵션 만들기**에서 다음과 같이 `HostConfig` 개체를 업데이트합니다.
+
+    `HostConfig` 개체에서 스토리지 위치를 구성하려면 다음 `Binds` 속성을 `HostConfig`에 추가합니다.
 
     ```json
     "Binds": [
@@ -498,122 +639,148 @@ The `timeToLiveSecs` property for the Edge Hub can be specified in the Deploymen
     ]
     ```
 
-    This `Binds` value configures the `/iotedge/storage/` directory in the Docker container for the Edge Hub Module to be mapped to the `/etc/iotedge/storage/` host system directory on the physical IoT Edge Device.
+    이 `Binds` 값은 물리적 IoT Edge 디바이스의 `/etc/iotedge/storage/` 호스트 시스템 디렉터리에 매핑될 Edge 허브 모듈의 Docker 컨테이너에 `/iotedge/storage/` 디렉터리를 구성합니다.
 
-    The value is in the format of `<HostStoragePath>:<ModuleStoragePath>`. The `<HostStoragePath>` value is the host directory location on the IoT Edge Device. The `<ModuleStoragePath>` is the module storage path made available within the container. Both of these values must be an absolute path.
+    값은 `<HostStoragePath>:<ModuleStoragePath>` 형식입니다. `<HostStoragePath>` 값은 IoT Edge 디바이스의 호스트 디렉터리 위치입니다. `<ModuleStoragePath>`는 컨테이너에서 사용할 수 있는 모듈 스토리지 경로입니다. 이 두 값은 모두 절대 경로여야 합니다.
 
-1. The resulting JSON in the **Create Options** box should look similar to the following:
+    `Binds` 속성은 `PortBindings` 속성 바로 아래의 `HostConfig`에 추가할 수 있습니다. 쉼표로 속성을 분리해야 합니다.
+
+    **옵션 만들기** 상자의 결과 JSON은 다음과 유사해야 합니다.
 
     ```json
-        {
-          "HostConfig": {
+    {
+        "HostConfig": {
             "PortBindings": {
-              "443/tcp": [
+                "443/tcp": [
                 {
-                  "HostPort": "443"
+                    "HostPort": "443"
                 }
-              ],
-              "5671/tcp": [
+                ],
+                "5671/tcp": [
                 {
-                  "HostPort": "5671"
+                    "HostPort": "5671"
                 }
-              ],
-              "8883/tcp": [
+                ],
+                "8883/tcp": [
                 {
-                  "HostPort": "8883"
+                    "HostPort": "8883"
                 }
-              ]
+                ]
             },
             "Binds": [
-              "/etc/iotedge/storage/:/iotedge/storage/"
+                "/etc/iotedge/storage/:/iotedge/storage/"
             ]
-          }
         }
+    }
     ```
 
-1. To finish the update for the change in message storage location, add a new environment variable named **storageFolder** with the value of `/iotedge/storage/` within the **Environment Variables** section.
+1. **Edge 허브**에서 **환경 변수** 필드를 찾습니다.
 
-1. Click **Save**.
+    메시지 저장소 위치 변경의 업데이트를 완료하려면 새 환경 변수를 추가해야 합니다.
 
-1. On the **Set modules** pane, click **Review + create**.
+1. **환경 변수**의 **이름** 텍스트 상자에 **storageFolder**를 입력합니다.
 
-1. On the **Review + create** step, notice changes made are reflected within the JSON displayed, then click **Create**.
+1. **환경 변수**의 **값** 텍스트 상자에 **/iotedge/storage/**를 입력합니다.
 
-1. Once this change is saved, the **IoT Edge Device** will be notified of the change to the Module configuration and the new settings will be reconfigured on the device accordingly.
+1. 블레이드 하단에서 **저장**을 선택하세요.
 
-  Once the changes have been passed to the Azure IoT Edge device, it will restart the **edgeHub** module with the new configuration.
+1. **모듈 설정** 블레이드에서 **검토 + 만들기**를 클릭합니다.
 
-## Update Directory Permissions
+1. 잠시 배포 매니페스트의 내용을 살펴봅니다.
 
- Before continuing, it is essential to ensure that the user profile for the IoT Edge Hub module has the required read, write, and execute permissions to the **/etc/iotedge/storage/** directory.
+    배포 매니페스트에서 업데이트를 찾습니다. `$edgeAgent`와 `$edgeHub`에서 찾아야 합니다.  
 
-1. Navigate to the **AZ220EdgeVM{YOUR-ID}** IoT Edge virtual machine within the Azure Portal.
+1. 블레이드 하단의 **만들기**를 클릭합니다.
 
-1. On the **Overview** pane of the **Virtual machine** blade, click the **Connect** button at the top.
+    변경 내용이 저장되면 **IoT Edge 디바이스**에 모듈 구성 변경에 대한 알림이 전달되고 그에 따라 새 설정이 디바이스에 다시 구성됩니다.
 
-1. Within the **Connect to virtual machine** pane, select the **SSH** option, then copy the **Login using VM local account** value.
+    변경 내용이 Azure IoT Edge 디바이스에 전달되면 새 구성으로 **edgeHub** 모듈이 다시 시작됩니다.
 
-    This is a sample SSH command that will be used to connect to the virtual machine that contains the IP Address for the VM and the Administrator username. The command is formatted similar to `ssh username@52.170.205.79`.
+#### 작업 2: 디렉터리 권한 업데이트
 
-1. At the top of the Azure Portal click on the **Cloud Shell** icon to open up the **Azure Cloud Shell** within the Azure Portal. When the pane opens, choose the option for the **Bash** terminal within the Cloud Shell.
+계속하기 전에 IoT Edge Hub 모듈의 사용자 프로필에 **/etc/iotedge/storage/** 디렉터리에 대한 읽기, 쓰기 및 실행 권한이 있는지 확인해야 합니다.
 
-1. Within the Cloud Shell, paste in the `ssh` command that was copied, and press **Enter**.
+1. Azure Portal 대시보드에서 **AZ220EdgeVM{YOUR-ID}**를 클릭합니다.
 
-1. When prompted with **Are you sure you want to continue connecting?**, type `yes` and press Enter. This prompt is a security confirmation since the certificate used to secure the connection to the VM is self-signed. The answer to this prompt will be remembered for subsequent connections, and is only prompted on the first connection.
+    이렇게 하면 IoT Edge 가상 머신에 대한 블레이드가 열리고 개요 창이 선택됩니다.
 
-1. When prompted to enter the password, enter the Administrator password that was entered when the VM was provisioned.
+1. **AZ220EdgeVM{YOUR-ID}** 블레이드 상단에서 **연결**을 클릭한 다음 **SSH**를 클릭합니다.
 
-1. Once connected, the terminal will change to show the name of the Linux VM, similar to the following. This tells you which VM you are connected to.
+1. **클라이언트로 SSH를 통해 연결**에서 **4. 아래 예제 명령을 실행하여 VM을 연결합니다.** 필드를 찾습니다.
+
+    가상 머신에 연결하는 데 사용되는 샘플 SSH 명령입니다. 여기에는 VM용 IP 주소와 관리자 사용자 이름이 포함됩니다. 명령 서식은 `ssh username@52.170.205.79`와 비슷합니다.
+
+    > **참고**: 샘플 명령에 포함된 경우 이 명령의 `-i <private key path>` 부분을 제거해야 합니다. 
+
+1. **4. 아래 예제 명령을 실행하여 VM을 찾습니다.**에서 값 오른쪽에 있는 **클립보드에 복사**를 클릭합니다.
+
+    > **참고**: 위의 샘플 명령에 `-i <private key path>`가 포함되어 있으면 텍스트 편집기를 사용하여 명령의 해당 부분을 제거하고 업데이트된 명령을 클립보드에 복사합니다. 
+
+1. Azure Portal 도구 모음에서 **Cloud Shell**을 클릭합니다.
+
+    환경이 **Bash**로 설정되어 있는지 확인합니다.
+
+1. Cloud Shell 명령 프롬프트에서 클립보드에서 `ssh` 명령을 붙여넣은 다음 **Enter** 키를 누릅니다.
+
+1. **계속 연결하시겠습니까?** 메시지가 표시되면 `예`를 입력하고 Enter 키를 누릅니다.
+
+    VM에 대한 연결을 보호하는 데 사용되는 인증서는 자체 서명되므로, 이 메시지는 보안 확인입니다. 이 메시지에 대한 답변은 나중에 연결할 수 있도록 기억되며 첫 번째 연결에서만 메시지가 표시됩니다.
+
+1. 암호를 입력하라는 메시지가 표시되면 VM이 프로비전될 때 입력한 관리자 암호를 입력합니다.
+
+    연결되면 연결된 Linux VM의 이름을 표시하도록 터미널 프롬프트가 업데이트됩니다. 예:
 
     ```cmd/sh
     username@AZ220EdgeVM{YOUR-ID}:~$
     ```
 
-1. To view the running IoT Edge modules, enter the following command:
+1. 실행 중인 IoT Edge 모듈을 보려면 다음 명령을 입력합니다.
 
     ```bash
     iotedge list
     ```
 
-    Notice that the *edgeHub* has failed to start:
+1. 잠시 `iotedge list` 명령의 출력을 살펴봅니다.
+
+    *edgeHub*가 시작되지 않은 것을 볼 수 있습니다.
 
     ```text
-    NAME             STATUS           DESCRIPTION                 CONFIG
+    이름             상태           설명                 구성
     edgeAgent        running          Up 4 seconds                mcr.microsoft.com/azureiotedge-agent:1.0
     edgeHub          failed           Failed (139) 0 seconds ago  mcr.microsoft.com/azureiotedge-hub:1.0
     ```
 
-    This is due to the fact that the *edgeHub* process does not have permission to write to the **/etc/iotedge/storage/** directory.
+    이것은 *edgeHub* 프로세스에 **/etc/iotedge/storage/** 디렉터리에 대한 쓰기 권한이 없기 때문입니다.
 
-1. To confirm the issue with the directory permission, enter the following command:
+1. 디렉터리 권한 문제를 확인하려면 다음 명령을 입력합니다.
 
     ```bash
     iotedge logs edgeHub
     ```
 
-    The terminal will output the current log - if you scroll through the log you will see the relevant entry:
+    터미널이 현재 로그를 출력합니다 - 로그를 스크롤하면 관련 항목이 표시됩니다.
 
     ```text
-    Unhandled Exception: System.AggregateException: One or more errors occurred. (Access to the path '/iotedge/storage/edgeHub' is denied.) ---> System.UnauthorizedAccessException: Access to the path '/iotedge/storage/edgeHub' is denied. ---> System.IO.IOException: Permission denied
+    처리되지 않은 예외: System.AggregateException: 하나 이상의 오류가 발생했습니다. ('/iotedge/storage/edgeHub' 경로에 대한 액세스가 거부되었습니다.) ---> System.UnauthorizedAccessException: '/iotedge/storage/edgeHub' 경로에 대한 액세스가 거부되었습니다. ---> System.IO.IOException: 권한 거부됨
     ```
   
-1. To update the directory permissions, enter the following commands:
+1. 디렉터리 권한을 업데이트하려면 다음 명령을 입력합니다.
 
     ```sh
     sudo chown $( whoami ):iotedge /etc/iotedge/storage/
     sudo chmod 775 /etc/iotedge/storage/
     ```
 
-    The first command sets the owner of the directory to the current user and the owning user group to **iotedge**. The second command enables full access to both the current user and members of the **iotedge** group. This will ensure that the *edgeHub* module is able to create directories and files within the **/etc/iotedge/storage/** directory.
+    첫 번째 명령은 디렉터리 소유자를 현재 사용자로, 소유한 사용자 그룹을 **iotedge**로 설정합니다. 두 번째 명령은 **iotedge** 그룹의 현재 사용자와 구성원 모두에 대한 모든 권한을 부여합니다. 이렇게 하면 *edgeHub* 모듈이 **/etc/iotedge/storage/** 디렉터리 내에 디렉터리와 파일을 만들 수 있습니다.
 
-1. To restart the *edgeHub* module and verify it started, enter the following commands:
+1. *edgeHub* 모듈을 다시 시작한 후 시작되었는지 확인하려면 다음 명령을 입력합니다.
 
     ```bash
     iotedge restart edgeHub
     iotedge list
     ```
 
-    You should see that the *edgeHub* module is now running:
+    *edgeHub* 모듈이 실행 중임을 알 수 있습니다.
 
     ```text
     NAME             STATUS           DESCRIPTION      CONFIG
@@ -621,55 +788,73 @@ The `timeToLiveSecs` property for the Edge Hub can be specified in the Deploymen
     edgeHub          running          Up 6 seconds     mcr.microsoft.com/azureiotedge-hub:1.0
     ```
 
-We are now ready to connect a device to this IoT Edge Gateway device.
+이제 이 IoT Edge 게이트웨이 디바이스에 디바이스를 연결할 준비가 되었습니다.
 
-## Exercise 7: Connect Child IoT Device to IoT Edge Gateway
+### 연습 7: 자식 IoT 디바이스를 IoT Edge 게이트웨이에 연결
 
-In this exercise, you will configure the downstream, child IoT Devices to connect to IoT Hub using their configured Symmetric Keys. The devices will be configured to connect to IoT Hub and the parent IoT Edge Device using a Connection String that contains the Symmetric Key; in addition to the Gateway Hostname for the Parent IoT Edge Device.
+대칭 키를 사용하여 일반 IoT 디바이스를 IoT Hub에 인증하는 프로세스는 다운스트림(또는 자식/리프) 디바이스에도 적용됩니다. 유일한 차이점은 연결을 라우팅하기 위해 게이트웨이 디바이스에 포인터를 추가하거나 오프라인 시나리오에서 IoT Hub를 대신하여 인증을 처리해야 한다는 것입니다.
 
-The process to authenticate regular IoT devices to IoT Hub with symmetric keys also applies to downstream (or child / leaf) devices. The only difference is that you need to add a pointer to the Gateway Device to route the connection or, in offline scenarios, to handle the authentication on behalf of IoT Hub.
+> **참고**: 이 연습에서는 랩의 앞부분에서 저장한 **ChildDevice1**의 연결 문자열 값을 사용합니다. 연결 문자열의 새 복사본이 필요한 경우 Azure Portal의 Azure IoT Hub에서 액세스할 수 있습니다. IoT Hub의 **IoT 디바이스** 창을 열고 **ChildDevice1**을 클릭하고 **기본 연결 문자열**을 복사한 다음 텍스트 파일에 저장합니다. 
 
-In a previous unit, you created the IoT Device Identities in Azure IoT Hub. You copied the **Connection String** for the IoT Device. Alternatively, the Connection String can be accessed with the Azure portal for the Device ID of the device within Azure IoT Hub.
+이 연습에서는 구성된 대칭 키를 사용하여 IoT Hub에 연결하도록 다운스트림 IoT 디바이스(자식 또는 리프 디바이스)를 구성합니다. 디바이스는 대칭 키(부모 IoT Edge 디바이스의 게이트웨이 호스트 이름 외에)가 포함된 연결 문자열을 사용하여 IoT Hub 및 부모 IoT Edge 디바이스에 연결하도록 구성됩니다.
 
-1. Copy the `azure-iot-test-only.root.ca.cert.pem` x.509 certificate file that was downloaded previously (when the IoT Edge Gateway was configured) to the `/LabFiles/ChildIoTDevice` directory where the source code for the Child IoT Device is located.
+1. Windows **파일 탐색기** 앱을 연 다음 **다운로드** 폴더로 이동합니다.
 
-1. Open the `/LabFiles/ChildIoTDevice` directory within **Visual studio Code**.
+    다운로드 폴더에는 IoT Edge 게이트웨이를 구성할 때 다운로드한 x.509 인증서 파일이 있어야 합니다. 이 인증서 파일을 자식 IoT 디바이스의 소스 코드가 있는 디렉터리에 복사해야 합니다. 랩 14의 시작 폴더에는 ChildIoTDevice라는 폴더가 있습니다. 해당 ChildIoTDevice 폴더에서 필요한 소스 코드를 찾을 수 있습니다.
 
-1. Open the **ChildIoTDevice.cs** source code file.
+1. **다운로드** 폴더에서 **azure-iot-test-only.root.ca.cert.pem**을 마우스 오른쪽 단추로 클릭한 다음 **복사**를 클릭합니다.
 
-1. Locate the declaration for the `s_connectionString` variable and replace the value placeholder with the **IoT Hub Connection String** for the **ChildDevice1** IoT Device.
+    이 파일은 다운로드한 x.509 인증서 파일이며 `/Starter/ChildIoTDevice` 디렉터리(자식 IoT 디바이스의 소스 코드가 있는 위치)에 추가됩니다.
 
-1. Modify the **IoT Hub Connection String** to include the `GatewayHostName` property with the value set to the **Hostname** for the IoT Edge Gateway (`IoTEdgeGateway`) virtual machine.
+1. Visual Studio Code의 새 인스턴스를 엽니다.
 
-    The Connection String will match the following format:
+1. **파일** 메뉴에서 **폴더 열기**를 클릭합니다.
+
+1. **폴더 열기** 대화 상자에서 랩 14 **Starter** 폴더로 이동하고 **ChildIoTDevice**를 클릭한 다음 **폴더 선택**을 클릭합니다.
+
+    이제 탐색기 창에서 프로젝트 파일을 볼 수 있습니다.
+
+1. Visual Studio Code **탐색기** 창에서 **ChildIoTDevice.cs**를 클릭합니다.
+
+1. **ChildIoTDevice.cs** 파일에서 `s_connectionString` 변수의 선언을 찾습니다.
+
+1. 자리 표시자 값을 **ChildDevice1** IoT 디바이스의 기본 연결 문자열로 바꿉니다.
+
+1. 다음과 같이 `GatewayHostName` 속성을 포함하도록 연결 문자열 값을 수정합니다.
+
+    `GatewayHostName` 속성은 IoT Edge 게이트웨이(`IoTEdgeGateway`) 가상 머신에 대한 **공용 IP 주소** 값으로 설정해야 합니다.
+
+    업데이트된 연결 문자열은 다음 형식과 일치합니다.
 
     ```text
     HostName=<iot-hub-name>.azure-devices.net;DeviceId=DownstreamDevice1;SharedAccessKey=<iot-device-key>;GatewayHostName=<iot-edge-gateway-hostname>
     ```
 
-    Be sure to replace the placeholders with the appropriate values:
+    위의 형식으로 된 자리 표시자를 적절한 값으로 바꿉니다.
 
-    - `<iot-hub-name>`: The **Name** of the **Azure IoT Hub**.
-    - `<iot-device-key>`: The Primary or Secondary **Key** for the **ChildDevice1** IoT Device in IoT Hub.
-    - `<iot-edge-gateway-hostname>`: Enter the **IP Address** for the **IoTEdgeGateway** virtual machine.
+    * `<iot-hub-name>`: **Azure IoT Hub**의 **이름**입니다.
+    * `<iot-device-key>`: IoT Hub의 **ChildDevice1** IoT 디바이스의 기본 또는 보조 **키**입니다.
+    * `<iot-edge-gateway-hostname>`: **IoTEdgeGateway** 가상 머신의 **IP 주소**를 입력합니다.
 
-1. Save the file.
+1. **파일** 메뉴에서 **저장**을 클릭합니다.   
 
-1. Open the **Terminal** window within Visual Studio Code.
+1. **보기** 메뉴에서 **터미널**을 클릭합니다.
 
-1. Navigate the **Terminal** to the location of the `/LabFiles/ChildIoTDevice` directory.
+    **터미널** 명령 프롬프트에 `/Starter/ChildIoTDevice` 디렉터리가 나열되어 있는지 확인합니다.
 
-1. Run the following command to build the code for the **ChildIoTDevice** simulated device, and execute it to start sending device telemetry:
+1. **ChildIoTDevice** 시뮬레이션된 디바이스를 만들고 실행하려면 다음 명령을 입력합니다.
 
     ```cmd/sh
     dotnet run
     ```
 
-1. When the app installed the **x.509 certificate** on the local machine so it can use it to authenticate with the IoT Edge Gateway, it may prompt asking if you would like to install the certificate. Click **Yes** to allow it and continue.
+    > **참고**: 앱이 로컬 컴퓨터에 **x.509 인증서**를 설치하면(IoT Edge 게이트웨이로 인증할 때 사용할 수 있음) 인증서를 설치할지 묻는 팝업 창이 표시될 수 있습니다. 앱이 인증서를 설치하도록 허용하려면 **예**를 클릭합니다.
 
-1. Once the simulated device is running, the console output will display the events being sent to the Azure IoT Edge Gateway.
+1. 터미널에 표시된 출력을 확인합니다.
 
-    The terminal output will look similar to the following:
+    시뮬레이션된 디바이스가 실행되면 콘솔 출력에 Azure IoT Edge 게이트웨이로 전송되는 이벤트가 표시됩니다.
+
+    터미널 출력은 다음과 유사합니다.
 
     ```cmd/sh
     IoT Hub Quickstarts #1 - Simulated device. Ctrl-C to exit.
@@ -683,29 +868,33 @@ In a previous unit, you created the IoT Device Identities in Azure IoT Hub. You 
     11/27/2019 4:18:29 AM > Sending message: {"temperature":32.81164186439088,"humidity":72.6606041624493}
     ```
 
-1. Leave the simulated device running while you move on to the next unit.
+1. 다음 연습으로 이동하는 동안 시뮬레이션된 디바이스를 계속 실행합니다.
 
-## Exercise 8: Test Device Connectivity and Offline Support
+### 연습 8: 디바이스 연결 및 오프라인 지원 테스트
 
-In this exercise, you will monitor events from the **ChildIoTDevice** are being sent to Azure IoT Hub through the **IoTEdgeGateway** IoT Edge Transparent Gateway. You will then interrupt connectivity between the **IoTEdgeGateway** and Azure IoT Hub to see that telemetry is still sent from the child IoT Device to the IoT Edge Gateway. After this, you will resume connectivity with Azure IoT Hub and monitor that the IoT Edge Gateway resumes sending telemetry to Azure IoT Hub.
+이 연습에서는 **IoTEdgeGateway** IoT Edge 투명 게이트웨이를 통해 Azure IoT Hub로 전송되는 **ChildIoTDevice**의 이벤트를 모니터링합니다. 그런 다음, **IoTEdgeGateway**와 Azure IoT Hub 간 연결을 중단하여 원격 분석이 자식 IoT 디바이스에서 IoT Edge 게이트웨이로 계속 전송되는지 확인합니다. 그런 다음, Azure IoT Hub에 다시 연결하고 IoT Edge 게이트웨이가 Azure IoT Hub로 원격 분석을 다시 전송하는지 모니터링합니다.
 
-1. If necessary, log in to your Azure portal using your Azure account credentials.
+1. 필요한 경우 Azure 계정 자격 증명을 사용하여 Azure Portal에 로그인합니다.
 
-    If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
+    둘 이상의 Azure 계정이 있는 경우에는 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. Open the Azure Cloud Shell by clicking the **Terminal** icon within the top header bar of the Azure portal, and select the **Bash** shell option.
+1. Azure Portal 도구 모음에서 **Cloud Shell**을 클릭합니다.
 
-1. Run the following command within the **Azure Cloud Shell** to start monitoring the Events being received by the Azure IoT Hub:
+    환경 드롭다운이 **Bash**로 설정되어 있는지 확인합니다.
+
+1. Cloud Shell 명령 프롬프트에서 Azure IoT Hub에서 수신되는 이벤트 모니터링을 시작하려면 다음 명령을 입력합니다.
 
     ```cmd/sh
-    az iot hub monitor-events --hub-name AZ-220-HUB-{Your-ID}
+    az iot hub monitor-events --hub-name AZ-220-HUB-{YOUR-ID}
     ```
 
-    Be sure to replace the `{Your-ID}` placeholder with your unique suffix for our Azure IoT Hub instance.
+    `{Your-ID}` 자리 표시자를 Azure IoT Hub 인스턴스의 고유한 접미사로 바꿔야 합니다.
 
-1. The `az iot hub monitor-events` command will start outputting the telemetry from the **ChildDevice1** that is getting sent to Azure IoT Hub.
+1. Azure IoT Hub로 전송되는 **ChildDevice1**의 원격 분석입니다.
 
-    Keep in mind that the **ChildDevice1** simulated device application is configured to send telemetry to the **IoTEdgeGateway** IoT Edge Transparent Gateway virtual machine, which then is sending the telemetry on to Azure IoT Hub.
+    **ChildDevice1** 시뮬레이션된 디바이스 애플리케이션은 **IoTEdgeGateway** IoT Edge 투명 게이트웨이 가상 머신으로 원격 분석을 보내도록 구성되었으며, 이후에 Azure IoT Hub로 원격 분석을 전송합니다.
+
+    Cloud Shell은 다음과 유사한 이벤트 메시지를 표시하기 시작합니다.
 
     ```text
     Starting event monitor, use ctrl-c to stop...
@@ -723,83 +912,106 @@ In this exercise, you will monitor events from the **ChildIoTDevice** are being 
     }
     ```
 
-1. The next step to test the **Offline** capabilities is to make the **IoTEdgeGateway** device go offline. Since this is a Virtual Machine running in Azure, this can be simulated by adding an **Outbound rule** to the **Network security group** for the VM.
+    > **참고**: 다음으로, **오프라인** 기능을 테스트해야 합니다. 이렇게 하려면 **IoTEdgeGateway** 디바이스를 오프라인으로 만들어야 합니다. Azure에서 실행 중인 가상 머신이므로 VM의 **네트워크 보안 그룹**에 **아웃바운드 규칙**을 추가하여 시뮬레이션할 수 있습니다.
 
-1. Within the **Azure portal**, navigate to the **AZ-220-IoTEdgeResources** resource group.
+1. **Azure Portal**에서 대시보드로 이동한 다음 **AZ-220-IoTEdge-RG** 리소스 그룹 타일을 찾습니다.
 
-1. In the list of resources, to open the **Network Security Group**   for the **AZ220EdgeVM{YOUR-ID}** virtual machine, click **AZ220EdgeVM{YOUR_ID}NSG**.
+1. **AZ220EdgeVM{YOUR-ID}** 가상 머신의 **네트워크 보안 그룹**을 열려면 리소스 목록에서 **AZ220EdgeVM{YOUR-ID}NSG**를 클릭합니다.
 
-1. On the **Network security group** blade, click on the **Outbound security rules** link under the **Settings** section.
+1. **네트워크 보안 그룹** 블레이드에서 **설정** 아래의 왼쪽 탐색 창에서 **아웃바운드 보안 규칙**을 클릭합니다.
 
-1. Click the **+Add** button at the top.
+1. 블레이드 상단에서 **추가**를 선택합니다.
 
-1. On the **Add outbound security rule** pane, set the following field values:
+1. **아웃바운드 보안 규칙 추가** 창에서 다음 필드 값을 설정합니다.
 
-    - Destination port ranges: **\***
-    - Action: **Deny**
-    - Name: **DenyAll**
+    * 대상 포트 범위: **\***
+    * 작업: **Deny**
+    * 이름: **DenyAll**
 
-    A **Destination port range** of "**\***" will apply the rule to all ports.
+    "**\***"의 **대상 포트 범위**는 모든 포트에 규칙을 적용합니다.
 
-1. Click **Add**.
+1. 블레이드 하단의 **추가**를 클릭하세요.
 
-1. Go back to the **Azure Cloud Shell**. If the **az iot hub monitor-events` command is still running, end it by pressing **Ctrl + C**.
+1. Azure Portal에서 **Cloud Shell**로 다시 돌아갑니다. 
 
-1. Within the **Azure Cloud Shell** connect to the **IoTEdgeGateway** VM using `ssh` with the following command:
+1. `az iot hub monitor-events` 명령이 계속 실행 중이면 **Ctrl+C**를 눌러 종료합니다.
+
+1. `ssh`를 사용하여 **IoTEdgeGateway** VM에 연결하려면 Cloud Shell 명령 프롬프트에서 다음 명령을 입력합니다.
 
     ```sh
     ssh <username>@<ipaddress>
     ```
 
-    Be sure to replace the placeholders with the required values for the `ssh` command:
+    자리 표시자를 `ssh` 명령에 필요한 값으로 바꾸는 것을 잊지 마세요.
 
-    | Placeholder | Value to replace |
+    | 자리 표시자 | 바꿀 값 |
     | :--- | :--- |
-    | `<username>` | The admin **Username** for the **IoTEdgeGateaway** virtual machine.
-    | `<ipaddress>` | The **Public IP Address** for the **IoTEdgeGateway** virtual machine.
+    | `<username>` | **IoTEdgeGateaway** 가상 머신에 대한 관리자의 **사용자 이름**. **vmadmin**이어야 합니다.
+    | `<ipaddress>` | **IoTEdgeGateway** 가상 머신에 대한 **공용 IP 주소**.
 
-    Enter the **Password** for the **IoTEdgeGateway** username when prompted.
+1. 메시지가 표시되면 **IoTEdgeGateway**에 대한 관리자 **암호**를 입력합니다.
 
-1. Once connected to the **IoTEdgeGateway** VM via `ssh`, run the following command to reset the IoT Edge Runtime.
+    `ssh`를 통해 **IoTEdgeGateway** VM에 연결되면 명령 프롬프트가 업데이트됩니다.
+
+1. IoT Edge 런타임을 다시 설정하려면 다음 명령을 입력합니다.
 
     ```sh
     sudo systemctl restart iotedge
     ```
 
-    This will force the IoT Edge Runtime to disconnect from the Azure IoT Hub service, and then attempt to reconnect.
+    이렇게 하면 IoT Edge 런타임이 Azure IoT Hub 서비스와의 연결을 끊은 다음 다시 연결합니다.
 
-1. Within the **IoTEdgeGateway**, run the `exit` command to end the `ssh` session.
+1. *edgeHub* 모듈이 올바르게 다시 시작되었는지 확인하려면 다음 명령을 입력합니다.
+
+    ```bash
+    iotedge list
+    ```
+
+    *edgeHub* 모듈이 성공적으로 다시 시작되지 못한 경우 다음 명령을 입력하여 다시 시작합니다.
+
+    ```bash
+    iotedge restart edgeHub
+    iotedge list
+    ```
+
+1. **IoTEdgeGateway**로 `ssh` 세션을 종료하려면 다음 명령을 입력합니다.
 
     ```cmd/sh
     exit
     ```
 
-1. Run the `az iot hub monitor-events` command again within the **Azure Cloud Shell** to start monitoring the Events being received by the Azure IoT Hub:
+1. Azure IoT Hub가 수신하는 이벤트를 모니터링하려면 Cloud Shell 명령 프롬프트에서 다음 명령을 입력합니다.
 
     ```cmd/sh
-    az iot hub monitor-events --hub-name AZ-220-HUB-{Your-ID}
+    az iot hub monitor-events --hub-name AZ-220-HUB-{YOUR-ID}
     ```
 
-    Be sure to replace the `{Your-ID}` placeholder with your unique suffix for our Azure IoT Hub instance.
+    `{Your-ID}` 자리 표시자를 Azure IoT Hub 인스턴스의 고유한 접미사로 바꿔야 합니다.
 
-1. Notice there are no longer any events being received by the **Azure IoT Hub**.
+1. **Azure IoT Hub**에서 수신되는 이벤트가 더 이상 없습니다.
 
-1. Go look at the **Terminal** where the **ChildIoTDevice** simulated device application is running, and notice that it's still sending device telemetry to the **IoTEdgeGateway**.
+1. Visual Studio Code 창으로 전환합니다.
 
-1. At this point the **IoTEdgeGateway** is disconnected from the Azure IoT Hub. It will continue to authenticate connections by the **ChildIoTDevice**, and receiving device telemetry from child device(s). During this time, the IoT Edge Gateway will be storing the event telemetry from the child devices on the IoT Edge Gateway device storage as configured.
+1. **ChildIoTDevice** 시뮬레이션된 디바이스 애플리케이션이 실행 중인 **터미널**을 열고 여전히 **IoTEdgeGateway**로 디바이스 원격 분석을 보내고 있음을 알 수 있습니다.
 
-1. In the **Azure portal**, navigate back to the **Network security group** blade for the **IoTEdgeGateway**, and click on **Outbound security rules** under the **Settings** section.
+    이때 **IoTEdgeGateway**와 Azure IoT Hub의 연결이 끊어집니다. **ChildIoTDevice**에 의한 연결을 계속 인증하고, 자식 디바이스에서 디바이스 원격 분석을 수신합니다. 이 기간 동안 IoT Edge 게이트웨이는 구성된 대로 IoT Edge 게이트웨이 디바이스 스토리지에 자식 디바이스의 이벤트 원격 분석을 저장합니다.
 
-1. On the **Outbound security rules** pane, click on the **DenyAll** rule at the top of the list.
+1. **Azure Portal** 창으로 전환합니다.
 
-1. On the **DenyAll** rule pane, click the **Delete** button to remove this deny rule from the NSG.
+1. **IoTEdgeGateway**에 대한 **네트워크 보안 그룹** 블레이드로 돌아갑니다.
 
-1. On the **Delete security rule** prompt, click **Yes**.
+1. 왼쪽 탐색 메뉴의 **설정**에서 **아웃바운드 보안 규칙**을 클릭합니다.
 
-1. Once the **IoTEdgeGateway** IoT Edge Transparent Gateway is able to resume connectivity with Azure IoT Hub, it will sync the event telemetry from all connected child devices. This includes the saved telemetry that couldn't be sent while disconnected, and all telemetry still being sent to the gateway.
+1. **아웃바운드 보안 규칙** 창에서 **DenyAll**을 클릭합니다.
 
-    > [!NOTE] The IoT Edge Gateway device will take a couple minutes to reconnect to Azure IoT Hub and resume sending telemetry. After waiting a couple minutes, you will see events showing up in the `az iot hub monitor-events` command output again.
+1. **DenyAll** 창에서 이 거부 규칙을 NSG에서 제거하려면 **삭제**를 클릭합니다.
 
-In this lab we have demonstrated that an Azure IoT Edge Gateway can utilize local storage to retain messages that can't be sent due to an interruption in the connection to the IoT Hub. Once connection is reestablished, we saw that messages are then sent.
+1. **보안 규칙 삭제** 프롬프트에서 **예**를 클릭합니다.
 
-> [!NOTE] Once you have finished with the lab, ensure you exit the device simulation application by pressing **CTRL+C** in the terminal.
+    **IoTEdgeGateway** IoT Edge 투명 게이트웨이가 Azure IoT Hub와 다시 연결되면 연결된 모든 자식 디바이스에서 이벤트 원격 분석을 동기화합니다. 여기에는 연결이 끊어진 동안 전송할 수 없는 저장된 원격 분석과 게이트웨이로 전송되는 모든 원격 분석이 포함됩니다.
+
+    > **참고**:  IoT Edge 게이트웨이 디바이스는 Azure IoT Hub에 다시 연결하고 원격 분석을 다시 전송하는 데 몇 분 정도 걸립니다. 몇 분 정도 기다리면 `az iot hub monitor-events` 명령 출력에서 이벤트가 다시 표시됩니다.
+
+이 랩에서는 Azure IoT Edge Gateway가 로컬 저장소를 사용하여 IoT Hub 연결 중단으로 인해 보낼 수 없는 메시지를 보존할 수 있다는 것을 입증했습니다. 다시 연결된 후 메시지가 전송된다는 것을 확인했습니다.
+
+> **참고**:  랩을 완료한 후에는 터미널에서 **CTRL+C**를 눌러 디바이스 시뮬레이션 애플리케이션을 종료해야 합니다.

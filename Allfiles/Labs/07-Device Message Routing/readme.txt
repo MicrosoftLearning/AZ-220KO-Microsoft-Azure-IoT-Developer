@@ -1,2 +1,2 @@
-Setup - script used to configure the Azure environment for this lab
-Starter - code project files used by students to complete this lab
+﻿설치 - 이 랩를 위해 Azure 환경을 구성하는 데 사용되는 스크립트
+스타터 - 이 랩을 완료하기 위해 학생들이 사용하는 프로젝트 파일 코드
