@@ -306,13 +306,13 @@ IoT용 Azure Security Center는 모듈 쌍 메커니즘을 사용하고, 각 디
 
     > **중요**: 모듈 ID는 다른 고유 이름이 아닌 **azureiotsecurity**라고 해야 합니다.
 
-    ![Azure IoT 보안 모듈의 스크린샷](media/LAB_AK_19-module-identity.png)
+![Azure IoT 보안 모듈의 스크린샷](media/LAB_AK_19-module-identity.png)
 
 1. **vm-device01** 블레이드에서 **기본 키**의 오른쪽에 있는 **복사**를 선택하세요.
 
     > **참고**: 연결 문자열이 아닌 디바이스의 **기본 키**를 복사해야 합니다.
 
-    ![Azure IoT 보안 모듈의 스크린샷](media/LAB_AK_19-primary-key.png)
+![Azure IoT 보안 모듈의 스크린샷](media/LAB_AK_19-primary-key.png)
 
 1. IoT Hub 블레이드로 돌아가세요.
 
@@ -499,7 +499,7 @@ IoT용 Azure Security Center는 보안 데이터를 IoT Hub를 통해 로그, �
 
 1. **모듈 ID** 아래에서 **azureiotsecurity** 모듈이 이제 **연결됨** 상태임을 확인하세요.
 
-    ![Azure IoT 보안 모듈 연결됨 스크린샷](media/LAB_AK_19-device-connected-agent.png)
+![Azure IoT 보안 모듈 연결됨 스크린샷](media/LAB_AK_19-device-connected-agent.png)
 
 이제 IoT 디바이스 에이전트용 Azure Security Center를 디바이스에 설치하였으므로 에이전트는 디바이스에서 원시 보안 이벤트를 수집, 집계 및 분석할 수 있습니다.
 
@@ -550,7 +550,7 @@ IoT Hub에서 활성화되면 IoT용 Azure Security Center는 다른 Azure 서�
 
     디바이스, 허브 및 기타 리소스에 대한 상태 개요가 두 개의 차트에 나타납니다. Azure IoT Security Center를 켤 때 바로 활성화된 기본 제공 실시간 모니터링, 추천 및 경고를 볼 수 있습니다.
 
-    ![Azure IoT 보안 모듈의 스크린샷](media/LAB_AK_19-security-dashboard.png)
+![Azure IoT 보안 모듈의 스크린샷](media/LAB_AK_19-security-dashboard.png)
 
 1. 왼쪽 탐색 메뉴에서 **보안** 아래의 **리소스**를 클릭하세요.
 
@@ -561,7 +561,7 @@ IoT Hub에서 활성화되면 IoT용 Azure Security Center는 다른 Azure 서�
 
     아래 이미지는 보안 평가를 수행한 후의 대시보드 상태를 보여줍니다.
 
-    ![업데이트한 Azure IoT 보안 모듈 스크린샷](media/LAB_AK_19-updated-security-dashboard.png)
+![업데이트한 Azure IoT 보안 모듈 스크린샷](media/LAB_AK_19-updated-security-dashboard.png)
 
 ### 연습 7: 사용자 지정 경고 소개하기
 
@@ -599,7 +599,7 @@ IoT Hub에서 활성화되면 IoT용 Azure Security Center는 다른 Azure 서�
 
     **사용자 지정 경고 규칙 만들기** 창이 열립니다. **디바이스 보안 그룹** 필드가 **기본** 그룹으로 채워졌는지 확인하세요.
 
-1. **사용자 지정 알림** 드롭다운에서 **허용되지 않은 범위의 디바이스 - 클라우드 메시지의 수 (MQTT 프로토콜)**를 클릭하세요.
+1. **사용자 지정 알림** 드롭다운에서 **허용되지 않은 범위의 디바이스 - 클라우드 메시지의 수 (MQTT 프로토콜)** 를 클릭하세요.
 
     > **팁**:
     > 사용 가능한 많은 사용자 지정 알림을 리뷰하세요. 솔루션을 보호하는 데 어떻게 사용할 수 있는지 고려하세요.
@@ -634,7 +634,7 @@ IoT Hub에서 활성화되면 IoT용 Azure Security Center는 다른 Azure 서�
 
     사용자 지정 알림 목록으로 돌아갑니다. 다음은 여러 사용자 지정 알림을 보여 주는 이미지입니다.
 
-    ![많은 사용자 지정 알림](media/LAB_AK_19-many-custom-alerts.png)
+![많은 사용자 지정 알림](media/LAB_AK_19-many-custom-alerts.png)
 
 ### 연습 8: 디바이스 앱 구성하기
 
@@ -842,11 +842,11 @@ IoT Hub에서 활성화되면 IoT용 Azure Security Center는 다른 Azure 서�
 
     **위협 탐지** 섹션을 살펴보세요. **디바이스 보안 경고** 차트에서 하나 이상의 경고를 볼 수 있어야 합니다.
 
-    ![디바이스 보안 경고 차트](media/LAB_AK_19-device-security-alert-chart.png)
+![디바이스 보안 경고 차트](media/LAB_AK_19-device-security-alert-chart.png)
 
     또한 **CheeseCave1-Sensor1** 디바이스에 대한 항목을 **가장 알림이 많이 발생한 디바이스** 타일에서 볼 수 있어야 합니다.
 
-    ![가장 알림이 많이 발생한 디바이스 타일](media/LAB_AK_19-devices-with-most-alerts-tile.png)
+![가장 알림이 많이 발생한 디바이스 타일](media/LAB_AK_19-devices-with-most-alerts-tile.png)
 
     > [!참고]
     > 대시보드에 경고가 나타나는데 10~15분 정도 걸릴 수 있습니다.
@@ -857,7 +857,7 @@ IoT Hub에서 활성화되면 IoT용 Azure Security Center는 다른 Azure 서�
 
     보안 알림 목록이 표시됩니다.
 
-    ![보안 알림 목록](media/LAB_AK_19-security-alert-list.png)
+![보안 알림 목록](media/LAB_AK_19-security-alert-list.png)
 
     최신 알림은 **신규** 레이블로 표시됩니다.
 
@@ -865,7 +865,7 @@ IoT Hub에서 활성화되면 IoT용 Azure Security Center는 다른 Azure 서�
 
     세부 창이 열립니다. **일반 정보**는 알림에 관련된 상위 수준 정보를 제공합니다. 이 아래에, **최근 영향을 받은 10개의 디바이스**는 **CheeseCave1-Sensor1**디바이스를 나열해야 합니다.
 
-    ![사용자 지정 알림 세부 정보 창](media/LAB_AK_19-custom-alert-details-pane.png)
+![사용자 지정 알림 세부 정보 창](media/LAB_AK_19-custom-alert-details-pane.png)
 
 1. Visual Studio Code로 돌아가서 디바이스 앱을 종료합니다.
 

@@ -292,7 +292,7 @@ Azure Container Registry를 만들고 로컬 컴퓨터를 인증한 이제 레�
 
 1. **보기** 메뉴에서 Visual Studio 명령 팔레트를 열려면 **명령 팔레트**를 클릭합니다.   
 
-1. 명령 프롬프트에서 **Azure IoT Edge**를 입력합니다.**새로 만들기**에서**Azure IoT Edge:**를 클릭합니다. **새로운 IoT Edge 솔루션**.
+1. 명령 프롬프트에서 **Azure IoT Edge**를 입력합니다.**새로 만들기**에서 **Azure IoT Edge:** 를 클릭합니다. **새로운 IoT Edge 솔루션**.
 
 1. 새 솔루션을 만들 폴더를 탐색한 다음 **폴더 선택**을 클릭합니다. 
 
@@ -408,7 +408,7 @@ Azure Container Registry를 만들고 로컬 컴퓨터를 인증한 이제 레�
 
 1. **보기** 메뉴의 Visual Studio Code에서 **명령 팔레트**를 클릭합니다.
 
-1. 명령 프롬프트에서 **Azure IoT Edge**를 입력합니다.**기본값을 설정한** 다음 **Azure IoT Edge:**를 클릭합니다.**Edge 솔루션에 대한 기본 대상 플랫폼 설정**.
+1. 명령 프롬프트에서 **Azure IoT Edge**를 입력합니다.**기본값을 설정한** 다음 **Azure IoT Edge:** 를 클릭합니다.**Edge 솔루션에 대한 기본 대상 플랫폼 설정**.
 
 1. 대상 플랫폼을 선택하려면 **amd64**를 클릭합니다.
 
