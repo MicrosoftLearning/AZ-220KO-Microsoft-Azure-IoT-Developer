@@ -96,23 +96,23 @@ Power BI 계정에 등록하려면 다음 단계를 따르세요. 이 프로세�
 
 1. 로봇이 아님을 증명해 달라는 메시지가 표시되면 **문자 보내기** 또는 **전화 걸기**를 선택하여 관련 정보를 제공하고 확인 코드를 받은 다음 이 절차의 다음 단계로 계속 이동합니다.
 
-![당신은 로봇입니까?](Media/LAB_AK_08-prove-robot.png)
+![당신은 로봇입니까?](media/LAB_AK_08-prove-robot.png)
 
     이 메시지 대신 이미 계정이 있다는 알림을 받으면 로그인을 계속하고 Power BI를 사용할 준비가 된 것입니다.
 
-![당신은 로봇입니까?](Media/LAB_AK_08-existing-account.png)
+![당신은 로봇입니까?](media/LAB_AK_08-existing-account.png)
 
 1. 문자 메시지를 확인하거나 전화를 기다려서 받은 코드를 입력한 다음 **등록**을 클릭합니다.
 
-![등록](Media/LAB_AK_08-sign-up.png)
+![등록](media/LAB_AK_08-sign-up.png)
 
 1. 이메일에 이와 유사한 메시지가 있는지 확인합니다.
 
-![등록](Media/LAB_AK_08-email-verification.png)
+![등록](media/LAB_AK_08-email-verification.png)
 
 1. 다음 화면에서 이메일로 받은 정보와 확인 코드를 입력합니다. 지역을 선택하고 이 화면에 연결된 정책을 검토한 다음 시작을 선택합니다.
 
-![등록](Media/LAB_AK_08-create-account.png)
+![등록](media/LAB_AK_08-create-account.png)
 
 1. 그런 다음 [Power BI 로그인 페이지](https://powerbi.microsoft.com/landing/signin/)로 이동하여 Power BI 사용을 시작할 수 있습니다.
 
@@ -156,7 +156,7 @@ Power BI 대시보드의 IoT Hub에서 라이브 스트리밍 데이터를 시�
 
 1. 다음과 유사한 콘솔 출력을 빠르게 확인해야 합니다.
 
-![콘솔 출력](Media/LAB_AK_08-vibration-telemetry.png)
+![콘솔 출력](media/LAB_AK_08-vibration-telemetry.png)
 
     > **참고**:  녹색 텍스트는 정상 작동을, 빨간색 텍스트는 문제가 발생했음을 의미합니다. 이 이미지와 유사한 화면이 없는 경우 디바이스 연결 문자열을 확인하여 시작합니다.
 
