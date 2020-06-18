@@ -341,7 +341,7 @@ Contoso는 IoT 디바이스를 사용하여 온도와 습도를 모니터링하�
     az iot hub monitor-events --hub-name {IoTHubName} --device-id SimulatedDevice1
     ```
 
-    _**IoTHubName** 자리 표시자를 Azure IoT Hub의 이름으로 바꿔야 합니다._
+    _**{IoTHubName}** 자리 표시자를 Azure IoT Hub의 이름으로 바꿔야 합니다._
 
     > **참고**:  Azure CLI 명령을 실행할 때 _"IoT 확장 버전에 필요한 종속성 업데이트"_라는 메시지가 나타나면 `y` 키를 눌러 업데이트를 수락하고 `Enter` 키를 누릅니다. 이렇게 하면 명령이 예상대로 계속될 수 있습니다.
 

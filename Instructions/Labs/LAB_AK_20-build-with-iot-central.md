@@ -49,7 +49,7 @@ IoT Central은 이 시나리오를 처리하는 데 필요한 모든 것을 제�
 
 1. **추천**에서 **사용자 지정 앱**을 클릭합니다.
 
-1. **새 애플리케이션** 페이지에서 **애플리케이션 이름**에 **Refrigerated-Trucks-{YOUR-ID}**를 입력합니다.
+1. **새 애플리케이션** 페이지에서 **애플리케이션 이름**에 **Refrigerated-Trucks-{YOUR-ID}** 를 입력합니다.
 
     입력한 애플리케이션 이름이 애플리케이션 URL의 루트로 사용되고 있습니다(소문자로 변환됨).
 
@@ -83,7 +83,7 @@ IoT Central은 이 시나리오를 처리하는 데 필요한 모든 것을 제�
 
 1. 브라우저를 사용하여 [Azure IoT Central](https://apps.azureiotcentral.com/?azure-portal=true)을 엽니다.
 
-1. 왼쪽 탐색 메뉴에서 **내 앱**을 클릭한 다음 **Refrigerated-Trucks-{YOUR-ID}**를 클릭합니다.
+1. 왼쪽 탐색 메뉴에서 **내 앱**을 클릭한 다음 **Refrigerated-Trucks-{YOUR-ID}** 를 클릭합니다.
 
     다음 단계는 _디바이스 템플릿_을 지정하는 것입니다.
 
@@ -449,7 +449,7 @@ IoT Central은 실제 센서가 있는 물리적 디바이스나 알고리즘을
 
     메모장(또는 다른 텍스트 편집기)을 사용하여 값을 텍스트 파일에 저장하여 Truck-connections.txt와 같은 의미 있는 이름을 제공합니다.
 
-1. **연결 방법**에서 **SAS(공유 액세스 서명)**가 선택되어 있는지 확인합니다.
+1. **연결 방법**에서 **SAS(공유 액세스 서명)** 가 선택되어 있는지 확인합니다.
 
 1. 대화 상자 하단에서 **닫기**를 클릭합니다.
 
@@ -864,7 +864,7 @@ Visual Studio Code를 사용하여 디바이스 센서 앱을 빌드합니다.
    ```cs
         static Task<MethodResponse> CmdGoToCustomer(MethodRequest methodRequest, object userContext)
         {
-            시도
+            try
             {
                 // IoT Central에 지정된 이름으로 요청 페이로드에서 변수를 선택합니다.
                 var payloadString = Encoding.UTF8.GetString(methodRequest.Data);

@@ -148,7 +148,7 @@ IoT Edge 모듈 배포를 다루는 랩에서 Docker Desktop Community 2.1.0.5(�
 
 1. **Docker Hub에서 다운로드**를 클릭합니다.
 
-1. Windows용 Docker Desktop 아래에서 **Windows용 Docker Desktop 가져오기(안정적)**를 클릭합니다.
+1. Windows용 Docker Desktop 아래에서 **Windows용 Docker Desktop 가져오기(안정적)** 를 클릭합니다.
 
 1. 설치를 시작하려면 **실행**을 클릭합니다.
 
@@ -229,7 +229,7 @@ Visual Studio Code 및 Azure CLI 도구는 개발자가 솔루션을 보다 효�
 
 Microsoft는 랩 리소스 파일에 대한 액세스를 제공하기 위해 GitHub 리포지토리를 만들었습니다. 이러한 파일을 개발자 환경에 로컬로 두는 것은 경우에 따라 필요하며 많은 경우에 편리합니다. 이 작업에서는 개발 환경 내에서 리포지토리의 내용을 다운로드하고 추출합니다.
 
-1. 웹 브라우저에서 다음 위치로 이동합니다. [https://github.com/MicrosoftLearning/AZ-220-Microsoft-Azure-IoT-Developer](https://github.com/MicrosoftLearning/AZ-220-Microsoft-Azure-IoT-Developer)
+1. 웹 브라우저에서 다음 위치로 이동합니다. [https://github.com/MicrosoftLearning/AZ-220KO-Microsoft-Azure-IoT-Developer](https://github.com/MicrosoftLearning/AZ-220KO-Microsoft-Azure-IoT-Developer)
 
 1. 페이지 오른쪽에서 **복제 또는 다운로드**를 클릭한 다음 **ZIP 다운로드**를 클릭합니다.
 
