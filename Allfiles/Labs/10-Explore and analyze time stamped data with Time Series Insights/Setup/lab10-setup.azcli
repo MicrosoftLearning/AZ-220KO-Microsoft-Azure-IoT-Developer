@@ -31,7 +31,7 @@ reportStatus() {
         return
     fi
     if [ $1 -eq "0" ]
-    then 
+    then
         printf "${GREEN}Succeeded${NC}\n"
     else
         printf "${RED}Failed - ${2}${NC}\n"
@@ -51,7 +51,7 @@ if [ "${exists}" == "true" ]
 then
     printf "${GREEN}Already exists\n${NC}"
 else
-    output=$( az group create --name $RGName --location $Location -o json 2>&1 >> build.log)
+    output=$( az group create --name $RGName --location $Location -o json >> build.log 2>&1)
     reportStatus $? "$output"
 fi
 
@@ -62,7 +62,7 @@ if [ "${exists}" == "${IoTHubName}" ]
 then
     printf "${GREEN}Already exists\n${NC}"
 else
-    output=$( az iot hub create --name $IoTHubName -g $RGName --sku S1 --location $Location -o json 2>&1 >> build.log)
+    output=$( az iot hub create --name $IoTHubName -g $RGName --sku S1 --location $Location -o json >> build.log 2>&1)
     reportStatus $? "$output"
 fi
 
@@ -74,12 +74,12 @@ createDevice() {
     then
         printf "${GREEN}Already exists\n${NC}"
     else
-        output=$( az iot hub device-identity create --hub-name $IoTHubName --device-id $1 -o json 2>&1 >> build.log )
+        output=$( az iot hub device-identity create --hub-name $IoTHubName --device-id $1 -o json >> build.log 2>&1 )
         reportStatus $? "$output"
     fi
 }
 
-# create the Device IDs 
+# create the Device IDs
 createDevice $DeviceID1
 createDevice $DeviceID2
 createDevice $DeviceID3

@@ -1,8 +1,8 @@
-﻿설치 - 이 랩를 위해 Azure 환경을 구성하는 데 사용되는 스크립트
+Setup - script used to configure the Azure environment for this lab
 
-참고: 이 랩에는 Azure 환경을 구성하는 데 사용되는 lab17-setup.azdi 스크립트 이외에도 랩 중에 사용되는 추가 스크립트 파일 2개가 포함되어 있습니다.
+Note: In addition to the lab17-setup.azdi script that is used to configure the Azure environment, this lab includes 2 additional script files that are used during the lab:
 
 * gen-dev-certs.sh
 * install-tools.sh 
 
-스타터 - 이 랩을 완료하기 위해 학생들이 사용하는 코드 프로젝트 파일
+Starter - code project files used by students to complete this lab
