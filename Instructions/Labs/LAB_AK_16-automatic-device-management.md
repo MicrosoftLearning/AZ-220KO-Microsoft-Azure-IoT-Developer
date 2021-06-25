@@ -1,4 +1,4 @@
-﻿---
+---
 lab:
     title: '랩 16: Azure IoT Hub를 통한 IoT 장치 관리 자동화'
     module: '모듈 8: 디바이스 관리'
