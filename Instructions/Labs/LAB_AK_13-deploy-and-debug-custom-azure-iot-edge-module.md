@@ -1,4 +1,4 @@
-﻿---
+---
 lab:
     title: '랩 13: VS 코드로 Azure IoT Edge에서 사용자 지정 모듈 개발, 배포 및 디버깅
     module: '모듈 7: Azure IoT Edge 모듈'
