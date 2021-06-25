@@ -1,4 +1,4 @@
-﻿---
+---
 lab:
     title: '랩 20: IoT Central로 구축'
     module: '모듈 12: IoT Central로 구축'
