@@ -1,4 +1,4 @@
-﻿---
+---
 lab:
     title: '랩 09: IoT Hub와 Event Grid 통합'
     module: '모듈 5: 인사이트 및 비즈니스 통합'

@@ -1,4 +1,4 @@
-﻿---
+---
 lab:
     title: '랩 14: 제한된 네트워크 및 오프라인에서 IoT Edge 디바이스 실행'
     module: '모듈 7: Azure IoT Edge 모듈'

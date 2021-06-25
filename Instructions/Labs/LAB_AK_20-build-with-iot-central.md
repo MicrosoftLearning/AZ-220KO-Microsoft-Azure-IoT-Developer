@@ -1,4 +1,4 @@
-﻿---
+---
 lab:
     title: '랩 20: 첫 번째 Azure IoT Central 앱 만들기'
     module: '모듈 12: IoT Central로 구축'

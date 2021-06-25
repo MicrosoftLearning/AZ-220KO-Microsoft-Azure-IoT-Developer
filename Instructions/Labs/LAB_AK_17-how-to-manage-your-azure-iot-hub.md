@@ -1,4 +1,4 @@
-﻿---
+---
 lab:
     title: '랩 17: Azure IoT Hub를 관리하는 방법'
     module: '모듈 9: 솔루션 테스트, 진단 및 로깅'

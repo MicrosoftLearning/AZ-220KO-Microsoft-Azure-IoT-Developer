@@ -1,4 +1,4 @@
-﻿---
+---
 lab:
     title: '랩 02: Azure IoT Services 시작하기'
     module: '모듈 1: IoT 및 Azure IoT 서비스 소개'

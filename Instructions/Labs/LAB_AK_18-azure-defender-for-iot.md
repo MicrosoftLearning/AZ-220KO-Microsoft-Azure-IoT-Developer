@@ -1,4 +1,4 @@
-﻿---
+---
 lab:
     title: '랩 18: Azure Defender for IoT를 사용하여 IoT 디바이스가 변조되었는지 검색'
     module: '모듈 10: Azure Defender 및 IoT 보안'
