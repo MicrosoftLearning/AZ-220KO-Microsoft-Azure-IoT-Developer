@@ -72,7 +72,8 @@ sed -i "s#\(hostname: \).*#\1\"$hostname\"#g" $configFile
 
 # CONFIGURE IOT EDGE DEVICE
 echo "Coniguring IoT Edge Device with Connection String..."
-sudo bash /etc/iotedge/configedge.sh $connectionstring
+sed -i "s|<ADD DEVICE CONNECTION STRING HERE>|$connectionstring|" $configFile
+sudo systemctl restart iotedge
 
 echo "IoT Edge Transparent Gateway has been configured!"
 

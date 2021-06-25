@@ -28,7 +28,7 @@ reportStatus() {
         return
     fi
     if [ $1 -eq "0" ]
-    then 
+    then
         printf "${GREEN}Succeeded${NC}\n"
     else
         printf "${RED}Failed - ${2}${NC}\n"
@@ -48,7 +48,18 @@ if [ "${exists}" == "true" ]
 then
     printf "${GREEN}Already exists\n${NC}"
 else
-    output=$( az group create --name $RGName --location $Location -o json 2>&1 >> build.log)
+    output=$( az group create --name $RGName --location $Location -o json >> build.log 2>&1)
+    reportStatus $? "$output"
+fi
+
+# create resource group
+printf "${YELLOW}Create resource group rg-az220vm - ${NC}"
+exists=$( az group exists --name rg-az220vm -o tsv )
+if [ "${exists}" == "true" ]
+then
+    printf "${GREEN}Already exists\n${NC}"
+else
+    output=$( az group create --name rg-az220vm --location $Location -o json >> build.log 2>&1)
     reportStatus $? "$output"
 fi
 
@@ -59,6 +70,6 @@ if [ "${exists}" == "${IoTHubName}" ]
 then
     printf "${GREEN}Already exists\n${NC}"
 else
-    output=$( az iot hub create --name $IoTHubName -g $RGName --sku S1 --location $Location -o json 2>&1 >> build.log)
+    output=$( az iot hub create --name $IoTHubName -g $RGName --sku S1 --location $Location -o json >> build.log 2>&1)
     reportStatus $? "$output"
 fi

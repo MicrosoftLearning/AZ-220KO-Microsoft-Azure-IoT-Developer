@@ -30,7 +30,7 @@ reportStatus() {
         return
     fi
     if [ $1 -eq "0" ]
-    then 
+    then
         printf "${GREEN}Succeeded${NC}\n"
     else
         printf "${RED}Failed - ${2}${NC}\n"
@@ -50,7 +50,7 @@ if [ "${exists}" == "true" ]
 then
     printf "${GREEN}Already exists\n${NC}"
 else
-    output=$( az group create --name $RGName --location $Location -o json 2>&1 >> build.log)
+    output=$( az group create --name $RGName --location $Location -o json >> build.log 2>&1)
     reportStatus $? "$output"
 fi
 
@@ -61,7 +61,7 @@ if [ "${exists}" == "${IoTHubName}" ]
 then
     printf "${GREEN}Already exists\n${NC}"
 else
-    output=$( az iot hub create --name $IoTHubName -g $RGName --sku S1 --location $Location -o json 2>&1 >> build.log)
+    output=$( az iot hub create --name $IoTHubName -g $RGName --sku S1 --location $Location -o json >> build.log 2>&1)
     reportStatus $? "$output"
 fi
 
@@ -72,13 +72,13 @@ if [ "${exists}" == "${DPSName}" ]
 then
     printf "${GREEN}Already exists\n${NC}"
 else
-    output=$( az iot dps create --name $DPSName -g $RGName --sku S1 -o json 2>&1 >> build.log)
+    output=$( az iot dps create --name $DPSName -g $RGName --sku S1 -o json >> build.log 2>&1)
     reportStatus $? "$output"
 fi
 
 # Get IoT Hub Connection String so DPS can be linked
 IoTHubConnectionString=$(
-    az iot hub show-connection-string --hub-name $IoTHubName --query connectionString --output tsv
+    az iot hub connection-string show --hub-name $IoTHubName --query connectionString --output tsv
 )
 
 # Link IoT Hub with DPS
@@ -88,7 +88,7 @@ if [ "${exists}" == "${IoTHubName}.azure-devices.net" ]
 then
     printf "${GREEN}Already exists\n${NC}"
 else
-    output=$( az iot dps linked-hub create --dps-name $DPSName -g $RGName --connection-string $IoTHubConnectionString --location $Location -o json 2>&1 >> build.log)
+    output=$( az iot dps linked-hub create --dps-name $DPSName -g $RGName --connection-string $IoTHubConnectionString --location $Location -o json >> build.log 2>&1)
     reportStatus $? "$output"
 fi
 
@@ -99,6 +99,11 @@ if [ "${exists}" == "${StorageAccountName}" ]
 then
     printf "${GREEN}Already exists\n${NC}"
 else
-    output=$( az storage account create --name $StorageAccountName --resource-group $RGName --location $Location --sku Standard_LRS -o table 2>&1 >> build.log )
+    output=$( az storage account create --name $StorageAccountName --resource-group $RGName --location $Location --sku Standard_LRS -o table >> build.log 2>&1 )
     reportStatus $? "$output"
 fi
+
+# Register resource providers
+printf "${YELLOW}Ensuring resource providers are registered - ${NC}"
+az provider register --namespace "Microsoft.Insights" --accept-terms >> build.log 2>&1
+printf "${GREEN}Succeeded\n${NC}"
