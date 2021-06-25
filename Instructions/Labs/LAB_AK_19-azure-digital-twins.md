@@ -1,4 +1,4 @@
-﻿---
+---
 lab:
     title: '랩 19: ADT(Azure Digital Twins) 솔루션 개발'
     module: '모듈 11: Azure Digital Twins를 사용하여 개발 작업 수행'
