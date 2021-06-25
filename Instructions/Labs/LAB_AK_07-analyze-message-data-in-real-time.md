@@ -1,6 +1,6 @@
 ﻿---
 lab:
-    title: '랩 07: 디바이스 메시지 라우팅
+    title: '랩 07: 디바이스 메시지 라우팅'
     module: '모듈 4: 메시지 처리 및 분석'
 ---
 
@@ -144,7 +144,7 @@ Contoso Management는 DPS를 사용하여 자동 디바이스 등록을 구현�
     미국 동부 2             36.6681     -78.3889     eastus2
     ```
 
-1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 [...]를 클릭한 다음 **편집기 닫기**를 클릭합니다.
+1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 **...**를 클릭한 다음 **편집기 닫기**를 클릭합니다.
 
     저장하라는 메시지가 표시된 경우 **저장**을 클릭하면 편집기가 닫힙니다.
 
@@ -418,7 +418,7 @@ Contoso의 컨베이어 벨트 시스템 모니터링을 자동화하고 예측 
 
 1. [Azure Portal](https://portal.azure.com)을 엽니다.
 
-1. 리소스 타일에서 **iot-az220-training-{your-id}**를 클릭합니다.
+1. 리소스 타일에서 **iot-az220-training-{your-id}** 를 클릭합니다.
 
 1. **개요** 창에서 아래로 스크롤하여 메트릭 타일을 봅니다.
 
@@ -484,19 +484,19 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
     그러면 **스토리지 계정 만들기** 블레이드가 표시됩니다.
 
-1. **스토리지 계정 만들기** 블레이드에서 **이름** 아래에 **vibrationstore{your-id}**를 입력합니다.
+1. **스토리지 계정 만들기** 블레이드에서 **이름** 아래에 **vibrationstore{your-id}** 를 입력합니다.
 
     예를 들어 **vibrationstorecah191211**과 같이 입력할 수 있습니다.
 
     > **참고**:  이 필드에는 3~24자 사이의 고유한 소문자와 숫자만 포함될 수 있습니다.
 
-1. **계정 종류** 드롭다운에서 **StorageV2(범용 v2)**를 클릭합니다.
+1. **계정 종류** 드롭다운에서 **StorageV2(범용 v2)** 를 클릭합니다.
 
 1. **성능**에서 **표준**이 선택되었는지 확인합니다.
 
     이렇게 하면 전체 성능을 낮추면서 비용을 절감할 수 있습니다.
 
-1. **복제**에서 **LRS(로컬 중복 저장소)**가 선택되어 있는지 확인합니다.
+1. **복제**에서 **LRS(로컬 중복 저장소)** 가 선택되어 있는지 확인합니다.
 
     이렇게 하면 재해 복구에 대한 위험 완화 비용을 절감할 수 있습니다. 프로덕션에서 솔루션은 보다 강력한 복제 전략이 필요할 수 있습니다.
 
@@ -512,7 +512,7 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
 #### 작업 2: 스토리지 계정 컨테이너 정의
 
-1. **스토리지 계정** 블레이드에서 **vibrationstore{your-id}**를 클릭합니다.
+1. **스토리지 계정** 블레이드에서 **vibrationstore{your-id}** 를 클릭합니다.
 
     **컨테이너** 블레이드가 표시되어야 합니다. 이 계정은 새 스토리지 계정이기 때문에 컨테이너는 표시되지 않습니다.
 
@@ -524,7 +524,7 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
    다시 말하지만 소문자와 숫자만 허용됩니다.
 
-1. **공용 액세스 수준**에서 **프라이빗(익명 액세스 없음)**이 선택되어 있는지 확인합니다.
+1. **공용 액세스 수준**에서 **프라이빗(익명 액세스 없음)** 이 선택되어 있는지 확인합니다.
 
 1. 컨테이너를 만들려면 **만들기**를 클릭합니다.
 
@@ -574,11 +574,11 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
     그렇지 않은 경우 `dotnet run`을 사용하여 Visual Studio Code 터미널에서 실행합니다.
 
-1. 스토리지 계정 블레이드를 열려면 리소스 타일에서 **vibrationstore{your-id}**를 클릭합니다.
+1. 스토리지 계정 블레이드를 열려면 리소스 타일에서 **vibrationstore{your-id}** 를 클릭합니다.
 
     리소스 타일에 스토리지 계정이 표시되지 않으면 리소스 그룹 타일 상단의 **새로 고침** 단추를 클릭한 후 위의 지침에 따라 스토리지 계정을 엽니다.
 
-1. **vibrationstore{your-id}** 블레이드의 왼쪽 메뉴에서 **Storage Explorer(미리 보기)**를 클릭합니다.
+1. **vibrationstore{your-id}** 블레이드의 왼쪽 메뉴에서 **Storage Explorer(미리 보기)** 를 클릭합니다.
 
     Storage Explorer를 사용하면 데이터가 스토리지 계정에 추가되고 있는지를 확인할 수 있습니다. 
 
@@ -588,7 +588,7 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
     데이터를 보려면 폴더 계층 구조를 탐색해야 합니다. 먼저 IoT Hub용으로 첫 번째 폴더의 이름을 지정합니다. 
 
-1. 오른쪽 창의 **이름** 아래에서 **iot-az220-training-{your-id}**를 두 번 클릭한 다음 하위 폴더를 계속 두 번 클릭하여 계층 구조 아래쪽으로 이동합니다.
+1. 오른쪽 창의 **이름** 아래에서 **iot-az220-training-{your-id}** 를 두 번 클릭한 다음 하위 폴더를 계속 두 번 클릭하여 계층 구조 아래쪽으로 이동합니다.
 
     IoT Hub 폴더에는 Partition 폴더, 그리고 연도, 월, 날짜의 숫자 값에 해당하는 Year, Month, Day 폴더가 있습니다. 마지막 폴더인 Hour는 UTC 시간 단위의 시간을 나타냅니다. Hour 폴더에 들어 있는 여러 블록 Blob에 로깅 메시지 데이터가 포함되어 있습니다. 
 
@@ -698,7 +698,7 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
 1. **구독**에서 이 랩에 사용 중인 구독을 선택합니다.
 
-1. **스토리지 계정**에서 **vibrationstore{your-id}**를 클릭합니다.
+1. **스토리지 계정**에서 **vibrationstore{your-id}** 를 클릭합니다.
 
     > **참고**:  **스토리지 계정 키**가 자동으로 채워졌으며 읽기 전용입니다.
 
@@ -749,7 +749,7 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
 1. Visual Studio Code에서 만든 디바이스 앱이 계속 실행 중인지 확인합니다. 
 
-    그렇지 않은 경우 `dotnet run`을 사용하여 Visual Studio Code 터미널에서 실행합니다.
+    그렇지 않은 경우 `dotnet run` 을 사용하여 Visual Studio Code 터미널에서 실행합니다.
 
 1. Stream Analytics 작업의 **개요** 창에서 **시작**을 클릭합니다.
 
@@ -759,7 +759,7 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
 1. Azure Portal 메뉴에서 **대시보드**를 클릭합니다.
 
-1. 리소스 타일에서 **vibrationstore{your-id}**를 클릭합니다.
+1. 리소스 타일에서 **vibrationstore{your-id}** 를 클릭합니다.
 
     스토리지 계정이 표시되지 않으면 리소스 그룹 타일 상단의 **새로 고침** 단추를 사용합니다.
 
@@ -769,13 +769,13 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
     차트에 활동이 표시될 것입니다.
 
-1. 왼쪽 메뉴에서 **Storage Explorer(미리 보기)**를 클릭합니다.
+1. 왼쪽 메뉴에서 **Storage Explorer(미리 보기)** 를 클릭합니다.
 
     Storage Explorer를 사용하여 모든 데이터가 스토리지 계정으로 전송됨을 다시 확인할 수 있습니다. 
 
     > **참고**:  Storage Explorer는 현재 미리 보기 모드이므로 정확한 작동 모드는 변경될 수 있습니다.
 
-1. **Storage Explorer(미리 보기)**의 **BLOB 컨테이너** 아래에서 **vibrationcontainer**를 클릭합니다.
+1. **Storage Explorer(미리 보기)** 의 **BLOB 컨테이너** 아래에서 **vibrationcontainer**를 클릭합니다.
 
     데이터를 보려면 폴더 계층 구조를 탐색해야 합니다. 첫 번째 폴더는 IoT Hub의 이름으로 지정되고, 다음 폴더는 파티션, 연도, 월, 일 및 시간 순으로 지정됩니다. 
 

@@ -1,6 +1,6 @@
 ﻿---
 lab:
-    title: '랩 09: IoT Hub를 Event Grid와 통합'
+    title: '랩 09: IoT Hub와 Event Grid 통합'
     module: '모듈 5: 인사이트 및 비즈니스 통합'
 ---
 
@@ -114,16 +114,16 @@ Nancy는 사업장 기술자 팀이 다른 치즈 보관소의 온도를 모니�
     ```bash
     az account list-locations -o Table
 
-    표시이름           위도    경도    이름
+    DisplayName           Latitude    Longitude    Name
     --------------------  ----------  -----------  ------------------
-    동아시아             22.267      114.188      eastasia
-    동남 아시아        1.283       103.833      southeastasia
-    미국 중부            41.5908     -93.6208     centralus
-    미국 동부               37.3719     -79.8164     eastus
-    미국 동부 2             36.6681     -78.3889     eastus2
+    East Asia             22.267      114.188      eastasia
+    Southeast Asia        1.283       103.833      southeastasia
+    Central US            41.5908     -93.6208     centralus
+    East US               37.3719     -79.8164     eastus
+    East US 2             36.6681     -78.3889     eastus2
     ```
 
-1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 [...]를 클릭한 다음 **편집기 닫기**를 클릭합니다.
+1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 **...**를 클릭한 다음 **편집기 닫기**를 클릭합니다.
 
     저장하라는 메시지가 표시된 경우 **저장**을 클릭하면 편집기가 닫힙니다.
 
@@ -177,7 +177,7 @@ Azure Logic Apps는 회사 또는 조직 전체에서 앱, 데이터, 시스템 
 
 1. **리소스 그룹** 드롭다운의 **기존 항목 선택**에서 **rg-az220**를 클릭합니다.
 
-1. **인스턴스 세부 정보**의 **이름** 필드에 **logic-az220-training-{your-id}**를 입력합니다.
+1. **인스턴스 세부 정보**의 **이름** 필드에 **logic-az220-training-{your-id}** 를 입력합니다.
 
     예를 들어 **logic-az220-training-cp191218**과 같이 입력할 수 있습니다.
 
@@ -241,13 +241,13 @@ Azure Logic Apps는 회사 또는 조직 전체에서 앱, 데이터, 시스템 
           "properties": {
             "desired": {
               "$metadata": {
-                "$lastUpdated": "2018-01-02T19:오후 5:44.4383997Z"
+                "$lastUpdated": "2018-01-02T19:17:44.4383997Z"
               },
               "$version": 1
             },
             "reported": {
               "$metadata": {
-                "$lastUpdated": "2018-01-02T19:오후 5:44.4383997Z"
+                "$lastUpdated": "2018-01-02T19:17:44.4383997Z"
               },
               "$version": 1
             }
@@ -269,7 +269,7 @@ Azure Logic Apps는 회사 또는 조직 전체에서 앱, 데이터, 시스템 
 
 1. **작업 선택** 아래 검색 텍스트 상자에 **Outlook.com**을 입력합니다.
 
-1. 작업 목록을 아래로 스크롤하여 보내기 옵션으로 이동한 다음 **이메일 보내기(V2)**를 클릭합니다.
+1. 작업 목록을 아래로 스크롤하여 보내기 옵션으로 이동한 다음 **이메일 보내기(V2)** 를 클릭합니다.
 
     > **참고**:  이 지침은 **Outlook.com** 이메일 주소를 사용하여 이메일을 보낼 논리 앱을 구성하는 방법을 보여줍니다. Office 365 Outlook 또는 Gmail 커넥터를 사용하여 메일을 보내도록 논리 앱을 구성할 수도 있습니다.
 
@@ -288,13 +288,13 @@ Azure Logic Apps는 회사 또는 조직 전체에서 앱, 데이터, 시스템 
 1. **본문** 필드에 다음 메시지 내용을 입력합니다.
 
     ```text
-    다음 사항을 알려주는 자동 전자 메일입니다.
+    This is an automated email to inform you that:
 
-    {eventTime}에 {eventType} 발생
+    {eventType} occurred at {eventTime}
 
     IoT Hub: {hubName}
-    디바이스 ID: {deviceID}
-    연결 상태: {connectionState}
+    Device ID: {deviceID}
+    Connection state: {connectionState}
     ```
 
 1. 방금 입력한 메시지 본문을 잠시 살펴봅니다.
@@ -337,7 +337,7 @@ Azure Maps 이벤트 알림을 다른 서비스에 보내고 다운스트림 프
 
 1. Azure Portal 대시보드로 다시 이동합니다.
 
-1. 리소스 그룹 타일에서 IoT Hub로 이동하려면 **iot-az220-training-{your-id}**를 클릭합니다.
+1. 리소스 그룹 타일에서 IoT Hub로 이동하려면 **iot-az220-training-{your-id}** 를 클릭합니다.
 
 1. **IoT Hub** 블레이드의 왼쪽 탐색 메뉴에서 **이벤트**를 클릭합니다.
 

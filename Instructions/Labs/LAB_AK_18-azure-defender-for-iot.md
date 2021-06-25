@@ -4,7 +4,7 @@ lab:
     module: '모듈 10: Azure Defender 및 IoT 보안'
 ---
 
-# Azure Defender for IoT를 사용하여 디바이스 변조 검색
+# Azure Defender for IoT를 사용하여 IoT 디바이스가 변조되었는지 검색
 
 ## 랩 시나리오
 
@@ -126,16 +126,16 @@ Contoso는 또한 다른 치즈 동굴에서 온도를 모니터링하고 제어
     ```bash
     az account list-locations -o Table
 
-    표시이름           위도    경도    이름
+    DisplayName           Latitude    Longitude    Name
     --------------------  ----------  -----------  ------------------
-    동아시아             22.267      114.188      eastasia
-    동남 아시아        1.283       103.833      southeastasia
-    미국 중부            41.5908     -93.6208     centralus
-    미국 동부               37.3719     -79.8164     eastus
-    미국 동부 2             36.6681     -78.3889     eastus2
+    East Asia             22.267      114.188      eastasia
+    Southeast Asia        1.283       103.833      southeastasia
+    Central US            41.5908     -93.6208     centralus
+    East US               37.3719     -79.8164     eastus
+    East US 2             36.6681     -78.3889     eastus2
     ```
 
-1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 [...]를 클릭한 다음 **편집기 닫기**를 클릭합니다.
+1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 **...**를 클릭한 다음 **편집기 닫기**를 클릭합니다.
 
     저장하라는 메시지가 표시된 경우 **저장**을 클릭하면 편집기가 닫힙니다.
 
@@ -168,7 +168,7 @@ Azure Defender for IoT는 다음과 같은 구성 요소로 구성됩니다.
 
     Azure 계정이 두 개 이상인 경우 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. Azure 대시보드에서 **iot-az220-training-{your-id}**를 클릭합니다.
+1. Azure 대시보드에서 **iot-az220-training-{your-id}** 를 클릭합니다.
 
     대시보드의 rg-az220 리소스 그룹 타일에 IoT Hub로 이동하는 링크가 있습니다.
 
@@ -178,7 +178,7 @@ Azure Defender for IoT는 다음과 같은 구성 요소로 구성됩니다.
 
 1. **IoT 솔루션 보호 단추**가 표시되면 **IoT 솔루션 보호**를 클릭하고 메시지가 표시되면 브라우저 창을 새로 고칩니다.
 
-    잠시 후 **이 IoT Hub의 온보딩이 성공했습니다. 변경 내용을 적용하려면 새로 고치세요.**라는 메시지가 표시됩니다.
+    잠시 후 **이 IoT Hub의 온보딩이 성공했습니다. 변경 내용을 적용하려면 새로 고치세요.** 라는 메시지가 표시됩니다.
 
 1. 보안 개요 창의 내용을 잠시 검토합니다.
 
@@ -207,7 +207,7 @@ Azure Defender for IoT가 켜져 있으면 IoT 디바이스, IoT Edge 및 IoT Hu
 
 1. **작업 영역** 드롭다운 아래에서 **새 작업 영역 만들기**를 클릭합니다.
 
-1. **Log Analytics 작업 영역** 창의 **Log Analytics 작업 영역** 아래 **log-az220-training-{your-id}**를 입력합니다.
+1. **Log Analytics 작업 영역** 창의 **Log Analytics 작업 영역** 아래 **log-az220-training-{your-id}** 를 입력합니다.
 
 1. **구독**에서 이 과정에 사용 중인 구독이 선택되어 있는지 확인합니다.
 
@@ -221,7 +221,7 @@ Azure Defender for IoT가 켜져 있으면 IoT 디바이스, IoT Edge 및 IoT Hu
 
     잠시 후 작업 영역이 작성되고 창이 닫힙니다.
 
-1. **설정 | 데이터 수집** 페이지로 돌아와 **작업 영역** 드롭다운에서 **log-az220-training-{your-id}**를 선택합니다.
+1. **설정 | 데이터 수집** 페이지로 돌아와 **작업 영역** 드롭다운에서 **log-az220-training-{your-id}** 를 선택합니다.
 
 1. **원시 보안 데이터 액세스**가 선택되어 있는지 확인합니다.
 
@@ -258,7 +258,7 @@ Azure Defender for IoT가 켜져 있으면 IoT 디바이스, IoT Edge 및 IoT Hu
 
     > **참고**: 각 VM용으로 별도의 리소스 그룹을 만들라는 지침이 나올 수도 있습니다. 각 VM용으로 개별 리소스 그룹을 만들면 VM에 추가하는 리소스를 쉽게 관리할 수 있습니다. 하지만 이 과정에서는 VM을 단순한 방식으로 사용하므로 각 VM용으로 개별 리소스 그룹을 만들 필요도 없고 만들 수도 없습니다.
 
-1. **인스턴스 세부 정보**의 **가상 머신 이름** 텍스트 상자에 **vm-az220-training-edge0002-{your-id}**를 입력합니다.
+1. **인스턴스 세부 정보**의 **가상 머신 이름** 텍스트 상자에 **vm-az220-training-edge0002-{your-id}** 를 입력합니다.
 
 1. **지역** 드롭다운에서 가장 가까운 Azure 지역 또는 Azure IoT Hub가 프로비전된 지역을 선택하세요.
 
@@ -301,7 +301,7 @@ Azure Defender for IoT가 켜져 있으면 IoT 디바이스, IoT Edge 및 IoT Hu
 
 1. Azure Portal 메뉴에서 **대시보드**를 클릭합니다.
 
-1. rg-az220 리소스 그룹 타일에서 **iot-az220-training-{your-id}**를 클릭합니다.
+1. rg-az220 리소스 그룹 타일에서 **iot-az220-training-{your-id}** 를 클릭합니다.
 
     IoT Hub 블레이드를 열 수 있는 수많은 방법이 있습니다. 원하는 메서드를 사용하세요.
 
@@ -309,7 +309,7 @@ Azure Defender for IoT가 켜져 있으면 IoT 디바이스, IoT Edge 및 IoT Hu
 
 1. **IoT 디바이스** 창의 상단에서 **+ 새로 만들기**를 클릭합니다.
 
-1. **디바이스 ID** 아래에 **vm-az220-training-edge0002-{your-id}**를 입력합니다.
+1. **디바이스 ID** 아래에 **vm-az220-training-edge0002-{your-id}** 를 입력합니다.
 
     예. VM에 할당한 이름을 디바이스 ID로 사용하고 있습니다.
 
@@ -334,7 +334,7 @@ Azure Defender for IoT는 모듈 쌍 메커니즘을 사용하고 각 디바이�
 
     IoT Hub 블레이드에서 **IoT 디바이스** 창을 열려면 왼쪽 메뉴에서 **탐색기** 아래의 **IoT 디바이스**를 클릭합니다.
 
-1. **디바이스 ID**에서 **vm-az220-training-edge0002-{your-id}**를 클릭합니다.
+1. **디바이스 ID**에서 **vm-az220-training-edge0002-{your-id}** 를 클릭합니다.
 
     **추가 로드**를 클릭해야 디바이스가 표시될 수도 있습니다.
 
@@ -391,11 +391,11 @@ Azure Defender for IoT는 보안 데이터를 IoT Hub를 통해 로그, 처리, 
 
     **모든 서비스**가 아닌 **모든 리소스**를 선택해야 합니다.
 
-1. **모든 리소스** 블레이드의 **이름으로 필터링** 텍스트 상자에 **vm-az220-training-edge0002**를 입력합니다
+1. **모든 리소스** 블레이드의 **이름으로 필터링** 텍스트 상자에 **vm-az220-training-edge0002** 를 입력합니다
 
-1. **이름**에서 **vm-az220-training-edge0002-{your-id}**를 클릭합니다.
+1. **이름**에서 **vm-az220-training-edge0002-{your-id}** 를 클릭합니다.
 
-    새로 만든 가상 머신(**vm-az220-training-edge0002-{your-id}**)의 개요 창이 열립니다.
+    새로 만든 가상 머신 (**vm-az220-training-edge0002-{your-id}**) 의 개요 창이 열립니다.
 
 1. 블레이드 상단에서 **연결**을 클릭한 다음 **SSH**를 클릭하세요.
 
@@ -419,7 +419,7 @@ Azure Defender for IoT는 보안 데이터를 IoT Hub를 통해 로그, 처리, 
 
 1. Cloud Shell 명령 프롬프트에서 위에서 만든 `ssh` 명령을 입력한 다음 **Enter 키**를 누릅니다.
 
-1. **계속 연결하시겠습니까?**라는 메시지가 나타나면 **네**라고 입력하고 **Enter 키**를 누르세요.
+1. **계속 연결하시겠습니까?** 라는 메시지가 나타나면 **네**라고 입력하고 **Enter 키**를 누르세요.
 
     해당 메시지는 VM에 대한 연결 보안에 사용된 인증서가 자체 서명된 인증서이므로 보안 확인입니다. 이 메시지에 대한 대답은 이후 연결을 위해 기억되며, 이 메시지는 첫 번째 연결에서만 표시됩니다.
 
@@ -446,7 +446,7 @@ Azure Defender for IoT는 보안 데이터를 IoT Hub를 통해 로그, 처리, 
     1. 새 브라우저 탭을 열고 그 새 탭에서 Azure Portal로 이동하세요.
     1. Azure Portal 메뉴에서 **대시보드**를 클릭한 다음 IoT Hub를 엽니다.
     1. 왼쪽 메뉴의 **탐색기** 아래에서 **IoT 디바이스**를 클릭합니다.
-    1. **디바이스 ID**에서 **vm-az220-training-edge0002-{your-id}**를 클릭합니다.
+    1. **디바이스 ID**에서 **vm-az220-training-edge0002-{your-id}** 를 클릭합니다.
     1. 세부 정보 목록에서 **기본 키**를 복사하세요.
     1. Azure Cloud Shell 브라우저 탭으로 돌아옵니다. **vm-az220-training-edge0002-{your-id}** 가상 머신에 아직 연결되어 있어야 합니다.
 
@@ -499,7 +499,7 @@ Azure Defender for IoT는 보안 데이터를 IoT Hub를 통해 로그, 처리, 
     > **참고**: 나열된 호스트 이름 대신 IoT Hub 호스트 이름을 지정해야 합니다.
 
     > **중요**:
-    > `-hn` 스위치 값으로는 **iot-az220-training-ab200213.azure-devices.net**과 같은 전체 IoT Hub 호스트 이름을 사용해야 합니다.
+    > `-hn` 스위치 값으로는 **iot-az220-training-ab200213.azure-devices.net** 과 같은 전체 IoT Hub 호스트 이름을 사용해야 합니다.
 
     이 스크립트는 다음 기능을 수행합니다.
 
@@ -541,11 +541,11 @@ Azure Defender for IoT는 보안 데이터를 IoT Hub를 통해 로그, 처리, 
 
     특히 서비스가 **로드되었는지 확인해야 합니다. 로드** 및 **활성: 활성 (실행 중)**.
 
-    > **참고**: Azure Defender for IoT가 실행되지 않거나 활성 상태가 아니면 [Linux용 Defender for IoT C# 기반 보안 에이전트 배포](https://docs.microsoft.com/en-us/azure/defender-for-iot/how-to-deploy-linux-css)의 내용을 확인하세요. 일반적인 문제는 서비스를 **활성 상태로 둘 수 있습니다. 활성화**는 부정확한 키 값이거나 IoT Hub 호스트 이름을 지정하지 않는 것입니다.
+    > **참고**: Azure Defender for IoT가 실행되지 않거나 활성 상태가 아니면 [Linux용 Defender for IoT C# 기반 보안 에이전트 배포](https://docs.microsoft.com/ko-kr/azure/defender-for-iot/how-to-deploy-linux-css)의 내용을 확인하세요. 일반적인 문제는 서비스를 **활성 상태로 둘 수 있습니다. 활성화**는 부정확한 키 값이거나 IoT Hub 호스트 이름을 지정하지 않는 것입니다.
 
 1. Azure Portal에서 IoT Hub 블레이드로 다시 이동하여 **vm-az220-training-edge0002-{your-id}** 디바이스 블레이드를 엽니다.
 
-    IoT Hub 블레이드를 열고 탐색 메뉴의 **탐색기** 아래에서 **IoT 디바이스**를 클릭한 다음 **vm-az220-training-edge0002-{your-id}**을 클릭합니다.
+    IoT Hub 블레이드를 열고 탐색 메뉴의 **탐색기** 아래에서 **IoT 디바이스**를 클릭한 다음 **vm-az220-training-edge0002-{your-id}** 을 클릭합니다.
 
 1. **모듈 ID** 아래에서 **azureiotsecurity** 모듈이 이제 **연결된** 상태임을 확인하세요.
 
@@ -667,7 +667,7 @@ Azure Defender for IoT는 IoT Hub에서 사용하도록 설정되면 IoT Hub에 
 
     **사용자 지정 경고 규칙 만들기** 창이 열립니다. **디바이스 보안 그룹** 필드가 **기본** 그룹으로 채워졌는지 확인하세요.
 
-1. **사용자 지정 알림** 드롭다운에서 **허용되지 않은 범위의 디바이스 - 클라우드 메시지의 수 (MQTT 프로토콜)**를 클릭하세요.
+1. **사용자 지정 알림** 드롭다운에서 **허용되지 않은 범위의 디바이스 - 클라우드 메시지의 수 (MQTT 프로토콜)** 를 클릭하세요.
 
     > **팁**:
     > 사용 가능한 많은 사용자 지정 알림을 리뷰하세요. 솔루션을 보호하는 데 어떻게 사용할 수 있는지 고려하세요.

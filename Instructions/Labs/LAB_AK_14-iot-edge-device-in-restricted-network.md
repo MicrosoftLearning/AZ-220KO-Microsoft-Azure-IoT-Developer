@@ -133,16 +133,16 @@ az iot hub device-identity connection-string show --hub-name iot-az220-training-
     ```bash
     az account list-locations -o Table
 
-    표시이름           위도    경도    이름
+    DisplayName           Latitude    Longitude    Name
     --------------------  ----------  -----------  ------------------
-    동아시아             22.267      114.188      eastasia
-    동남 아시아        1.283       103.833      southeastasia
-    미국 중부            41.5908     -93.6208     centralus
-    미국 동부               37.3719     -79.8164     eastus
-    미국 동부 2             36.6681     -78.3889     eastus2
+    East Asia             22.267      114.188      eastasia
+    Southeast Asia        1.283       103.833      southeastasia
+    Central US            41.5908     -93.6208     centralus
+    East US               37.3719     -79.8164     eastus
+    East US 2             36.6681     -78.3889     eastus2
     ```
 
-1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 [...]를 클릭한 다음 **편집기 닫기**를 클릭합니다.
+1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 **...**를 클릭한 다음 **편집기 닫기**를 클릭합니다.
 
     저장하라는 메시지가 표시된 경우 **저장**을 클릭하면 편집기가 닫힙니다.
 
@@ -198,7 +198,7 @@ az iot hub device-identity connection-string show --hub-name iot-az220-training-
 
     * Azure Portal 메뉴에서 **리소스 그룹**을 클릭합니다.
     * **리소스 그룹** 블레이드의 **이름**에서 **rg-az220vm** 리소스 그룹을 찾습니다.
-    * **rg-az220vm** 행에서 블레이드의 오른쪽에 있는 [...]를 클릭하고 **대시보드에 고정**을 클릭합니다.
+    * **rg-az220vm** 행에서 블레이드의 오른쪽에 있는 **...**를 클릭하고 **대시보드에 고정**을 클릭합니다.
 
     RG 타일과 목록의 리소스에 더 쉽게 액세스할 수 있도록 대시보드를 편집할 수 있습니다.
 
@@ -210,7 +210,7 @@ az iot hub device-identity connection-string show --hub-name iot-az220-training-
 
     > **참고**: 반드시 두 번째 명령에 있는 자리 표시자를 바꿔야 합니다.
 
-    이 명령은 위에 지정된 리소스 그룹 내에서 VM을 만듭니다. **vm-az220-training-gw0002-{your-id}**는 고유 ID를 입력하여 업데이트하고, `{암호 입력}`은 적절한 보안 수준의 암호로 바꿔야 합니다.
+    이 명령은 위에 지정된 리소스 그룹 내에서 VM을 만듭니다. **vm-az220-training-gw0002-{your-id}** 는 고유 ID를 입력하여 업데이트하고, `{암호 입력}`은 적절한 보안 수준의 암호로 바꿔야 합니다.
 
     > **참고**: 프로덕션 환경에서는 사용자 이름/암호 접근 방법을 사용하는 대신 SSH 키를 생성하도록 선택할 수 있습니다. Linux VM 및 SSH에 대한 자세한 내용은 여기를 참조하세요. [https://docs.microsoft.com/ko-kr/azure/virtual-machines/linux/create-ssh-keys-detailed](https://docs.microsoft.com/ko-kr/azure/virtual-machines/linux/create-ssh-keys-detailed).
     >
@@ -674,7 +674,7 @@ Azure IoT Edge 게이트웨이가 자식 IoT 디바이스와 통신하려면 **�
 
     Azure 계정이 두 개 이상인 경우 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. 대시보드에서 **vm-az220-training-gw0001-{your-id}**가상 머신을 포함하는 리소스 그룹 타일을 찾습니다.
+1. 대시보드에서 **vm-az220-training-gw0001-{your-id}** 가상 머신을 포함하는 리소스 그룹 타일을 찾습니다.
 
 1. 이 리소스 그룹에는 **vm-az220-training-gw0002-{your-id}** 가상 머신용으로 만든 **vm-az220-training-gw0002-{your-id}NSG** NSG(네트워크 보안 그룹)도 포함되어 있습니다.
 
@@ -709,7 +709,7 @@ Azure IoT Edge 게이트웨이가 자식 IoT 디바이스와 통신하려면 **�
 
     > **참고**:  프로덕션 환경에서는 IoT 디바이스에서 사용 중인 통신 프로토콜에 대해서만 인바운드 통신을 여는 것이 좋습니다. 디바이스에서 MQTT만 사용하는 경우 해당 포트에 대한 인바운드 통신만 엽니다. 이렇게 하면 악용될 수 있는 열린 포트의 표면 공격 영역을 제한하는 데 도움이 됩니다.
 
-    **NSG(네트워크 보안 그룹)**에 **인바운드 규칙**이 추가되면 자식 IoT 디바이스가 IoT Edge 게이트웨이 가상 머신과 통신할 수 있습니다.
+    **NSG(네트워크 보안 그룹)** 에 **인바운드 규칙**이 추가되면 자식 IoT 디바이스가 IoT Edge 게이트웨이 가상 머신과 통신할 수 있습니다.
 
 ### 연습 6: IoT Edge 디바이스 TTL(Time-to-Live) 및 메시지 스토리지 구성
 
@@ -729,13 +729,13 @@ IoT Edge 디바이스는 연결이 끊어졌거나 오프라인 된 상태에서
 
     Azure 계정이 두 개 이상인 경우 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. **rg-az220** 리소스 그룹 타일에서 **iot-az220-training-{your-id}**를 클릭합니다.
+1. **rg-az220** 리소스 그룹 타일에서 **iot-az220-training-{your-id}** 를 클릭합니다.
 
 1. IoT Hub 블레이드 왼쪽 메뉴의 **자동 디바이스 관리**에서 **IoT Edge**를 클릭합니다.
 
     이 창을 사용하면 IoT Hub에 연결된 IoT Edge 디바이스를 관리할 수 있습니다.
 
-1. **디바이스 ID**에서 **vm-az220-training-gw0002-{your-id}**를 클릭합니다.
+1. **디바이스 ID**에서 **vm-az220-training-gw0002-{your-id}** 를 클릭합니다.
 
 1. **모듈**에서 **$edgeHub**를 클릭합니다.
 
@@ -751,7 +751,7 @@ IoT Edge 디바이스는 연결이 끊어졌거나 오프라인 된 상태에서
 
 1. **모듈 ID 쌍** 블레이드를 닫습니다.
 
-1. **vm-az220-training-gw0002-{your-id} **블레이드로 다시 이동합니다.
+1. **vm-az220-training-gw0002-{your-id}** 블레이드로 다시 이동합니다.
 
 1. 블레이드 상단에서 **모듈 설정**을 클릭합니다.
 
@@ -824,7 +824,7 @@ IoT Edge 디바이스는 연결이 끊어졌거나 오프라인 된 상태에서
 
 1. **환경 변수**의 **이름** 텍스트 상자에 **storageFolder**를 입력합니다.
 
-1. **환경 변수**의 **값** 텍스트 상자에 **/iotedge/storage/**를 입력합니다.
+1. **환경 변수**의 **값** 텍스트 상자에 **/iotedge/storage/** 를 입력합니다.
 
 1. **런타임 설정** 창 아래쪽에서 **저장**을 클릭합니다.
 
@@ -972,7 +972,7 @@ IoT Edge 디바이스는 연결이 끊어졌거나 오프라인 된 상태에서
 
     이제 탐색기 창에 프로젝트 파일이 표시됩니다.
 
-1. Visual Studio Code **탐색기 **창에서 **Program.cs**를 클릭합니다.
+1. Visual Studio Code **탐색기**창에서 **Program.cs** 를 클릭합니다.
 
 1. **Program.cs** 파일에서 **connectionString** 변수의 선언을 찾습니다.
 
@@ -1036,7 +1036,7 @@ IoT Edge 디바이스는 연결이 끊어졌거나 오프라인 된 상태에서
 
 ### 연습 8: 디바이스 연결 및 오프라인 지원 테스트
 
-이 연습에서는 **vm-az220-training-gw0002-{your-id}** IoT Edge Transparent Gateway를 통해 Azure IoT Hub로 전송되는 **sensor-th-0084**의 이벤트를 모니터링합니다. 그런 다음 **vm-az220-training-gw0002-{your-id}**와 Azure IoT Hub 간 연결을 중단하여 원격 분석이 하위 IoT 디바이스에서 IoT Edge 게이트웨이로 계속 전송되는지 확인합니다. 그런 다음, Azure IoT Hub에 다시 연결하고 IoT Edge 게이트웨이가 Azure IoT Hub로 원격 분석을 다시 전송하는지 모니터링합니다.
+이 연습에서는 **vm-az220-training-gw0002-{your-id}** IoT Edge Transparent Gateway를 통해 Azure IoT Hub로 전송되는 **sensor-th-0084**의 이벤트를 모니터링합니다. 그런 다음 **vm-az220-training-gw0002-{your-id}** 와 Azure IoT Hub 간 연결을 중단하여 원격 분석이 하위 IoT 디바이스에서 IoT Edge 게이트웨이로 계속 전송되는지 확인합니다. 그런 다음, Azure IoT Hub에 다시 연결하고 IoT Edge 게이트웨이가 Azure IoT Hub로 원격 분석을 다시 전송하는지 모니터링합니다.
 
 1. 필요한 경우 Azure 계정 자격 증명을 사용하여 Azure Portal에 로그인합니다.
 
@@ -1103,7 +1103,7 @@ IoT Edge 디바이스는 연결이 끊어졌거나 오프라인 된 상태에서
 1. `ssh`를 사용하여 **vm-az220-training-gw0002-{your-id}** VM에 연결하려면 Cloud Shell 명령 프롬프트에서 다음 명령을 입력합니다.
 
     ```sh
-    ssh <사용자 이름>@<IP 주소>
+    ssh <username>@<ipaddress>
     ```
 
     자리 표시자는 `ssh` 명령에 필요한 값으로 바꿔야 합니다.
@@ -1113,7 +1113,7 @@ IoT Edge 디바이스는 연결이 끊어졌거나 오프라인 된 상태에서
     | `<사용자 이름>` | **IoTEdgeGateaway** 가상 머신에 대한 관리자의 **사용자 이름**. **vmadmin**이어야 합니다.
     | `<IP 주소>` | **vm-az220-training-gw0002-{your-id}** 가상 머신의 공용 IP 주소
 
-1. 메시지가 표시되면 **vm-az220-training-gw0002-{your-id}**의 관리자 **암호**를 입력합니다.
+1. 메시지가 표시되면 **vm-az220-training-gw0002-{your-id}** 의 관리자 **암호**를 입력합니다.
 
     `ssh`를 통해 **vm-az220-training-gw0002-{your-id}** VM에 연결되면 명령 프롬프트가 업데이트됩니다.
 
@@ -1138,7 +1138,7 @@ IoT Edge 디바이스는 연결이 끊어졌거나 오프라인 된 상태에서
     iotedge list
     ```
 
-1. **vm-az220-training-gw0002-{your-id}**와의 `ssh` 세션을 종료하려면 다음 명령을 입력합니다.
+1. **vm-az220-training-gw0002-{your-id}** 와의 `ssh` 세션을 종료하려면 다음 명령을 입력합니다.
 
     ```cmd/sh
     exit
@@ -1156,13 +1156,13 @@ IoT Edge 디바이스는 연결이 끊어졌거나 오프라인 된 상태에서
 
 1. Visual Studio Code 창으로 전환합니다.
 
-1. **sensor-th-0084** 시뮬레이션된 디바이스 애플리케이션이 실행 중인 **터미널**을 엽니다. 그러면 애플리케이션이 **vm-az220-training-gw0002-{your-id}**로 디바이스 원격 분석을 계속 전송 중임을 확인할 수 있습니다.
+1. **sensor-th-0084** 시뮬레이션된 디바이스 애플리케이션이 실행 중인 **터미널**을 엽니다. 그러면 애플리케이션이 **vm-az220-training-gw0002-{your-id}** 로 디바이스 원격 분석을 계속 전송 중임을 확인할 수 있습니다.
 
-    이때 **vm-az220-training-gw0002-{your-id}**와 Azure IoT Hub의 연결이 끊어집니다. **sensor-th-0084**에 의한 연결을 계속 인증하고, 자식 디바이스에서 디바이스 원격 분석을 수신합니다. 이 시간 동안 IoT Edge 게이트웨이에서는 구성에 따라 IoT Edge 게이트웨이 디바이스 스토리지에 자식 디바이스의 이벤트 원격 분석을 저장합니다.
+    이때 **vm-az220-training-gw0002-{your-id}** 와 Azure IoT Hub의 연결이 끊어집니다. **sensor-th-0084**에 의한 연결을 계속 인증하고, 자식 디바이스에서 디바이스 원격 분석을 수신합니다. 이 시간 동안 IoT Edge 게이트웨이에서는 구성에 따라 IoT Edge 게이트웨이 디바이스 스토리지에 자식 디바이스의 이벤트 원격 분석을 저장합니다.
 
 1. **Azure Portal** 창으로 전환합니다.
 
-1. **vm-az220-training-gw0002-{your-id}**의 **네트워크 보안 그룹** 블레이드로 다시 이동합니다.
+1. **vm-az220-training-gw0002-{your-id}** 의 **네트워크 보안 그룹** 블레이드로 다시 이동합니다.
 
 1. 왼쪽 탐색 메뉴의 **설정**에서 **아웃바운드 보안 규칙**을 클릭합니다.
 

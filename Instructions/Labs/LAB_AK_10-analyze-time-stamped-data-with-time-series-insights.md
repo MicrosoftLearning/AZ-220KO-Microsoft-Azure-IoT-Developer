@@ -1,6 +1,6 @@
 ﻿---
 lab:
-    title: '랩 10: Time Series Insights로 타임스탬프 데이터 탐색 및 분석
+    title: '랩 10: Time Series Insights로 시간이 기록된 데이터 탐색 및 분석'
     module: '모듈 5: 인사이트 및 비즈니스 통합'
 ---
 
@@ -102,7 +102,7 @@ Azure IoT 솔루션에 Time Series Insights를 추가하는 것을 제안합니�
     chmod +x lab10-setup.azcli
     ```
 
-1. Cloud Shell 도구 모음에서 lab10-setup.azcli 파일에 액세스할 수 있도록 설정하려면 **편집기 열기**(오른쪽에서 두 번째 단추 - **{}**)를 클릭합니다.
+1. Cloud Shell 도구 모음에서 lab10-setup.azcli 파일에 액세스할 수 있도록 설정하려면 **편집기 열기 **(오른쪽에서 두 번째 단추 - **{}**) 를 클릭합니다.
 
 1. lab10 폴더를 펼치고 스크립트 파일을 열려면 **파일** 목록에서 **lab10**을 클릭한 다음 **lab10-setup.azcli**를 클릭합니다.
 
@@ -125,16 +125,16 @@ Azure IoT 솔루션에 Time Series Insights를 추가하는 것을 제안합니�
     ```bash
     az account list-locations -o Table
 
-    표시이름           위도    경도    이름
+    DisplayName           Latitude    Longitude    Name
     --------------------  ----------  -----------  ------------------
-    동아시아             22.267      114.188      eastasia
-    동남 아시아        1.283       103.833      southeastasia
-    미국 중부            41.5908     -93.6208     centralus
-    미국 동부               37.3719     -79.8164     eastus
-    미국 동부 2             36.6681     -78.3889     eastus2
+    East Asia             22.267      114.188      eastasia
+    Southeast Asia        1.283       103.833      southeastasia
+    Central US            41.5908     -93.6208     centralus
+    East US               37.3719     -79.8164     eastus
+    East US 2             36.6681     -78.3889     eastus2
     ```
 
-1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 [...]를 클릭한 다음 **편집기 닫기**를 클릭합니다.
+1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 **...**를 클릭한 다음 **편집기 닫기**를 클릭합니다.
 
     저장하라는 메시지가 표시된 경우 **저장**을 클릭하면 편집기가 닫힙니다.
 
@@ -188,9 +188,9 @@ Azure TSI(Time Series Insights)는 IoT 솔루션에서 규모에 맞게 데이�
 
 1. 블레이드 하단에서 **다음: 이벤트 원본**을 클릭합니다.
 
-1. **이벤트 원본 세부 정보** 섹션에서 **이벤트 소스를 만드시겠습니까?**가 **예**로 설정되어 있는지 확인합니다.
+1. **이벤트 원본 세부 정보** 섹션에서 **이벤트 소스를 만드시겠습니까?** 가 **예**로 설정되어 있는지 확인합니다.
 
-1. **이름** 필드에 **iot-az220-training-{your-id}**를 입력하여 이 이벤트 원본의 고유한 이름을 지정합니다.
+1. **이름** 필드에 **iot-az220-training-{your-id}** 를 입력하여 이 이벤트 원본의 고유한 이름을 지정합니다.
 
 1. **소스 유형** 드롭다운에서 **IoT Hub**가 선택되어 있는지 확인합니다.
 
@@ -236,7 +236,7 @@ Azure TSI(Time Series Insights)는 IoT 솔루션에서 규모에 맞게 데이�
 
     이 항목이 TSI 리소스를 만들 때 구성한 이벤트 원본입니다.
 
-1. 이벤트 원본 세부 정보를 보려면 **iot-az220-training-{your-id}**를 클릭합니다.
+1. 이벤트 원본 세부 정보를 보려면 **iot-az220-training-{your-id}** 를 클릭합니다.
 
     이벤트 원본의 구성은 Time Series Insights 리소스가 생성될 때 설정된 구성과 일치합니다.
 

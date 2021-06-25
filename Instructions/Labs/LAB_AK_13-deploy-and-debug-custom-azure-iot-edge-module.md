@@ -1,6 +1,6 @@
 ﻿---
 lab:
-    title: '랩 13: VS 코드로 Azure IoT Edge에서 사용자 지정 모듈 개발, 배포 및 디버깅
+    title: '랩 13: VS 코드로 Azure IoT Edge에서 사용자 지정 모듈 개발, 배포 및 디버깅'
     module: '모듈 7: Azure IoT Edge 모듈'
 ---
 
@@ -131,16 +131,16 @@ lab:
     ```bash
     az account list-locations -o Table
 
-    표시이름           위도    경도    이름
+    DisplayName           Latitude    Longitude    Name
     --------------------  ----------  -----------  ------------------
-    동아시아             22.267      114.188      eastasia
-    동남 아시아        1.283       103.833      southeastasia
-    미국 중부            41.5908     -93.6208     centralus
-    미국 동부               37.3719     -79.8164     eastus
-    미국 동부 2             36.6681     -78.3889     eastus2
+    East Asia             22.267      114.188      eastasia
+    Southeast Asia        1.283       103.833      southeastasia
+    Central US            41.5908     -93.6208     centralus
+    East US               37.3719     -79.8164     eastus
+    East US 2             36.6681     -78.3889     eastus2
     ```
 
-1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 [...]를 클릭한 다음 **편집기 닫기**를 클릭합니다.
+1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 **...**를 클릭한 다음 **편집기 닫기**를 클릭합니다.
 
     저장하라는 메시지가 표시된 경우 **저장**을 클릭하면 편집기가 닫힙니다.
 
@@ -219,7 +219,7 @@ Azure Container Registry는 컨테이너 배포를 위해 비공개 Docker 이�
 
 1. **컨테이너 레지스트리 만들기** 블레이드에서 **레지스트리 이름**아래에 전역고유의 이름을 입력합니다.
 
-    전역적으로 고유한 이름을 입력하려면 **acraz220training{your-id}**를 입력합니다.
+    전역적으로 고유한 이름을 입력하려면 **acraz220training{your-id}** 를 입력합니다.
 
     예를 들어 **acraz220trainingcah191204**과 같이 입력할 수 있습니다.
 
@@ -251,7 +251,7 @@ Azure Container Registry는 컨테이너 배포를 위해 비공개 Docker 이�
 
 #### 작업 2: 컨테이너 레지스트리에 Docker 연결
 
-1. 대시보드에서 리소스 타일을 새로 고친 다음 **acraz220training{your-id}**를 클릭합니다.
+1. 대시보드에서 리소스 타일을 새로 고친 다음 **acraz220training{your-id}** 를 클릭합니다.
 
 1. 왼쪽 탐색 메뉴에서 **설정**에서 **액세스 키**를 클릭합니다.
 
@@ -265,7 +265,7 @@ Azure Container Registry는 컨테이너 배포를 위해 비공개 Docker 이�
     * **사용자 이름**
     * **password**
 
-    기본적으로 관리자 사용자 이름은 ACR 이름과 일치하는 **acraz220training{your-id}**입니다.
+    기본적으로 관리자 사용자 이름은 ACR 이름과 일치하는 **acraz220training{your-id}** 입니다.
 
     이 정보를 통해 다음 단계에서 Docker 작업을 수행하는 데 필요한 새 레지스트리에 인증할 수 있습니다.
 
@@ -275,7 +275,7 @@ Azure Container Registry는 컨테이너 배포를 위해 비공개 Docker 이�
     docker login <로그인 서버>
     ```
 
-    `<로그인 서버>`는 기록해 둔 이름으로 바꾸고, 메시지가 표시되면 기록해 둔 사용자 이름과 암호를 입력합니다.  예를 들어 다음과 같이 입력할 수 있습니다.
+    `<loginserver>`는 기록해 둔 이름으로 바꾸고, 메시지가 표시되면 기록해 둔 사용자 이름과 암호를 입력합니다.  예를 들어 다음과 같이 입력할 수 있습니다.
 
     ```cmd/sh
     docker login az220acrcah191204.azurecr.io
@@ -295,7 +295,7 @@ Azure Container Registry를 만들고 로컬 컴퓨터를 인증한 이제 레�
 
 1. **보기** 메뉴에서 Visual Studio 명령 팔레트를 열려면 **명령 팔레트**를 클릭합니다.
 
-1. 명령 프롬프트에서 **Azure IoT Edge**를 입력합니다.** 새로 만들기**에서 **Azure IoT Edge:**를 클릭합니다.** 새로운 IoT Edge 솔루션**.
+1. 명령 프롬프트에서 **Azure IoT Edge: **를 입력합니다. **새로 만들기**에서 **Azure IoT Edge:** 를 클릭합니다.**새로운 IoT Edge 솔루션**.
 
 1. 새 솔루션을 만들 폴더를 탐색한 다음 **폴더 선택**을 클릭합니다.
 
@@ -413,13 +413,13 @@ Azure Container Registry를 만들고 로컬 컴퓨터를 인증한 이제 레�
         }
     ```
 
-    `ensorToObjectCountingModule` 경로는 `SimulatedTemperatureSensor` 모듈에서(or/outputs/temperatureOutput`을 통해) 사용자 지정 `ObjectCountingModule` 모듈로(`BrokeredEndpoint(\"/modules/ObjectCountingModule/inputs/input1\")"`을 통해) 메시지를 라우팅하도록 구성됩니다.
+    `ensorToObjectCountingModule` 경로는 `SimulatedTemperatureSensor` 모듈에서(`or/outputs/temperatureOutput`을 통해) 사용자 지정 `ObjectCountingModule` 모듈로(`BrokeredEndpoint(\"/modules/ObjectCountingModule/inputs/input1\")"` 을 통해) 메시지를 라우팅하도록 구성됩니다.
 
     `ObjectCountingModuleToIoTHub` 경로는 사용자 지정 `ObjectCountingModule` 모듈에서(`/messages/modules/SimulatedTemperatureSensor/outputs/temperatureOutput`을 통해) 전송되는 메시지를 Azure IoT Hub 서비스(`$upstream`를 통해)로 라우팅하도록 구성됩니다
 
 1. **보기** 메뉴의 Visual Studio Code에서 **명령 팔레트**를 클릭합니다.
 
-1. 명령 프롬프트에서 **Azure IoT Edge**를 입력합니다.** 기본값을 설정한** 다음 **Azure IoT Edge:**를 클릭합니다.** Edge 솔루션에 대한 기본 대상 플랫폼 설정**.
+1. 명령 프롬프트에서 **Azure IoT Edge:** 를 입력합니다. **기본값을 설정한** 다음 **Azure IoT Edge:** 를 클릭합니다. **Edge 솔루션에 대한 기본 대상 플랫폼 설정**.
 
 1. 대상 플랫폼을 선택하려면 **amd64**를 클릭합니다.
 
@@ -473,7 +473,7 @@ Azure Container Registry를 만들고 로컬 컴퓨터를 인증한 이제 레�
 
     Azure 계정이 두 개 이상인 경우 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. 리소스 그룹 타일에서 **iot-az220-training-{your-id}**를 클릭합니다.
+1. 리소스 그룹 타일에서 **iot-az220-training-{your-id}** 를 클릭합니다.
 
 1. 왼쪽 탐색 메뉴의 **설정** 아래에서 **공유 액세스 정책**을 클릭하세요.
 
@@ -519,11 +519,11 @@ Azure Container Registry를 만들고 로컬 컴퓨터를 인증한 이제 레�
 
 1. **IoT Edge 디바이스 선택하기**을 창이 나타나면 **SimulatedDevice**를 클릭하세요.
 
-    > **참고**: 오른쪽 아래 모서리에 **권한 없음** 오류가 표시되면 명령 팔레트에서 `Azure IoT Hub: IoT Hub 연결 문자열 설정` 명령을 실행하여 시뮬레이터 연결 문자열을 다시 구성한 후에 명령 팔레트에서 `Azure IoT Edge: IoT Edge 시뮬레이터 설정`을 실행하고 디바이스를 다시 선택해 보세요.
+    > **참고**: 오른쪽 아래 모서리에 **권한 없음** 오류가 표시되면 명령 팔레트에서 `Azure IoT Hub: Set IoT Hub Connection String` 명령을 실행하여 시뮬레이터 연결 문자열을 다시 구성한 후에 명령 팔레트에서 `Azure IoT Edge: Setup IoT Edge Simulator`을 실행하고 디바이스를 다시 선택해 보세요.
 
     > **참고**: 로컬 컴퓨터 (Visual Studio Code **터미널**창)에서 특히 Linux 또는 macOS에서  관리자 암호를 입력하라는 메시지가 표시될 수 있습니다. 프롬프트에 암호를 입력하고 **Enter 키**를 누릅니다. 암호를 요청할 수 있는 이유는 `iotedgehubdev`에 대한 설치 명령이 높은 권한이 필요하기 때문에 `sudo`를 사용하여 실행되기 때문입니다.
 
-    IoT Edge 시뮬레이터가 성공적으로 설정되면 ** IoT Edge 시뮬레이터 설치 성공** 메시지가 Visual Studio Code 터미널에 표시됩니다.
+    IoT Edge 시뮬레이터가 성공적으로 설정되면 **IoT Edge 시뮬레이터 설치 성공** 메시지가 Visual Studio Code 터미널에 표시됩니다.
 
     이제 IoT Edge 시뮬레이터에서 모듈을 빌드하고 실행하면 예상대로 실행됩니다.
 
@@ -599,7 +599,7 @@ Azure Container Registry를 만들고 로컬 컴퓨터를 인증한 이제 레�
 
     실행 단추는 상단에서 아래로 네 번째 단추이며 아이콘에 버그 셰이프가 포함되어 있습니다.
 
-1. **실행** 창 상단의 드롭다운에서 **ObjectCountingModule 원격 디버그(.NET Core)**를 선택했는지 확인하세요.
+1. **실행** 창 상단의 드롭다운에서 **ObjectCountingModule 원격 디버그(.NET Core)** 를 선택했는지 확인하세요.
 
 1. 드롭다운 왼쪽에서 **디버깅 시작하기**를 클릭하세요.
 
@@ -631,7 +631,7 @@ Azure Container Registry를 만들고 로컬 컴퓨터를 인증한 이제 레�
 
 1. 디버깅을 중지하려면 **연결 끊기** 단추를 클릭하거나 **Shift + F5**를 누르세요.
 
-1. IoT Edge 시뮬레이터를 중지하려면 **명령 팔레트**를 연 다음 **Azure IoT Edge**를 선택하세요.** IoT Edge 시뮬레이터 옵션을 중지하세요**.
+1. IoT Edge 시뮬레이터를 중지하려면 **명령 팔레트**를 연 다음 **Azure IoT Edg:** 를 선택하세요. **IoT Edge 시뮬레이터 옵션을 중지하세요**.
 
 이제 IoT Edge 시뮬레이터에서 모듈을 만들고 테스트하였으므로, 클라우드에 배포할 차례입니다.
 
@@ -668,7 +668,7 @@ Azure Container Registry를 만들고 로컬 컴퓨터를 인증한 이제 레�
 
     Azure 계정이 두 개 이상인 경우 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. ACR(Azure Container Registry) 서비스를 열려면 리소스 그룹 타일에서 **acraz220training{your-id}**를 클릭합니다.
+1. ACR(Azure Container Registry) 서비스를 열려면 리소스 그룹 타일에서 **acraz220training{your-id}** 를 클릭합니다.
 
 1. 왼쪽 탐색 메뉴에서 **서비스**에서 **리포지토리**를 클릭합니다.
 
@@ -759,7 +759,7 @@ Azure Container Registry를 만들고 로컬 컴퓨터를 인증한 이제 레�
 
 1. 나머지 설정은 기본값으로 남겨두고 **추가**를 클릭하세요.
 
-1. **디바이스의 설정 모듈: objectcountingdevice** 블레이드의 하단에서 **다음: 경로 >**를 클릭합니다.
+1. **디바이스의 설정 모듈: objectcountingdevice** 블레이드의 하단에서 **다음: 경로 >** 를 클릭합니다.
 
 1. **경로** 탭에서 기본 경로 설정을 리뷰하세요.
 
@@ -779,13 +779,13 @@ Azure Container Registry를 만들고 로컬 컴퓨터를 인증한 이제 레�
 
 1. **AllMessagesToObjectCountingModule** 경로에 할당된 값을 검토합니다.
 
-    이 경로는 `/*`의 **소스** 값을 지정합니다. 이렇게 하면 모든 디바이스-클라우드 메시지 또는 모든 모듈이나 리프 디바이스의 쌍 변경 알림에 대한 경로가 적용됩니다.
+    이 경로는 `/*` 의 **소스** 값을 지정합니다. 이렇게 하면 모든 디바이스-클라우드 메시지 또는 모든 모듈이나 리프 디바이스의 쌍 변경 알림에 대한 경로가 적용됩니다.
 
     이 경로는 BrokeredEndpoint("/모듈/개체 계산 모듈/입력/입력1")의 **대상**'값을 지정합니다. 이렇게 하면 이 경로의 소스에서 `objectcountingmodule` IoT Edge 모듈의 입력으로 모든 메시지를 보냅니다.
 
 1. **ObjectCountingModuleToIoTHu** 경로에 할당된 값을 검토합니다.
 
-    이 경로는`/messages/modules/objectcountingmodule/outputs/*`의 **소** 값을 지정합니다. 이것은 `objectcountingmodule` IoT Edge 모듈에서 출력된 모든 메시지에 대한 경로를 적용합니다.
+    이 경로는`/messages/modules/objectcountingmodule/outputs/*` 의 **소** 값을 지정합니다. 이것은 `objectcountingmodule` IoT Edge 모듈에서 출력된 모든 메시지에 대한 경로를 적용합니다.
 
     이 경로는 `$upstream`의 **대상** 값을 지정합니다. 이렇게 하면 이 경로의 소스에서 Microsoft Azure 내의 Azure IoT Hub 서비스로 모든 메시지가 전송됩니다.
 
@@ -793,7 +793,7 @@ Azure Container Registry를 만들고 로컬 컴퓨터를 인증한 이제 레�
     > * [IoT Edge에서 모듈을 배포하고 경로를 설정하는 방법 알아보기](https://docs.microsoft.com/ko-kr/azure/iot-edge/module-composition)
     > * [IoT Hub 메시지 라우팅 쿼리 구문](https://docs.microsoft.com/ko-kr/azure/iot-hub/iot-hub-devguide-routing-query-syntax)
 
-1. 블레이드 하단에서 **다음: 검토 + 만들기 >**를 클릭합니다.
+1. 블레이드 하단에서 **다음: 검토 + 만들기 >** 를 클릭합니다.
 
 1. 디바이스에 대한 배포 매니페스트를 검토한 다음 **만들기**를 클릭합니다.
 

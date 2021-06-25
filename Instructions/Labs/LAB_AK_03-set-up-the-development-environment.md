@@ -142,7 +142,7 @@ IoT Edge 및 Docker를 지원하기 위해 Python 3.9을 사용합니다.
 
 1. **Docker Hub에서 다운로드**를 클릭합니다.
 
-1. Windows용 Docker Desktop 아래에서 **Windows용 Docker Desktop 가져오기(안정적)**를 클릭합니다.
+1. Windows용 Docker Desktop 아래에서 **Windows용 Docker Desktop 가져오기(안정적)** 를 클릭합니다.
 
 1. 설치를 시작하려면 **실행**을 클릭합니다.
 

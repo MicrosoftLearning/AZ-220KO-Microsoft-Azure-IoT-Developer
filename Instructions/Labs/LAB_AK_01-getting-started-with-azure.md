@@ -71,7 +71,7 @@ Azure IoT 서비스를 사용하기 전에 Azure 자체의 작동 방식에 익�
 
     다양한 보기 옵션이 제공되는 모든 서비스 페이지에서는 Azure에서 제공하는 모든 PaaS, IaaS 및 SaaS 서비스에 액세스할 수 있습니다. 모든 서비스 페이지를 처음 열면 개요 페이지가 표시됩니다. 이 보기는 왼쪽 메뉴에서 액세스할 수 있습니다.
 
-    > **정의**: **PaaS**란 용어는 **Platform as a Service**의 약어이며 **IaaS**라는 용어는 **Infrastructure as a Service(서비스 제공 인프라)**의 약어입니다. 그리고 **SaaS**라는 용어는 **Software as a Service**의 약어입니다.
+    > **정의**: **PaaS**란 용어는 **Platform as a Service**의 약어이며 **IaaS**라는 용어는 **Infrastructure as a Service(서비스 제공 인프라)** 의 약어입니다. 그리고 **SaaS**라는 용어는 **Software as a Service**의 약어입니다.
 
 1. **모든 서비스** 페이지 왼쪽 메뉴의 **범주** 아래에서 **모두**를 클릭합니다.
 

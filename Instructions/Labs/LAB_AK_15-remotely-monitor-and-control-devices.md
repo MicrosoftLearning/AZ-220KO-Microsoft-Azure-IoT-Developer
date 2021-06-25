@@ -153,16 +153,16 @@ Contoso로부터 동굴 환경을 제어 범위 내에서 유지하는 자동 �
     ```bash
     az account list-locations -o Table
 
-    표시이름           위도    경도    이름
+    DisplayName           Latitude    Longitude    Name
     --------------------  ----------  -----------  ------------------
-    동아시아             22.267      114.188      eastasia
-    동남 아시아        1.283       103.833      southeastasia
-    미국 중부            41.5908     -93.6208     centralus
-    미국 동부               37.3719     -79.8164     eastus
-    미국 동부 2             36.6681     -78.3889     eastus2
+    East Asia             22.267      114.188      eastasia
+    Southeast Asia        1.283       103.833      southeastasia
+    Central US            41.5908     -93.6208     centralus
+    East US               37.3719     -79.8164     eastus
+    East US 2             36.6681     -78.3889     eastus2
     ```
 
-1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 [...]를 클릭한 다음 **편집기 닫기**를 클릭합니다.
+1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 **...**를 클릭한 다음 **편집기 닫기**를 클릭합니다.
 
     저장하라는 메시지가 표시된 경우 **저장**을 클릭하면 편집기가 닫힙니다.
 
@@ -275,10 +275,10 @@ Contoso로부터 동굴 환경을 제어 범위 내에서 유지하는 자동 �
 1. 코드 편집기에서 다음 코드 줄을 찾습니다.
 
     ```csharp
-    private readonly static string deviceConnectionString = "<디바이스 연결 문자열>";
+    private readonly static string deviceConnectionString = "<your device connection string>";
     ```
 
-1. **\<디바이스 연결 문자열\>**은 앞에서 저장한 디바이스 연결 문자열로 바꿉니다.
+1. **\<디바이스 연결 문자열\>** 은 앞에서 저장한 디바이스 연결 문자열로 바꿉니다.
 
     IoT Hub로 원격 분석을 보내기 전에 구현해야 하는 변경은 이 항목뿐입니다.
 
@@ -482,7 +482,7 @@ Contoso로부터 동굴 환경을 제어 범위 내에서 유지하는 자동 �
 
     > **팁**: 코드를 삽입할 때 코드 레이아웃이 적절하지 않은 경우에는 코드 편집기 창을 마우스 오른쪽 단추로 클릭하고 문서 서식을 클릭하면 Visual Studio Code에서 문서 서식을 자동으로 지정합니다. 작업 창을 열고(**F1** 키 누르기) 문서 서식을 입력한 다음 Enter 키를 눌러도 됩니다. Windows에서 이 작업을 수행하는 바로 가기 키는 Shift+Alt+F입니다.
 
-1. `// INSERT 이 주석 아래에 변수를 삽입합니다.` 주석을 찾습니다.
+1. `// INSERT variables below here` 주석을 찾습니다.
 
 1. 프로그램에서 사용 중인 변수를 지정하려면 다음 코드를 입력합니다.
 
@@ -528,10 +528,10 @@ Contoso로부터 동굴 환경을 제어 범위 내에서 유지하는 자동 �
 1. 서비스 연결 문자열을 할당하는 데 사용되는 코드 줄 찾기
 
     ```csharp
-    private readonly static string serviceConnectionString = "<서비스 연결 문자열>";
+    private readonly static string serviceConnectionString = "<your service connection string>";
     ```
 
-1. **\<서비스 연결 문자열\>**은 이 랩 앞부분에서 저장한 IoT Hub 서비스 연결 문자열로 바꿉니다.
+1. **\<서비스 연결 문자열\>** 은 이 랩 앞부분에서 저장한 IoT Hub 서비스 연결 문자열로 바꿉니다.
 
     이 문자열은 연습 1에서 실행했던 lab15-setup.azcli 설정 스크립트에서 생성되어 저장해 두었던 iothubowner 공유 액세스 정책 기본 연결 문자열입니다.
 
@@ -550,7 +550,7 @@ Contoso로부터 동굴 환경을 제어 범위 내에서 유지하는 자동 �
     >
     > 프로덕션 시나리오에서 **서비스 연결** 및 **레지스트리 읽기** 권한만 있는 새 공유 액세스 정책을 추가하는 것이 좋습니다.
 
-1. **\<이벤트 허브 엔드포인트\>**, **\<이벤트 허브 경로\>** 및 **\<이벤트 허브 SaS 키\>**는 이 랩 앞부분에서 저장한 값으로 바꿉니다.
+1. **\<이벤트 허브 엔드포인트\>**, **\<이벤트 허브 경로\>** 및 **\<이벤트 허브 SaS 키\>** 는 이 랩 앞부분에서 저장한 값으로 바꿉니다.
 
 1. `// INSERT Main method below here` 주석을 찾습니다.
 
@@ -714,7 +714,7 @@ Contoso 시나리오에서는 치즈 저장고에 있는 팬 작동을 제어하
 
 1. 코드 편집기에서 **Program.cs**가 열려 있는지 확인합니다.
 
-1. `// INSERT 이 주석 아래에 직접 메서드 코드를 등록합니다.` 주석을 찾습니다.
+1. `INSERT register direct method code below here` 주석을 찾습니다.
 
 1. 직접 메서드를 등록하려면 다음 코드를 입력합니다.
 
@@ -770,7 +770,7 @@ Contoso 시나리오에서는 치즈 저장고에 있는 팬 작동을 제어하
 
     이 메서드는 관련 원격 메서드인 **SetFanState**가 IoT Hub를 통해 호출되면 디바이스에서 실행됩니다. 이 메서드는 **MethodRequest** 인스턴스를 수신할 뿐 아니라 직접 메시지 콜백 등록 시에 정의된 **userContext** 개체(여기서는 null)도 수신합니다.
 
-    이 메서드의 첫 코드 줄은 치즈 저장고 팬이 현재 **Failed** 상태인지를 확인합니다. 치즈 저장고 시뮬레이터는 팬이 고장나면 후속 명령도 자동으로 실패한다고 가정합니다. 따라서 **result** 속성이 **Fan Failed**로 설정된 JSON 문자열이 작성됩니다. 그러면 바이트 배열로 인코딩된 결과 문자열과 HTTP 상태 코드를 사용하여 새 **MethodResponse** 개체가 생성됩니다. 위의 코드에서는 상태 코드로 **400**이 사용되었습니다. REST API의 컨텍스트에서 이 코드는 일반 클라이언트 쪽 오류가 발생했다는 의미입니다. **Task\<MethodResponse\>**를 반환하려면 직접 메서드 콜백이 필요하므로, 새 작업이 작성되어 반환됩니다.
+    이 메서드의 첫 코드 줄은 치즈 저장고 팬이 현재 **Failed** 상태인지를 확인합니다. 치즈 저장고 시뮬레이터는 팬이 고장나면 후속 명령도 자동으로 실패한다고 가정합니다. 따라서 **result** 속성이 **Fan Failed**로 설정된 JSON 문자열이 작성됩니다. 그러면 바이트 배열로 인코딩된 결과 문자열과 HTTP 상태 코드를 사용하여 새 **MethodResponse** 개체가 생성됩니다. 위의 코드에서는 상태 코드로 **400**이 사용되었습니다. REST API의 컨텍스트에서 이 코드는 일반 클라이언트 쪽 오류가 발생했다는 의미입니다. **Task\<MethodResponse\>** 를 반환하려면 직접 메서드 콜백이 필요하므로, 새 작업이 작성되어 반환됩니다.
 
     > **정보**: REST API 내에서 HTTP 상태 코드가 사용되는 방식에 대한 자세한 내용은 [여기](https://restfulapi.net/http-status-codes/)서 확인할 수 있습니다.
 
@@ -806,7 +806,7 @@ Contoso 시나리오에서는 치즈 저장고에 있는 팬 작동을 제어하
 
 1. 코드 편집기에서 **Program.cs**가 열려 있는지 확인합니다.
 
-1. `// INSERT 이 주석 아래에 서비스 클라이언트 변수를 삽입합니다.` 주석을 찾습니다.
+1. `INSERT service client variable below here` 주석을 찾습니다.
 
 1. 서비스 클라이언트 인스턴스를 저장할 전역 변수를 추가하려면 다음 코드를 입력합니다.
 
@@ -814,7 +814,7 @@ Contoso 시나리오에서는 치즈 저장고에 있는 팬 작동을 제어하
     private static ServiceClient serviceClient;
     ```
 
-1. `// INSERT 이 주석 아래에서 서비스 클라이언트 인스턴스를 만듭니다.` 주석을 찾습니다.
+1. `INSERT create service client instance below here` 주석을 찾습니다.
 
 1. 서비스 클라이언트 인스턴스를 만들고 직접 메서드를 호출하는 코드를 추가하려면 다음 코드를 입력합니다.
 
@@ -925,7 +925,7 @@ IoT Hub를 통해 관리되는 디바이스 쌍은 쿼리용으로 설계되었�
     private static RegistryManager registryManager;
     ```
 
-1. `// INSERT 이 주석 아래에 원하는 속성의 변경된 처리기 코드를 등록합니다.` 주석을 찾습니다.
+1. `INSERT register desired property changed handler code below here` 주석을 찾습니다.
 
 1. 레지스트리 관리자 인스턴스를 만들고 쌍 속성을 설정하는 기능을 추가하려면 다음 코드를 입력합니다.
 

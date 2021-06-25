@@ -1,6 +1,6 @@
 ﻿---
 lab:
-    title: '랩 02: Azure IoT Services 시작'
+    title: '랩 02: Azure IoT Services 시작하기'
     module: '모듈 1: IoT 및 Azure IoT 서비스 소개'
 ---
 
@@ -197,7 +197,7 @@ IoT Hub를 만드는 데 사용할 수 있는 몇 가지 방법이 있습니다.
 
 1. **IoT Hub 이름** 오른쪽에 전역에서 고유한 IoT Hub 이름을 다음과 같이 입력합니다.
 
-    전역적으로 고유한 이름을 제공하려면 **iot-az220-training-{your-id}**를 입력합니다(**{your-id}**는 연습 1에서 만든 고유 ID로 바꿔야 함).
+    전역적으로 고유한 이름을 제공하려면 **iot-az220-training-{your-id}** 를 입력합니다(**{your-id}** 는 연습 1에서 만든 고유 ID로 바꿔야 함).
 
     예를 들어 **iot-az220-training-cah191216**과 같이 입력할 수 있습니다.
 
@@ -282,7 +282,7 @@ IoT Hub의 기능을 사용하면 제조에 사용되는 산업용 장비의 관
 
 1. AZ-220 대시보드가 표시되는지 확인합니다.
 
-1. **rg-az220** 리소스 그룹 타일에서 **iot-az220-training-{your-id}**를 클릭합니다.
+1. **rg-az220** 리소스 그룹 타일에서 **iot-az220-training-{your-id}** 를 클릭합니다.
 
     IoT Hub 블레이드를 처음 열면 **개요** 정보가 표시됩니다. 보시다시피 이 블레이드 상단의 영역은 데이터 센터 위치 및 구독과 같은 IoT Hub 서비스에 대한 몇 가지 필수 정보를 제공합니다. 그러나 이 블레이드에는 허브 사용 방법 및 최근 활동에 대한 정보를 제공하는 타일도 포함되어 있습니다. 이러한 타일이 더 어떻게 나타나는지 살펴보겠습니다.
 
@@ -378,7 +378,7 @@ IoT Hub Device Provisioning Service의 인스턴스를 만드는 방법에는 �
 
 1. **이름** 아래에 IoT Hub Device Provisioning Service의 전역에서 고유한 이름을 다음과 같이 입력합니다.
 
-    전역적으로 고유한 이름을 제공하려면 **dps-az220-training-{your-id}**를 입력합니다(**{your-id}**는 연습 1에서 만든 고유 ID로 바꿔야 함).
+    전역적으로 고유한 이름을 제공하려면 **dps-az220-training-{your-id}** 를 입력합니다 (**{your-id}** 는 연습 1에서 만든 고유 ID로 바꿔야 함).
 
     예를 들어 **dps-az220-training-cah191216**과 같이 입력할 수 있습니다.
 
@@ -408,7 +408,7 @@ IoT Hub Device Provisioning Service의 인스턴스를 만드는 방법에는 �
 
     IoT Hub 및 DPS 리소스가 모두 나열되어 있습니다. 리소스가 최근에 만들어진 경우 **새로 고침**을 눌러야 할 수 있습니다.
 
-1. **rg-az220** 리소스 그룹 타일에서 **dps-az220-training-{your-id}**를 클릭합니다.
+1. **rg-az220** 리소스 그룹 타일에서 **dps-az220-training-{your-id}** 를 클릭합니다.
 
 1. **디바이스 프로비저닝 서비스** 블레이드의 **설정**에서 **연결된 IoT Hub**를 클릭합니다.
 
@@ -420,7 +420,7 @@ IoT Hub Device Provisioning Service의 인스턴스를 만드는 방법에는 �
 
     구독은 사용 가능한 IoT Hub 목록을 제공하는 데 사용됩니다.
 
-1. IoT Hub 드롭다운을 연 다음 **iot-az220-training-{your-id}**를 클릭합니다.
+1. IoT Hub 드롭다운을 연 다음 **iot-az220-training-{your-id}** 를 클릭합니다.
 
     이전 연습에서 만든 IoT ub입니다.
 
@@ -446,7 +446,7 @@ IoT Hub Device Provisioning Service는 IoT Hub를 위한 도우미 서비스로,
 
 1. AZ-220 대시보드가 표시되는지 확인합니다.
 
-1. **rg-az220** 리소스 그룹 타일에서 **dps-az220-training-{your-id}**를 클릭합니다.
+1. **rg-az220** 리소스 그룹 타일에서 **dps-az220-training-{your-id}** 를 클릭합니다.
 
     Device Provisioning Service 인스턴스를 처음 열면 개요 정보가 표시됩니다. 보시다시피 블레이드 상단의 영역은 상태, 데이터 센터 위치 및 구독과 같은 DPS 인스턴스에 대한 몇 가지 필수 정보를 제공합니다. 이 블레이드는 또한 다음에 대한 액세스를 제공하는 _빠른 링크_ 섹션을 제공합니다.
 

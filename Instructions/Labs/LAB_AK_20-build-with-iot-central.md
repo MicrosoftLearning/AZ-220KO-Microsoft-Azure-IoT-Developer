@@ -1,6 +1,6 @@
 ﻿---
 lab:
-    title: '랩 20: IoT Central로 구축'
+    title: '랩 20: 첫 번째 Azure IoT Central 앱 만들기'
     module: '모듈 12: IoT Central로 구축'
 ---
 
@@ -49,7 +49,7 @@ IoT Central은 이 시나리오를 처리하는 데 필요한 모든 것을 제�
 
 1. **추천**에서 **사용자 지정 앱**을 클릭합니다.
 
-1. **새 애플리케이션** 페이지에서 **애플리케이션 이름**에 **Refrigerated-Trucks-{your-id}**를 입력합니다.
+1. **새 애플리케이션** 페이지에서 **애플리케이션 이름**에 **Refrigerated-Trucks-{your-id}** 를 입력합니다.
 
     입력한 애플리케이션 이름이 애플리케이션 URL의 루트로 사용되고 있습니다(소문자로 변환됨).
 
@@ -83,7 +83,7 @@ IoT Central은 이 시나리오를 처리하는 데 필요한 모든 것을 제�
 
 1. 브라우저를 사용하여 [Azure IoT Central](https://apps.azureiotcentral.com/?azure-portal=true)을 엽니다.
 
-1. 왼쪽 탐색 메뉴에서 **내 앱**을 클릭한 다음 **Refrigerated-Trucks-{your-id}**를 클릭합니다.
+1. 왼쪽 탐색 메뉴에서 **내 앱**을 클릭한 다음 **Refrigerated-Trucks-{your-id}** 를 클릭합니다.
 
     다음 단계는 _디바이스 템플릿_을 지정하는 것입니다.
 
@@ -169,7 +169,7 @@ IoT Central은 이 시나리오를 처리하는 데 필요한 모든 것을 제�
 
     랩 시나리오를 단순화하기 위해 트럭의 화물 상태를 _비어 있음_, _가득 참_ 또는 _녹는 중_ 중 하나로 정의합니다.
 
-1. **복합 형식을 정의해야 합니다** 메시지에서 **+**를 클릭합니다.
+1. **복합 형식을 정의해야 합니다** 메시지에서 **+** 를 클릭합니다.
 
 1. **표시 이름**에 **비어 있음**을 입력합니다.
 
@@ -179,7 +179,7 @@ IoT Central은 이 시나리오를 처리하는 데 필요한 모든 것을 제�
 
     세 필드 모두 **비어 있음**이어야 합니다.
 
-1. 방금 입력한 필드 바로 아래의 **+**를 클릭합니다.
+1. 방금 입력한 필드 바로 아래의 **+** 를 클릭합니다.
 
 1. 위의 프로세스를 사용하여 **가득 참** 및 **녹는 중** 상태 값도 추가합니다.
 
@@ -201,7 +201,7 @@ IoT Central은 이 시나리오를 처리하는 데 필요한 모든 것을 제�
     | 의미 체계 유형 | 상태 |
     | 값 스키마 | 문자열 |
 
-1. **복합 형식을 정의해야 합니다** 메시지에서 **+**를 클릭한 후 위에서 사용한 프로세스에 따라 다음 상태 값 옵션을 추가합니다.
+1. **복합 형식을 정의해야 합니다** 메시지에서 **+** 를 클릭한 후 위에서 사용한 프로세스에 따라 다음 상태 값 옵션을 추가합니다.
 
     * 에
     * 끄기
@@ -454,7 +454,7 @@ IoT Central은 실제 센서가 있는 물리적 디바이스나 알고리즘을
 
     메모장(또는 다른 텍스트 편집기)을 사용하여 값을 텍스트 파일에 저장하여 Truck-connections.txt와 같은 의미 있는 이름을 제공합니다.
 
-1. **연결 방법**에서 **SAS(공유 액세스 서명)**가 선택되어 있는지 확인합니다.
+1. **연결 방법**에서 **SAS(공유 액세스 서명)** 가 선택되어 있는지 확인합니다.
 
 1. 대화 상자 하단에서 **닫기**를 클릭합니다.
 
@@ -602,12 +602,12 @@ Visual Studio Code를 사용하여 디바이스 센서 앱을 빌드합니다.
     using System;
     using System.Text.Json;
     using System.Text;
-    System.Threading을 사용해서;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Azure.Devices.Client;
     using Microsoft.Azure.Devices.Shared;
     using Microsoft.Azure.Devices.Provisioning.Client;
-    Microsoft.Azure.Devices.Provisioning.Client.Transport 사용;
+    using Microsoft.Azure.Devices.Provisioning.Client.Transport;
     using AzureMapsToolkit;
     using AzureMapsToolkit.Common;
     ```
