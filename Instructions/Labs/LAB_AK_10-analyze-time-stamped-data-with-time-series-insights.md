@@ -1,4 +1,4 @@
-﻿---
+---
 lab:
     title: '랩 10: Time Series Insights로 타임스탬프 데이터 탐색 및 분석
     module: '모듈 5: 인사이트 및 비즈니스 통합'
