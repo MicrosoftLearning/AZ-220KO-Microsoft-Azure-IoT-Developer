@@ -844,7 +844,7 @@ IoT Edge 디바이스는 연결이 끊어졌거나 오프라인 된 상태에서
 
 계속하기 전에 IoT Edge Hub 모듈의 사용자 프로필에 **/etc/iotedge/storage/** 디렉터리에 대한 읽기, 쓰기 및 실행 권한이 있는지 확인해야 합니다.
 
-1. Azure Portal 대시보드에서 **vm-az220-training-gw0002-{your-id}**를 클릭합니다.
+1. Azure Portal 대시보드에서 **vm-az220-training-gw0002-{your-id}** 를 클릭합니다.
 
     이렇게 하면 IoT Edge 가상 머신에 대한 블레이드가 열리고 개요 창이 선택됩니다.
 
