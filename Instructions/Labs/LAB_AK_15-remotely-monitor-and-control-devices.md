@@ -66,7 +66,7 @@ Contoso로부터 동굴 환경을 제어 범위 내에서 유지하는 자동 �
 | 리소스 유형 | 리소스 이름 |
 | :-- | :-- |
 | 리소스 그룹 | rg-az220 |
-| IoT Hub | iot-az220-training-{사용자 ID} |
+| IoT Hub | iot-az220-training-{your-id} |
 | IoT 디바이스 | sensor-th-0055 |
 
 > **중요**: 설정 스크립트를 실행하여 필요한 디바이스를 만드세요.
@@ -78,7 +78,7 @@ Contoso로부터 동굴 환경을 제어 범위 내에서 유지하는 자동 �
 >**참고:** **sensor-th-0055** 디바이스용 연결 문자열이 필요합니다. 이 디바이스가 Azure IoT Hub에 이미 등록된 경우, Azure Cloud Shell에서 다음 명령을 실행하여 연결 문자열을 가져올 수 있습니다."
 >
 > ```bash
-> az iot hub device-identity connection-string show --hub-name iot-az220-training-{사용자 ID} --device-id sensor-th-0055 -o tsv
+> az iot hub device-identity connection-string show --hub-name iot-az220-training-{your-id} --device-id sensor-th-0055 -o tsv
 > ```
 
 1. 브라우저를 사용하여 [Azure Cloud Shell](https://shell.azure.com/)을 열고 이 과정에 사용 중인 Azure 구독으로 로그인합니다.
@@ -136,9 +136,9 @@ Contoso로부터 동굴 환경을 제어 범위 내에서 유지하는 자동 �
 
     이제 편집기에서 **lab15-setup.azcli** 파일의 내용을 표시합니다.
 
-1. 편집기에서 `{사용자 ID}` 및 `{사용자 위치}`에 할당된 값을 업데이트합니다.
+1. 편집기에서 `{your-id}` 및 `{your-location}`에 할당된 값을 업데이트합니다.
 
-    아래 샘플을 예로 들어 보면, `{사용자 ID}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{사용자 위치}`는 리소스에 적합한 위치로 설정해야 합니다.
+    아래 샘플을 예로 들어 보면, `{your-id}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{your-location}`는 리소스에 적합한 위치로 설정해야 합니다.
 
     ```bash
     #!/bin/bash
@@ -176,7 +176,7 @@ Contoso로부터 동굴 환경을 제어 범위 내에서 유지하는 자동 �
 
     이 스크립트를 실행하는 데 몇 분이 걸릴 수 있습니다. 각 단계가 완료될 때 출력이 표시됩니다.
 
-    이 스크립트는 먼저 **rg-az220** 리소스 그룹과 **iot-az220-training-{사용자 ID}** IoT Hub를 만듭니다. 이미 있는 경우 해당 메시지가 표시됩니다. 그런 다음 스크립트는 ID가 **sensor-th-0055**인 디바이스를 IoT Hub에 추가하고 디바이스 연결 문자열을 표시합니다.
+    이 스크립트는 먼저 **rg-az220** 리소스 그룹과 **iot-az220-training-{your-id}** IoT Hub를 만듭니다. 이미 있는 경우 해당 메시지가 표시됩니다. 그런 다음 스크립트는 ID가 **sensor-th-0055**인 디바이스를 IoT Hub에 추가하고 디바이스 연결 문자열을 표시합니다.
 
 1. 스크립트가 완료되면 IoT Hub 및 디바이스와 관련된 정보가 표시됩니다.
 
@@ -185,19 +185,19 @@ Contoso로부터 동굴 환경을 제어 범위 내에서 유지하는 자동 �
     ```text
     Configuration Data:
     ------------------------------------------------
-    iot-az220-training-{사용자 ID} Service connectionstring:
+    iot-az220-training-{your-id} Service connectionstring:
     HostName=iot-az220-training-{your-id}.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=nV9WdF3Xk0jYY2Da/pz2i63/3lSeu9tkW831J4aKV2o=
 
     sensor-th-0055 device connection string:
     HostName=iot-az220-training-{your-id}.azure-devices.net;DeviceId=sensor-th-0055;SharedAccessKey=TzAzgTYbEkLW4nWo51jtgvlKK7CUaAV+YBrc0qj9rD8=
 
-    iot-az220-training-{사용자 ID} eventhub endpoint:
+    iot-az220-training-{your-id} eventhub endpoint:
     sb://iothub-ns-iot-az220-training-2610348-5a463f1b56.servicebus.windows.net/
 
-    iot-az220-training-{사용자 ID} eventhub path:
-    iot-az220-training-{사용자 ID}
+    iot-az220-training-{your-id} eventhub path:
+    iot-az220-training-{your-id}
 
-    iot-az220-training-{사용자 ID} eventhub SaS primarykey:
+    iot-az220-training-{your-id} eventhub SaS primarykey:
     tGEwDqI+kWoZroH6lKuIFOI7XqyetQHf7xmoSf1t+zQ=
     ```
 
@@ -462,7 +462,7 @@ Contoso로부터 동굴 환경을 제어 범위 내에서 유지하는 자동 �
 
     이 코드는 Operator 앱 구조를 대략적으로 보여 줍니다.
 
-1. `// INSERT 이 주석 아래에 using 문을 삽입합니다.` 주석을 찾습니다.
+1. `// INSERT using statements below here` 주석을 찾습니다.
 
 1. 애플리케이션 코드가 사용하도록 할 네임스페이스를 지정하려면 다음 코드를 입력합니다.
 
@@ -489,11 +489,11 @@ Contoso로부터 동굴 환경을 제어 범위 내에서 유지하는 자동 �
     ```csharp
     // 전역 변수입니다.
     // Event Hub 호환 엔드포인트입니다.
-    private readonly static string eventHubsCompatibleEndpoint = "<이벤트 허브 엔드포인트>";
+    private readonly static string eventHubsCompatibleEndpoint = "<your event hub endpoint>";
 
     // Event Hub 호환 이름입니다.
-    private readonly static string eventHubsCompatiblePath = "<이벤트 허브 경로>";
-    private readonly static string iotHubSasKey = "<이벤트 허브 SaS 키>";
+    private readonly static string eventHubsCompatiblePath = "<your event hub path>";
+    private readonly static string iotHubSasKey = "<your event hub SaS key>";
     private readonly static string iotHubSasKeyName = "service";
     private static EventHubClient eventHubClient;
 
@@ -502,7 +502,7 @@ Contoso로부터 동굴 환경을 제어 범위 내에서 유지하는 자동 �
     // INSERT 이 주석 아래에 레지스트리 관리자 변수를 삽입합니다.
 
     // IoT Hub의 연결 문자열입니다.
-    private readonly static string serviceConnectionString = "<서비스 연결 문자열>";
+    private readonly static string serviceConnectionString = "<your service connection string>";
 
     private readonly static string deviceId = "sensor-th-0055";
     ```
@@ -552,7 +552,7 @@ Contoso로부터 동굴 환경을 제어 범위 내에서 유지하는 자동 �
 
 1. **\<이벤트 허브 엔드포인트\>**, **\<이벤트 허브 경로\>** 및 **\<이벤트 허브 SaS 키\>**는 이 랩 앞부분에서 저장한 값으로 바꿉니다.
 
-1. `// INSERT 이 주석 아래에 Main 메서드를 삽입합니다.` 주석을 찾습니다.
+1. `// INSERT Main method below here` 주석을 찾습니다.
 
 1. **Main** 메서드를 구현하려면 다음 코드를 입력합니다.
 
@@ -725,7 +725,7 @@ Contoso 시나리오에서는 치즈 저장고에 있는 팬 작동을 제어하
 
     **SetFanState** 직접 메서드 처리기도 이 코드를 통해 설정됩니다. 위의 코드에 나와 있는 것처럼, deviceClient의 **SetMethodHandlerAsync** 메서드는 원격 메서드 이름 `"SetFanState"`, 호출할 실제 로컬 메서드 및 사용자 컨텍스트 개체(여기서는 null)를 인수로 사용합니다.
 
-1. `// INSERT 이 주석 아래에 SetFanState 메서드를 삽입합니다.` 주석을 찾습니다.
+1. `INSERT SetFanState method below here` 주석을 찾습니다.
 
 1. **SetFanState** 직접 메서드를 구현하려면 다음 코드를 입력합니다.
 
@@ -824,7 +824,7 @@ Contoso 시나리오에서는 치즈 저장고에 있는 팬 작동을 제어하
     InvokeMethod().GetAwaiter().GetResult();
     ```
 
-1. `// INSERT 이 주석 아래에 InvokeMethod 메서드를 삽입합니다.` 주석을 찾습니다.
+1. `INSERT InvokeMethod method below here` 주석을 찾습니다.
 
 1. 직접 메서드를 호출하는 코드를 추가하려면 다음 코드를 입력합니다.
 
@@ -917,7 +917,7 @@ IoT Hub를 통해 관리되는 디바이스 쌍은 쿼리용으로 설계되었�
 
 1. **Program.cs**가 열려 있는지 확인합니다.
 
-1. `// INSERT 이 주석 아래에 레지스트리 관리자 변수를 삽입합니다.` 주석을 찾습니다.
+1. `INSERT registry manager variable below here` 주석을 찾습니다.
 
 1. 레지스트리 관리자 변수를 삽입하려면 다음 코드를 입력합니다.
 
@@ -947,15 +947,15 @@ IoT Hub를 통해 관리되는 디바이스 쌍은 쿼리용으로 설계되었�
         var twin = await registryManager.GetTwinAsync(deviceId);
         var patch =
             @"{
-                태그: {
+                tags: {
                     customerID: 'Customer1',
                     cheeseCave: 'CheeseCave1'
                 },
                 properties: {
                     desired: {
                         patchId: 'set values',
-                        온도: '50',
-                        습도: '85'
+                        temperature: '50',
+                        humidity: '85'
                     }
                 }
             }";
@@ -981,7 +981,7 @@ IoT Hub를 통해 관리되는 디바이스 쌍은 쿼리용으로 설계되었�
 
 1. 코드 편집기 창에서 **Program.cs** 파일이 열려 있는지 확인합니다.
 
-1. `// INSERT 이 주석 아래에 원하는 속성의 변경된 처리기 코드를 등록합니다.` 주석을 찾습니다.
+1. `INSERT register desired property changed handler code below here` 주석을 찾습니다.
 
 1. 원하는 속성 변경 처리기를 등록하려면 다음 코드를 추가합니다.
 
@@ -994,7 +994,7 @@ IoT Hub를 통해 관리되는 디바이스 쌍은 쿼리용으로 설계되었�
     deviceClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertyChanged, null).Wait();
     ```
 
-1. `// INSERT 이 주석 아래에 OnDesiredPropertyChanged 메서드를 삽입합니다.` 주석을 찾습니다.
+1. `INSERT OnDesiredPropertyChanged method below here` 주석을 찾습니다.
 
 1. 디바이스 쌍 속성 변경에 응답하는 코드를 추가하려면 다음 코드를 입력합니다.
 

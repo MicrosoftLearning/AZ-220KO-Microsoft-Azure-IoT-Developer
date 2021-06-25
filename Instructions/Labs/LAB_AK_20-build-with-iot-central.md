@@ -49,13 +49,13 @@ IoT Central은 이 시나리오를 처리하는 데 필요한 모든 것을 제�
 
 1. **추천**에서 **사용자 지정 앱**을 클릭합니다.
 
-1. **새 애플리케이션** 페이지에서 **애플리케이션 이름**에 **Refrigerated-Trucks-{사용자 ID}**를 입력합니다.
+1. **새 애플리케이션** 페이지에서 **애플리케이션 이름**에 **Refrigerated-Trucks-{your-id}**를 입력합니다.
 
     입력한 애플리케이션 이름이 애플리케이션 URL의 루트로 사용되고 있습니다(소문자로 변환됨).
 
     애플리케이션 이름은 어떤 이름이든 사용할 수 있지만 **URL**은 _반드시_ 고유해야 합니다. 이 둘이 정확히 일치할 필요는 없지만 일치하면 혼동을 줄일 수 있습니다.
 
-    애플리케이션 이름에 `{사용자 ID}`를 추가하면 고유한 URL을 만들 수 있습니다.
+    애플리케이션 이름에 `{your-id}`를 추가하면 고유한 URL을 만들 수 있습니다.
 
 1. **애플리케이션 템플릿**에서 기본 **사용자 지정 애플리케이션** 값을 유지합니다.
 
@@ -79,11 +79,11 @@ IoT Central은 이 시나리오를 처리하는 데 필요한 모든 것을 제�
 
 1. Azure IoT Central 브라우저 탭을 닫습니다.
 
-    다음에 Azure IoT Central 홈 페이지를 열 때 왼쪽 탐색 메뉴에서 **내 앱**을 선택하면 **Refrigerated-Trucks-{사용자 ID}** 앱이 나열됩니다.
+    다음에 Azure IoT Central 홈 페이지를 열 때 왼쪽 탐색 메뉴에서 **내 앱**을 선택하면 **Refrigerated-Trucks-{your-id}** 앱이 나열됩니다.
 
 1. 브라우저를 사용하여 [Azure IoT Central](https://apps.azureiotcentral.com/?azure-portal=true)을 엽니다.
 
-1. 왼쪽 탐색 메뉴에서 **내 앱**을 클릭한 다음 **Refrigerated-Trucks-{사용자 ID}**를 클릭합니다.
+1. 왼쪽 탐색 메뉴에서 **내 앱**을 클릭한 다음 **Refrigerated-Trucks-{your-id}**를 클릭합니다.
 
     다음 단계는 _디바이스 템플릿_을 지정하는 것입니다.
 
@@ -474,7 +474,7 @@ Azure Maps 계정이 아직 없는 경우 새로 만들어야 합니다.
 
     이 과정에서 사용 중인 Azure 구독을 사용하여 Azure Maps 계정을 만든 경우, 다음과 같이 Azure Portal에서 계정의 기본 키를 찾을 수 있습니다. Azure Maps(AZ-220-MAPS) 블레이드를 열고 인증 창을 엽니다. 기본 키가 표시됩니다.
 
-    > **참고**: Azure Maps의 경우 기본 키가 올바른지 확인하려는 경우. .html 파일에 다음 HTML을 저장합니다. `'<Azure Maps 구독 키>'` 자리 표시자를 기본 키 값으로 바꾼 다음, 파일을 웹 브라우저에 로드합니다. 세계 지도가 표시됩니다.
+    > **참고**: Azure Maps의 경우 기본 키가 올바른지 확인하려는 경우. .html 파일에 다음 HTML을 저장합니다. `'<your Azure Maps subscription key>'` 자리 표시자를 기본 키 값으로 바꾼 다음, 파일을 웹 브라우저에 로드합니다. 세계 지도가 표시됩니다.
 
     ```html
     <!DOCTYPE html>
@@ -627,20 +627,20 @@ Visual Studio Code를 사용하여 디바이스 센서 앱을 빌드합니다.
                 enroute,
                 delivering,
                 returning,
-                로드하는 중,
-                덤핑 중
+                loading,
+                dumping
             };
             enum ContentsEnum
             {
                 full,
                 melting,
-                비어 있음
+                empty
             }
             enum FanEnum
             {
-                켜짐,
-                꺼짐,
-                실패
+                on,
+                off,
+                failed
             }
 
             // Azure Maps 서비스 전역.
@@ -765,7 +765,7 @@ Visual Studio Code를 사용하여 디바이스 센서 앱을 빌드합니다.
                 // 트럭이 목적지에서 10미터 이내의 거리에 있으면 양호로 판단합니다.
                 if (DistanceInMeters(currentLat, currentLon, destinationLat, destinationLon) < 10)
                     return true;
-                거짓으로 반환;
+                return false;
             }
 
             static void UpdatePosition()
@@ -862,7 +862,7 @@ Visual Studio Code를 사용하여 디바이스 센서 앱을 빌드합니다.
     ```
 
     > **참고**:
-    > 위의 코드에 있는 키 호출은 `var directions = azureMapsServices.GetRouteDirections(req).Result;`입니다. 'directions' 구조는 복잡합니다. 이 메서드에서 중단점을 설정하고 'directions'의 내용을 검사하는 것이 좋습니다.
+    > 위의 코드에 있는 키 호출은 `var directions = azureMapsServices.GetRouteDirections(req).Result;`입니다. `directions` 구조는 복잡합니다. 이 메서드에서 중단점을 설정하고 `directions`의 내용을 검사하는 것이 좋습니다.
 
 1. 코드 편집기 창에서 고객에게 전달할 직접 메서드를 추가하려면 다음 코드를 입력합니다.
 
@@ -896,7 +896,7 @@ Visual Studio Code를 사용하여 디바이스 센서 앱을 빌드합니다.
                             else
                             {
                                 // 모든 것이 양호한 경우에만 이벤트를 설정합니다.
-                                eventText = "신규 고객: " + customerNumber.ToString();
+                                eventText = "New customer: " + customerNumber.ToString();
 
                                 destinationLat = customer[customerNumber, 0];
                                 destinationLon = customer[customerNumber, 1];
@@ -1141,7 +1141,7 @@ Visual Studio Code를 사용하여 디바이스 센서 앱을 빌드합니다.
     ```
 
     > **참고**:
-    > 이 함수는 시간 간격마다 호출됩니다. 실제 시간 간격은 5초로 설정되지만 _시뮬레이션된 시간_(이 함수가 호출될 때마다 경과하도록 지정한 시뮬레이션된 초)은 전역 `static double interval = 60`으로 설정됩니다. 이 값을 60으로 설정하면 시뮬레이션이 5/60의 속도, 즉 실제 시간의 12배속으로 실행됩니다. 시뮬레이션된 시간을 줄이려면 'interval'을 예를 들어, 30(실시간으로 6회 실행되는 시뮬레이션)으로 줄입니다. `간격`을 5로 설정하면 시뮬레이션이 실시간으로 실행됩니다. 따라서 고객 목적지까지의 실제 운전 시간을 감안할 때 현실적이기는 하지만 약간 느립니다.
+    > 이 함수는 시간 간격마다 호출됩니다. 실제 시간 간격은 5초로 설정되지만 _시뮬레이션된 시간_(이 함수가 호출될 때마다 경과하도록 지정한 시뮬레이션된 초)은 전역 `static double interval = 60`으로 설정됩니다. 이 값을 60으로 설정하면 시뮬레이션이 5/60의 속도, 즉 실제 시간의 12배속으로 실행됩니다. 시뮬레이션된 시간을 줄이려면 `interval`을 예를 들어, 30(실시간으로 6회 실행되는 시뮬레이션)으로 줄입니다. `interval`을 5로 설정하면 시뮬레이션이 실시간으로 실행됩니다. 따라서 고객 목적지까지의 실제 운전 시간을 감안할 때 현실적이기는 하지만 약간 느립니다.
 
 1. 코드 편집기 창에서 트럭 원격 분석을 보내는 메서드를 추가하기 위해 (이벤트가 발생한 경우 이벤트도 전송) 다음 코드를 입력합니다.
 
@@ -1237,9 +1237,9 @@ Visual Studio Code를 사용하여 디바이스 센서 앱을 빌드합니다.
     하나의 설정과 하나의 속성만 앱에 추가됩니다. 더 필요한 경우 쉽게 추가할 수 있습니다.
 
     > **참고**:
-    > 이 코드 섹션은 IoT Central과 통신하는 대부분의 C# 앱에서 일반적입니다. 추가 속성 또는 설정을 추가하려면 'reportedProperties'에 추가하거나 새 설정 문자열을 만들고 각각 'desiredProperties'를 확인합니다. 대부분 다른 코드를 변경할 필요가 없습니다.
+    > 이 코드 섹션은 IoT Central과 통신하는 대부분의 C# 앱에서 일반적입니다. 추가 속성 또는 설정을 추가하려면 `reportedProperties`에 추가하거나 새 설정 문자열을 만들고 각각 `desiredProperties`를 확인합니다. 대부분 다른 코드를 변경할 필요가 없습니다.
 
-1. 코드 편집기 창에서 'Main' 함수를 추가하려면 다음 코드를 입력합니다.
+1. 코드 편집기 창에서 `Main` 함수를 추가하려면 다음 코드를 입력합니다.
 
    ```cs
             static void Main(string[] args)

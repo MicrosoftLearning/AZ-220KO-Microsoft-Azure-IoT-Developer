@@ -1,7 +1,7 @@
 ﻿---
-랩:
-    제목: '랩 19: ADT(Azure Digital Twins) 솔루션 개발'
-    모듈: '모듈 11: Azure Digital Twins를 사용하여 개발 작업 수행'
+lab:
+    title: '랩 19: ADT(Azure Digital Twins) 솔루션 개발'
+    module: '모듈 11: Azure Digital Twins를 사용하여 개발 작업 수행'
 ---
 
 # ADT(Azure Digital Twins) 솔루션 개발
@@ -57,8 +57,8 @@
 | 리소스 유형  | 리소스 이름                |
 | :------------- | :--------------------------- |
 | 리소스 그룹 | rg-az220                     |
-| IoT Hub        | iot-az220-training-{사용자 ID} |
-| TSI            | tsi-az220-training-{사용자 ID} |
+| IoT Hub        | iot-az220-training-{your-id} |
+| TSI            | tsi-az220-training-{your-id} |
 | TSI 액세스 정책 | access1                   |
 
 > **참고**:  **lab19-setup.azcli** 스크립트는 **bash** 셸 환경에서 실행되도록 작성됩니다. 이는 Azure Cloud Shell에서 실행할 수 있는 가장 쉬운 방법입니다.
@@ -120,9 +120,9 @@
 
     이제 편집기에서 **lab19-setup.azcli** 파일의 내용을 표시합니다.
 
-1. 편집기에서 `{사용자 ID}` 및 `{사용자 위치}` 변수의 값을 업데이트합니다.
+1. 편집기에서 `{your-id}` 및 `{your-location}` 변수의 값을 업데이트합니다.
 
-    아래 샘플을 예로 들면 `{사용자 ID}`는 이 과정을 시작할 때 만든 고유 ID(**cah191211**)로 설정해야 하며 `{사용자 위치}`는 리소스 그룹과 일치하는 위치로 설정해야 합니다.
+    아래 샘플을 예로 들면 `{your-id}`는 이 과정을 시작할 때 만든 고유 ID(**cah191211**)로 설정해야 하며 `{your-location}`는 리소스 그룹과 일치하는 위치로 설정해야 합니다.
 
     ```bash
     #!/bin/bash
@@ -196,7 +196,7 @@
 
 1. **위치** 드롭다운에서 Azure IoT Hub가 프로비전된 지역을 선택합니다.
 
-1. **리소스 이름**으로 **adt-az220-training-{사용자 ID}**를 입력합니다.
+1. **리소스 이름**으로 **adt-az220-training-{your-id}**를 입력합니다.
 
 1. 입력한 값을 검토하려면 **검토 + 만들기**를 클릭합니다.
 
@@ -212,7 +212,7 @@
 
 1. **메모장** 또는 유사한 텍스트 편집기를 사용해 **adt-connection.txt** 파일을 만듭니다.
 
-1. 이 파일에 Azure Digital Twins 인스턴스의 이름인 **adt-az220-training-{사용자 ID}**를 추가합니다.
+1. 이 파일에 Azure Digital Twins 인스턴스의 이름인 **adt-az220-training-{your-id}**를 추가합니다.
 
 1. 이 파일에 리소스 그룹인 **rg-az220**을 추가합니다.
 
@@ -1018,7 +1018,7 @@ Cheese Cave 모델용으로 확인된 속성의 전체 목록은 다음과 같�
 1. 폴더와 하위 폴더에서 모델 파일의 유효성을 검사하려면 다음 명령을 입력합니다.
 
     ```powershell
-    dotnet run -- --directory {모델 위치}
+    dotnet run -- --directory {model-location}
     ```
 
     여기서 **{모델 위치}** 토큰은 모델이 있는 폴더로 바꿉니다. 예를 들어 **Allfiles\Labs\19-Azure Digital Twins\Final\Models** 폴더를 입력할 수 있습니다.
@@ -1028,14 +1028,14 @@ Cheese Cave 모델용으로 확인된 속성의 전체 목록은 다음과 같�
     ```cmd
     dotnet run -- --directory "D:\D-Repos\AZ220-DeveloperLabs\Allfiles\Labs\19-Azure Digital Twins\Final\Models"
     Simple DTDL Validator (dtdl parser library version 3.12.5.0)
-    Validating *json files in folder 'D:\D-Repos\AZ220-DeveloperLabs\Allfiles\Labs\19-Azure Digital Twins\Final\Models'.
+    Validating *.json files in folder 'D:\D-Repos\AZ220-DeveloperLabs\Allfiles\Labs\19-Azure Digital Twins\Final\Models'.
     Recursive is set to True
 
     Read 3 files from specified directory
     Validated JSON for all files - now validating DTDL
 
     **********************************************
-    **Validated all files - Your DTDL is valid**
+    ** Validated all files - Your DTDL is valid **
     **********************************************
     ```
 
@@ -1049,7 +1049,7 @@ Cheese Cave 모델용으로 확인된 속성의 전체 목록은 다음과 같�
 
     ```cmd
     Simple DTDL Validator (dtdl parser library version 3.12.5.0)
-    Validating *bad files in folder 'D:\Az220\Allfiles\Labs\19-Azure Digital Twins\Final\Models'.
+    Validating *.bad files in folder 'D:\Az220\Allfiles\Labs\19-Azure Digital Twins\Final\Models'.
     Recursive is set to True
 
     Read 1 files from specified directory
@@ -1223,10 +1223,10 @@ ADT에서 디지털 트윈을 만들려면 먼저 모델을 업로드해야 합�
 1. **Cheese Factory 인터페이스**를 업로드하려면 다음 명령을 입력합니다.
 
     ```powershell
-    az dt model create --models "{파일 루트}\Allfiles\Labs\19-Azure Digital Twins\Final\Models\CheeseFactoryInterface.json" -n adt-az220-training-{사용자 ID}
+    az dt model create --models "{파일 루트}\Allfiles\Labs\19-Azure Digital Twins\Final\Models\CheeseFactoryInterface.json" -n adt-az220-training-{your-id}
     ```
 
-    여기서 **{파일 루트}**는 이 랩용 도우미 파일이 포함된 폴더로 바꾸고 **{사용자 ID}**는 사용자의 고유 식별자로 바꿔야 합니다.
+    여기서 **{파일 루트}**는 이 랩용 도우미 파일이 포함된 폴더로 바꾸고 **{your-id}**는 사용자의 고유 식별자로 바꿔야 합니다.
 
     명령 실행이 정상적으로 완료되면 다음과 같은 출력이 표시됩니다.
 
@@ -1280,10 +1280,10 @@ Azure Digital Twins 솔루션에서는 환경의 엔터티가 디지털 트윈�
 1. Azure CLI를 사용하여 Cheese Factory 모델에서 디지털 트윈을 만들려면 다음 명령을 입력합니다.
 
     ```powershell
-    az dt twin create --dt-name adt-az220-training-{사용자 ID} --dtmi "dtmi:com:contoso:digital_factory:cheese_factory;1" --twin-id factory_1 --properties "{파일 루트}\Allfiles\Labs\19-Azure Digital Twins\Final\Properties\FactoryProperties.json"
+    az dt twin create --dt-name adt-az220-training-{your-id} --dtmi "dtmi:com:contoso:digital_factory:cheese_factory;1" --twin-id factory_1 --properties "{파일 루트}\Allfiles\Labs\19-Azure Digital Twins\Final\Properties\FactoryProperties.json"
     ```
 
-    여기서 **{파일 루트}**는 이 랩용 도우미 파일이 포함된 폴더로 바꾸고 **{사용자 ID}**는 사용자의 고유 식별자로 바꿔야 합니다.
+    여기서 **{파일 루트}**는 이 랩용 도우미 파일이 포함된 폴더로 바꾸고 **{your-id}**는 사용자의 고유 식별자로 바꿔야 합니다.
 
     이 명령에 포함된 각 값의 용도는 다음과 같습니다.
 
@@ -1405,10 +1405,10 @@ Azure Digital Twins 솔루션에서는 환경의 엔터티가 디지털 트윈�
 1. Azure CLI를 통해 관계를 만들려면 명령 프롬프트로 돌아와 다음 명령을 실행합니다.
 
     ```powershell
-    az dt twin relationship create -n adt-az220-training-{사용자 ID} --relationship-id factory_1_has_cave_1 --relationship rel_has_caves --twin-id factory_1 --target cave_1
+    az dt twin relationship create -n adt-az220-training-{your-id} --relationship-id factory_1_has_cave_1 --relationship rel_has_caves --twin-id factory_1 --target cave_1
     ```
 
-    **{사용자 ID}**를 사용자의 고유 식별자로 바꿔야 합니다.
+    **{your-id}**를 사용자의 고유 식별자로 바꿔야 합니다.
 
     명령 실행이 정상적으로 완료되면 다음과 같은 명령 출력이 표시됩니다.
 
@@ -1476,7 +1476,7 @@ ADT를 사용하는 모델링 과정의 디자인 프로세스에서는 개념 �
 1. CLI를 통해 **factory_2** 디지털 트윈을 삭제하려면 명령 프롬프트 창으로 돌아와 다음 명령을 입력합니다.
 
     ```powershell
-    az dt twin delete -n adt-az220-training-{사용자 ID} --twin-id factory_2
+    az dt twin delete -n adt-az220-training-{your-id} --twin-id factory_2
     ```
 
     다른 명령과 달리 이 명령은 실행이 완료되어도 출력이 표시되지 않습니다(명령에서 오류가 생성되는 경우는 제외).
@@ -1484,13 +1484,13 @@ ADT를 사용하는 모델링 과정의 디자인 프로세스에서는 개념 �
 1. **factory_1**과 **cave_1** 간의 관계를 삭제하려면 다음 명령을 입력합니다.
 
     ```powershell
-    az dt twin relationship delete -n adt-az220-training-{사용자 ID} --twin-id factory_1 --relationship-id factory_1_has_cave_1
+    az dt twin relationship delete -n adt-az220-training-{your-id} --twin-id factory_1 --relationship-id factory_1_has_cave_1
     ```
 
     이 명령을 실행하려면 관계 ID가 필요합니다. 지정된 트윈의 관계 ID를 확인할 수 있습니다. 예를 들어 **factory_1**의 관계 ID를 확인하려는 경우 다음 명령을 입력하면 됩니다.
 
     ```powershell
-    az dt twin relationship list -n adt-az220-training-{사용자 ID} --twin-id factory_1
+    az dt twin relationship list -n adt-az220-training-{your-id} --twin-id factory_1
     ```
 
     cave_1에 대한 관계를 삭제하기 전에 이 명령을 실행하면 다음과 같은 출력이 표시됩니다.
@@ -1517,7 +1517,7 @@ ADT를 사용하는 모델링 과정의 디자인 프로세스에서는 개념 �
 1. 모델을 삭제하려면 다음 명령을 입력합니다.
 
     ```powershell
-    az dt model delete -n adt-az220-training-{사용자 ID} --dtmi "dtmi:com:contoso:digital_factory:cheese_factory;1"
+    az dt model delete -n adt-az220-training-{your-id} --dtmi "dtmi:com:contoso:digital_factory:cheese_factory;1"
     ```
 
     이번에도 출력은 표시되지 않습니다.
@@ -1915,20 +1915,20 @@ Azure Digital Twins와 해당 API에 액세스하려면 적절한 권한이 있�
 1. Cloud Shell 명령 프롬프트에서 Azure 함수 앱을 만들려면 다음 명령을 입력합니다.
 
     ```bash
-    az functionapp create --resource-group rg-az220 --consumption-plan-location {사용자 위치} --name func-az220-hub2adt-training-{사용자 ID} --storage-account staz220training{사용자 ID} --functions-version 3
+    az functionapp create --resource-group rg-az220 --consumption-plan-location {your-location} --name func-az220-hub2adt-training-{your-id} --storage-account staz220training{your-id} --functions-version 3
     ```
 
-    > **참고**: 위의 **{사용자 위치}** 및 **{사용자 ID}** 토큰은 적절한 값으로 바꿔야 합니다.
+    > **참고**: 위의 **{사용자 위치}** 및 **{your-id}** 토큰은 적절한 값으로 바꿔야 합니다.
 
     Azure 함수가 Azure Digital Twins에 인증을 하려면 전달자 토큰을 함수에 전달해야 합니다. 이 토큰이 전달되었는지 확인하려면 함수 앱에 대한 관리 ID를 만들어야 합니다.
 
 1. 함수 앱용 시스템 관리 ID를 작성(할당)하고 연결된 서비스 주체 ID를 표시하려면 다음 명령을 입력합니다.
 
     ```bash
-    az functionapp identity assign -g rg-az220 -n func-az220-hub2adt-training-{사용자 ID} --query principalId -o tsv
+    az functionapp identity assign -g rg-az220 -n func-az220-hub2adt-training-{your-id} --query principalId -o tsv
     ```
 
-    > **참고**: 위의 **{사용자 ID}** 토큰은 적절한 값으로 바꿔야 합니다.
+    > **참고**: 위의 **{your-id}** 토큰은 적절한 값으로 바꿔야 합니다.
 
     그러면 다음과 같은 출력이 표시됩니다.
 
@@ -1941,20 +1941,20 @@ Azure Digital Twins와 해당 API에 액세스하려면 적절한 권한이 있�
 1. 함수 앱 서비스 주체에 **Azure Digital Twins 데이터 소유자** 역할을 할당하려면 다음 명령을 입력합니다.
 
     ```bash
-    az dt role-assignment create --dt-name adt-az220-training-{사용자 ID} --assignee {서비스 주체 ID} --role "Azure Digital Twins Data Owner"
+    az dt role-assignment create --dt-name adt-az220-training-{your-id} --assignee {principal-id} --role "Azure Digital Twins Data Owner"
     ```
 
-    > **참고**: 위의 **{사용자 ID}** 및 **{서비스 주체 ID}** 토큰은 적절한 값으로 바꿔야 합니다. **{서비스 주체 ID}** 값은 이전 단계의 출력으로 표시되었던 값입니다.
+    > **참고**: 위의 **{your-id}** 및 **{서비스 주체 ID}** 토큰은 적절한 값으로 바꿔야 합니다. **{서비스 주체 ID}** 값은 이전 단계의 출력으로 표시되었던 값입니다.
 
     이제 Azure 함수 앱에 서비스 주체가 할당되었으므로 해당 서비스 주체가 Azure Digital Twins 인스턴스에 액세스할 수 있도록 **Azure Digital Twins 데이터 소유자** 역할을 할당해야 합니다.
 
 1. Azure 함수 앱에 Azure Digital Twins 인스턴스 URL을 환경 변수로 제공하려면 다음 명령을 입력합니다.
 
     ```bash
-    az functionapp config appsettings set -g rg-az220 -n func-az220-hub2adt-training-{사용자 ID} --settings "ADT_SERVICE_URL={ADT URL}"
+    az functionapp config appsettings set -g rg-az220 -n func-az220-hub2adt-training-{your-id} --settings "ADT_SERVICE_URL={adt-url}"
     ```
 
-    > **참고**: 위의 **{사용자 ID}** 및 **{ADT URL}** 토큰은 적절한 값으로 바꿔야 합니다. 이전 작업에서 **adt-connection.txt** 파일에 저장했던 **{ADT URL}** 값은 `https://adt-az220-training-dm030821.api.eus.digitaltwins.azure.net`과 같은 형식입니다.
+    > **참고**: 위의 **{your-id}** 및 **{ADT URL}** 토큰은 적절한 값으로 바꿔야 합니다. 이전 작업에서 **adt-connection.txt** 파일에 저장했던 **{ADT URL}** 값은 `https://adt-az220-training-dm030821.api.eus.digitaltwins.azure.net`과 같은 형식입니다.
 
     명령 실행이 완료되면 사용 가능한 모든 설정의 목록이 표시됩니다. 이제 Azure 함수가 **ADT_SERVICE_URL** 값을 읽어 ADT 서비스 URL을 가져올 수 있습니다.
 
@@ -2181,9 +2181,9 @@ Azure 함수는 다양한 NuGet 패키지를 사용하여 ADT 및 Azure Identity
     ```csharp
     //트윈 업데이트
     var patch = new Azure.JsonPatchDocument();
-    patch.AppendReplace<부울>("/fanAlert", fanAlert); // 이미 부울임
-    patch.AppendReplace<부울>("/temperatureAlert", temperatureAlert.Value<부울>()); // JToken 값을 부울로 변환
-    patch.AppendReplace<부울>("/humidityAlert", humidityAlert.Value<부울>()); // JToken 값을 부울로 변환
+    patch.AppendReplace<bool>("/fanAlert", fanAlert); // 이미 부울임
+    patch.AppendReplace<bool>("/temperatureAlert", temperatureAlert.Value<bool>()); // JToken 값을 부울로 변환
+    patch.AppendReplace<bool>("/humidityAlert", humidityAlert.Value<bool>()); // JToken 값을 부울로 변환
 
     await client.UpdateDigitalTwinAsync(deviceId, patch);
 
@@ -2219,7 +2219,7 @@ Azure 함수를 만들었으므로 이제 Azure에 게시해야 합니다.
 1. 메시지가 표시되면 다음 항목을 선택합니다.
 
     * **구독 선택**: 이 과정에 사용 중인 구독을 선택합니다.
-    * **Azure에서 함수 앱 선택**: **func-az220-hub2adt-training-{사용자 ID}**를 선택합니다.
+    * **Azure에서 함수 앱 선택**: **func-az220-hub2adt-training-{your-id}**를 선택합니다.
 
     배포를 확인하라는 메시지가 표시되면 **배포**를 클릭합니다.
 
@@ -2243,7 +2243,7 @@ Azure 함수를 만들었으므로 이제 Azure에 게시해야 합니다.
 
 1. 브라우저를 열고 [Azure Portal](https://portal.azure.com/)로 이동합니다.
 
-1. **iot-az220-training-{사용자 ID}** IoT Hub로 이동합니다.
+1. **iot-az220-training-{your-id}** IoT Hub로 이동합니다.
 
 1. 왼쪽 탐색 영역에서 **이벤트**를 선택합니다.
 
@@ -2253,7 +2253,7 @@ Azure 함수를 만들었으므로 이제 Azure에 게시해야 합니다.
 
 1. **Event Grid 스키마** 드롭다운에서 **Event Grid 스키마**가 선택되어 있는지 확인합니다.
 
-1. **항목 정보** 섹션에서 **항목 유형**이 **IoT Hub**로, **원본 리소스**가 **iot-az220-training-{사용자 ID}**로 설정되어 있는지 확인합니다.
+1. **항목 정보** 섹션에서 **항목 유형**이 **IoT Hub**로, **원본 리소스**가 **iot-az220-training-{your-id}**로 설정되어 있는지 확인합니다.
 
 1. **시스템 항목 이름** 필드에 **Twin-Topic**을 입력합니다.
 
@@ -2269,7 +2269,7 @@ Azure 함수를 만들었으므로 이제 Azure에 게시해야 합니다.
 
 1. **리소스 그룹**에서 **rg-az220**이 선택되어 있는지 확인합니다.
 
-1. 함수 앱 아래에서 **func-az220-hub2adt-training-{사용자 ID}**를 선택합니다.
+1. 함수 앱 아래에서 **func-az220-hub2adt-training-{your-id}**를 선택합니다.
 
 1. **슬롯** 아래에 **프로덕션**이 선택되어 있는지 확인합니다.
 
@@ -2300,7 +2300,7 @@ Azure 함수를 만들었으므로 이제 Azure에 게시해야 합니다.
         "iothub-connection-device-id": "sensor-th-0055",
         "iothub-connection-auth-method": "{\"scope\":\"device\",\"type\":\"sas\",\"issuer\":\"iothub\",\"acceptingIpFilterRule\":null}",
         "iothub-connection-auth-generation-id": "637508617957275763",
-        "iothub-enqueuedtime": "2021-03-12T19:오후 2:16.824Z",
+        "iothub-enqueuedtime": "2021-03-12T19:14:16.824Z",
         "iothub-message-source": "Telemetry"
     },
     "body": "eyJ0ZW1wZXJhdHVyZSI6NjkuNDcsImh1bWlkaXR5Ijo5Ny44OX0="
@@ -2342,7 +2342,7 @@ Azure 함수를 만들었으므로 이제 Azure에 게시해야 합니다.
     2021-03-11T16:35:43.647 [Information] Device:sensor-th-0055 Humidity is:98.08
     2021-03-11T16:35:43.648 [Information] Executed 'HubToAdtFunction' (Succeeded, Id=9f7a3611-0795-4da7-ac8c-0b380310f4db, Duration=2ms)
     2021-03-11T16:35:43.728 [Error] Service request failed.
-    상태: 404 (Not Found)
+    Status: 404 (Not Found)
 
     Content:
     {"error":{"code":"DigitalTwinNotFound","message":"There is no digital twin instance that exists with the ID sensor-th-0055. Please verify that the twin id is valid and ensure that the twin is not deleted. See section on querying the twins http://aka.ms/adtv2query."}}
@@ -2453,9 +2453,9 @@ REST API를 사용하려면 HTTP 헤더에서 비밀(또는 암호)을 전달해
 
 마지막으로 앱 등록 서비스 주체에 ADT 역할을 부여해야 합니다.
 
-1. **iot-az220-training-{사용자 ID}** ADT 인스턴스를 엽니다.
+1. **iot-az220-training-{your-id}** ADT 인스턴스를 엽니다.
 
-    **리소스, 서비스 및 문서 검색** 필드에 **adt-az220**을 입력한 후 검색 결과에서 **adt-az220-training-{사용자 ID}**를 클릭하여 ADT 인스턴스로 이동할 수 있습니다.
+    **리소스, 서비스 및 문서 검색** 필드에 **adt-az220**을 입력한 후 검색 결과에서 **adt-az220-training-{your-id}**를 클릭하여 ADT 인스턴스로 이동할 수 있습니다.
 
 1. 사용자 역할을 업데이트하려면 왼쪽 메뉴에서 **액세스 제어(IAM)**를 클릭합니다.
 
@@ -2569,9 +2569,9 @@ REST API를 사용하려면 HTTP 헤더에서 비밀(또는 암호)을 전달해
 
 1. 드롭다운에서 **GET** 값을 찾아 **PATCH**로 변경합니다.
 
-1. **Enter request URL** 필드에 **https://{ADT 호스트 이름}/digitaltwins/{트윈 ID}**를 입력합니다.
+1. **Enter request URL** 필드에 **https://{adt-hostname}/digitaltwins/{twin_id}**를 입력합니다.
 
-    > **참고**: **{트윈 ID}** 토큰은 **cave_2**로, **{ADT 호스트 이름}** 토큰은 Azure Digital Twins 인스턴스의 호스트 이름으로 바꿉니다. 다음 Azure CLI 명령을 실행하면 현재 구독 내 모든 ADT 인스턴스의 호스트 이름 목록이 표시됩니다. `az dt list --query "[].hostName"`.
+    > **참고**: **{twin_id}** 토큰은 **cave_2**로, **{adt-hostname}** 토큰은 Azure Digital Twins 인스턴스의 호스트 이름으로 바꿉니다. 다음 Azure CLI 명령을 실행하면 현재 구독 내 모든 ADT 인스턴스의 호스트 이름 목록이 표시됩니다. `az dt list --query "[].hostName"`.
 
 1. URL 아래에서 **Query params** 탭을 선택하고 다음 정보를 입력합니다.
 
@@ -2644,9 +2644,9 @@ REST API를 사용하려면 HTTP 헤더에서 비밀(또는 암호)을 전달해
 
 1. 드롭다운에서 **GET** 값을 찾아 **POST**로 변경합니다.
 
-1. **Enter request URL** 필드에 **https://{ADT 호스트 이름}/query**를 입력합니다.
+1. **Enter request URL** 필드에 **https://{adt-hostname}/query**를 입력합니다.
 
-    > **참고**: **{ADT 호스트 이름}** 토큰은 Azure Digital Twins 인스턴스의 호스트 이름으로 바꿉니다. 다음 Azure CLI 명령을 실행하면 현재 구독 내 모든 ADT 인스턴스의 호스트 이름 목록이 표시됩니다. `az dt list --query "[].hostName"`.
+    > **참고**: **{adt-hostname}** 토큰은 Azure Digital Twins 인스턴스의 호스트 이름으로 바꿉니다. 다음 Azure CLI 명령을 실행하면 현재 구독 내 모든 ADT 인스턴스의 호스트 이름 목록이 표시됩니다. `az dt list --query "[].hostName"`.
 
 1. URL 아래에서 **Query params** 탭을 선택하고 다음 정보를 입력합니다.
 
@@ -2701,7 +2701,7 @@ REST API를 사용하려면 HTTP 헤더에서 비밀(또는 암호)을 전달해
     > ```json
     > {
     >     "query": "SELECT DesiredTemperature, DesiredHumidity FROM DIGITALTWINS where $dtId = 'cave_5' AND IS_PRIMITIVE(DesiredTemperature) AND IS_PRIMITIVE(DesiredHumidity)",
-    >     "continuationToken": "{구성 토큰}"
+    >     "continuationToken": "{continuation-token}"
     > }
     > ```
 
@@ -2781,7 +2781,7 @@ Event Grid는 Azure 서비스에서 생성된 이벤트를 Azure 내의 다른 �
 
 엔드포인트를 정의해야 Azure Digital Twins에서 이벤트를 보낼 수 있습니다.
 
-1. Azure Portal에서 Azure Digital Twins 인스턴스 **adt-az220-training-{사용자 ID}**로 이동합니다.
+1. Azure Portal에서 Azure Digital Twins 인스턴스 **adt-az220-training-{your-id}**로 이동합니다.
 
 1. 왼쪽 탐색 영역의 **출력 연결**에서 **엔드포인트**를 클릭합니다.
 
@@ -2837,13 +2837,13 @@ Event Grid는 Azure 서비스에서 생성된 이벤트를 Azure 내의 다른 �
 
 #### 작업 4 – 트윈 업데이트 함수 만들기
 
-이 작업에서는 기존 **func-az220-hub2adt-training-{사용자 ID}** 함수 앱과 관련 코드 프로젝트에 새 함수를 추가합니다. 이 함수는 Cheese Cave Device에서 라우팅된 트윈 업데이트 이벤트에 응답하여 부모 Cheese Cave 트윈에서 속성을 업데이트합니다.
+이 작업에서는 기존 **func-az220-hub2adt-training-{your-id}** 함수 앱과 관련 코드 프로젝트에 새 함수를 추가합니다. 이 함수는 Cheese Cave Device에서 라우팅된 트윈 업데이트 이벤트에 응답하여 부모 Cheese Cave 트윈에서 속성을 업데이트합니다.
 
 > **참고**: 이 함수는 기존 함수 앱 내에 배포되므로 ADT 액세스 권한이 있는 서비스 주체를 상속합니다.
 
 1. Visual Studio Code에서 **Contoso.AdtFunctions** 프로젝트를 엽니다.
 
-1. 기존 프로젝트에 새 함수를 추가하려면 **보기** 메뉴에서 **명령 팔레트**를 클릭하고 다음 명령을 입력합니다. **Azure Functions:**** 함수 만들기**
+1. 기존 프로젝트에 새 함수를 추가하려면 **보기** 메뉴에서 **명령 팔레트**를 클릭하고 다음 명령을 입력합니다. **Azure Functions: 함수 만들기**
 
 1. 프롬프트에서 다음 정보를 제공합니다.
 
@@ -2851,7 +2851,7 @@ Event Grid는 Azure 서비스에서 생성된 이벤트를 Azure 내의 다른 �
    * **템플릿 필터 선택**: **모두**를 선택합니다.
    * **함수의 템플릿 선택**: **EventGridTrigger**를 선택합니다.
    * **함수 이름 제공**: **UpdateTwinFunction**을 입력합니다.
-   * **네임스페이스 제공**: **HContoso.AdtFunctions**를 입력합니다.
+   * **네임스페이스 제공**: **Contoso.AdtFunctions**를 입력합니다.
    * **스토리지 계정에 대한 메시지가 표시되는 경우**: **지금은 건너뛰기**를 클릭합니다.
 
     **UpdateTwinFunction.cs** 파일이 프로젝트에 추가되며 편집할 수 있도록 열립니다.
@@ -2928,7 +2928,7 @@ Event Grid는 Azure 서비스에서 생성된 이벤트를 Azure 내의 다른 �
         string twinId = eventGridEvent.Subject.ToString();
         JObject message = (JObject)JsonConvert.DeserializeObject(eventGridEvent.Data.ToString());
 
-        log.LogInformation($"Reading event from {트윈 ID}: {eventGridEvent.EventType}: {message["data"]}");
+        log.LogInformation($"Reading event from {twinId}: {eventGridEvent.EventType}: {message["data"]}");
 
         if (message["data"]["modelId"] != null && (string)message["data"]["modelId"] == "dtmi:com:contoso:digital_factory:cheese_factory:cheese_cave_device;1")
         {
@@ -2980,7 +2980,7 @@ Event Grid는 Azure 서비스에서 생성된 이벤트를 Azure 내의 다른 �
 1. 원본 Cheese Cave Device의 부모 Cheese Cave를 찾으려면 `// INSERT 디바이스 부모 모델(Cheese Cave)을 찾습니다.` 주석을 찾은 다음 그 아래에 다음 코드를 삽입합니다.
 
     ```csharp
-    AsyncPageable<들어오는 관계> incomingRels = client.GetIncomingRelationshipsAsync(dtId);
+    AsyncPageable<IncomingRelationship> rels = client.GetIncomingRelationshipsAsync(twinId);
 
     string parentId = null;
     await foreach (IncomingRelationship ie in rels)
@@ -3032,9 +3032,9 @@ Event Grid는 Azure 서비스에서 생성된 이벤트를 Azure 내의 다른 �
 
             if (mappedProperties.Contains(propertyPath))
             {
-                var value = operation["value"].Value<부울>();
+                var value = operation["value"].Value<bool>();
                 patch.AppendReplace<bool>(propertyPath, value);
-                log.LogInformation($"Updating parent {부모 ID}: {propertyPath} = {값}");
+                log.LogInformation($"Updating parent {parentId}: {propertyPath} = {value}");
             }
         }
     }
@@ -3090,7 +3090,7 @@ Event Grid는 Azure 서비스에서 생성된 이벤트를 Azure 내의 다른 �
 1. 메시지가 표시되면 다음 항목을 선택합니다.
 
     * **구독 선택**: 이 과정에 사용 중인 구독을 선택합니다.
-    * **Azure에서 함수 앱 선택**: **func-az220-hub2adt-training-{사용자 ID}**를 선택합니다.
+    * **Azure에서 함수 앱 선택**: **func-az220-hub2adt-training-{your-id}**를 선택합니다.
 
     배포를 확인하라는 메시지가 표시되면 **배포**를 클릭합니다.
 
@@ -3138,7 +3138,7 @@ Event Grid는 Azure 서비스에서 생성된 이벤트를 Azure 내의 다른 �
 
 1. **리소스 그룹**에서 **rg-az220**이 선택되어 있는지 확인합니다.
 
-1. 함수 앱 아래에서 **func-az220-hub2adt-training-{사용자 ID}**를 선택합니다.
+1. 함수 앱 아래에서 **func-az220-hub2adt-training-{your-id}**를 선택합니다.
 
 1. **슬롯** 아래에 **프로덕션**이 선택되어 있는지 확인합니다.
 
@@ -3286,7 +3286,7 @@ Event Hub 네임스페이스는 DNS 통합 네트워크 엔드포인트와 다�
 
 1. **리소스 그룹** 오른쪽에서 드롭다운을 열고 **rg-az220**을 클릭합니다.
 
-1. **네임스페이스 이름** 필드에 **adt-az220-training-{사용자 ID}**를 입력합니다.
+1. **네임스페이스 이름** 필드에 **adt-az220-training-{your-id}**를 입력합니다.
 
     이 리소스는 공개적으로 액세스 가능하며, 고유한 이름을 지정해야 합니다.
 
@@ -3328,7 +3328,7 @@ Event Hub 네임스페이스는 DNS 통합 네트워크 엔드포인트와 다�
 
 이 작업에서는 트윈 원격 분석 이벤트를 구독하여 Azure 함수로 전달하는 Event Hub를 만듭니다.
 
-1. **adt-az220-training-{사용자 ID}** 네임스페이스의 **개요** 페이지에서 **+ Event Hub**를 클릭합니다.
+1. **adt-az220-training-{your-id}** 네임스페이스의 **개요** 페이지에서 **+ Event Hub**를 클릭합니다.
 
 1. **이벤트 허브 만들기** 페이지의 **이름** 아래에 **evh-az220-adt2func**를 입력합니다.
 
@@ -3350,7 +3350,7 @@ Event Hub 네임스페이스는 DNS 통합 네트워크 엔드포인트와 다�
 
 #### 작업 3 - Event Hub에 권한 부여 규칙 추가
 
-각 Event Hubs 네임스페이스 및 각 Event Hubs 엔터티(Event Hub 인스턴스 또는 Kafka 항목)에는 규칙으로 구성된 공유 액세스 권한 부여 정책이 포함되어 있습니다. 네임스페이스 수준에서 정책은 개별 정책 구성에 관계 없이 네임스페이스 내부의 모든 엔터티에 적용됩니다. 각각의 권한 부여 정책 규칙의 경우 이름, 범위 및 권한 등, 3가지 정보를 결정합니다. 이름은 해당 범위에서 고유한 이름입니다. 범위는 해당 리소스의 URI입니다. Event Hubs 네임스페이스에서 범위는 `https://evhns-az220-training-{사용자 ID}.servicebus.windows.net/`과 같은 FQDN(정규화된 도메인 이름)입니다.
+각 Event Hubs 네임스페이스 및 각 Event Hubs 엔터티(Event Hub 인스턴스 또는 Kafka 항목)에는 규칙으로 구성된 공유 액세스 권한 부여 정책이 포함되어 있습니다. 네임스페이스 수준에서 정책은 개별 정책 구성에 관계 없이 네임스페이스 내부의 모든 엔터티에 적용됩니다. 각각의 권한 부여 정책 규칙의 경우 이름, 범위 및 권한 등, 3가지 정보를 결정합니다. 이름은 해당 범위에서 고유한 이름입니다. 범위는 해당 리소스의 URI입니다. Event Hubs 네임스페이스에서 범위는 `https://evhns-az220-training-{your-id}.servicebus.windows.net/`과 같은 FQDN(정규화된 도메인 이름)입니다.
 
 정책 규칙에 의해 제공되는 권한은 다음의 조합일 수 있습니다.
 
@@ -3360,7 +3360,7 @@ Event Hub 네임스페이스는 DNS 통합 네트워크 엔드포인트와 다�
 
 이 작업에서는 **수신 대기** 및 **보내기** 권한이 있는 권한 부여 규칙을 만듭니다.
 
-1. **adt-az220-training-{사용자 ID}** 네임스페이스의 **개요** 페이지에서 **evh-az220-adt2func** Event Hub를 클릭합니다.
+1. **evhns-az220-training-{your-id}** 네임스페이스의 **개요** 페이지에서 **evh-az220-adt2func** Event Hub를 클릭합니다.
 
 1. 왼쪽 탐색 영역의 **설정**에서 **공유 액세스 정책**을 클릭합니다.
 
@@ -3388,7 +3388,7 @@ Event Hub 네임스페이스는 DNS 통합 네트워크 엔드포인트와 다�
 
 Event Hub를 만들었으므로 엔드포인트로 추가해야 합니다. 그러면 ADT 인스턴스가 해당 엔드포인트를 출력으로 사용하여 이벤트를 보낼 수 있습니다.
 
-1. **iot-az229-training-{사용자 ID}** 인스턴스로 이동합니다.
+1. **iot-az229-training-{your-id}** 인스턴스로 이동합니다.
 
 1. 왼쪽 탐색 영역의 **출력 연결**에서 **엔드포인트**를 클릭합니다.
 
@@ -3404,7 +3404,7 @@ Event Hub를 만들었으므로 엔드포인트로 추가해야 합니다. 그�
 
 1. **구독** 드롭다운에서 이 과정에 사용하려는 Azure 구독이 선택되어 있는지 확인합니다.
 
-1. **Event Hub 네임스페이스** 드롭다운에서 **adt-az220-training-{사용자 ID}**를 선택합니다.
+1. **Event Hub 네임스페이스** 드롭다운에서 **adt-az220-training-{your-id}**를 선택합니다.
 
 1. **Event Hub** 드롭다운에서 **evh-az220-adt2func**를 선택합니다.
 
@@ -3451,26 +3451,26 @@ ADT 인스턴스에 Event Hub 엔드포인트를 추가했으므로 이제 트�
 1. Azure 함수와 TSI 간의 Event Hub를 만들려면 다음 명령을 입력합니다.
 
     ```powershell
-    az eventhubs eventhub create --name evh-az220-func2tsi --resource-group rg-az220 --namespace-name evhns-az220-training-{사용자 ID}
+    az eventhubs eventhub create --name evh-az220-func2tsi --resource-group rg-az220 --namespace-name evhns-az220-training-{your-id}
     ```
 
-    **{사용자 ID}**는 적절한 값으로 바꿔야 합니다.
+    **{your-id}**는 적절한 값으로 바꿔야 합니다.
 
 1. 새 Event Hub에 대한 수신 대기 및 보내기 권한이 있는 권한 부여 규칙을 만들려면 다음 명령을 입력합니다.
 
     ```powershell
-    az eventhubs eventhub authorization-rule create --rights Listen Send --resource-group rg-az220  --eventhub-name evh-az220-func2tsi --name TSIHubPolicy --namespace-name evhns-az220-training-{사용자 ID}
+    az eventhubs eventhub authorization-rule create --rights Listen Send --resource-group rg-az220  --eventhub-name evh-az220-func2tsi --name TSIHubPolicy --namespace-name evhns-az220-training-{your-id}
     ```
 
-    **{사용자 ID}**는 적절한 값으로 바꿔야 합니다.
+    **{your-id}**는 적절한 값으로 바꿔야 합니다.
 
 1. 권한 부여 규칙의 기본 연결 문자열을 검색하려면 다음 명령을 입력합니다.
 
     ```powershell
-    az eventhubs eventhub authorization-rule keys list --resource-group rg-az220 --eventhub-name evh-az220-func2tsi --name TSIHubPolicy --namespace-name evhns-az220-training-{사용자 ID} --query primaryConnectionString -o tsv
+    az eventhubs eventhub authorization-rule keys list --resource-group rg-az220 --eventhub-name evh-az220-func2tsi --name TSIHubPolicy --namespace-name evhns-az220-training-{your-id} --query primaryConnectionString -o tsv
     ```
 
-    **{사용자 ID}**는 적절한 값으로 바꿔야 합니다.
+    **{your-id}**는 적절한 값으로 바꿔야 합니다.
 
     그러면 다음과 같은 출력이 표시됩니다.
 
@@ -3486,7 +3486,7 @@ ADT 인스턴스에 Event Hub 엔드포인트를 추가했으므로 이제 트�
 
 Azure 함수가 Event Hub에 연결하려면 적절한 권한이 있는 정책의 연결 문자열에 액세스할 수 있어야 합니다. 이 시나리오에서는 Event Hub 2개가 사용됩니다. 그 중 하나는 ADT의 이벤트를 게시하는 허브이고, 다른 하나는 Azure 함수에서 변환한 데이터를 TSI에 게시하는 허브입니다.
 
-1. Event Hub 권한 부여 규칙 연결 문자열을 환경 변수로 제공하려면 Azure Portal에서 **func-az220-hub2adt-training-{사용자 ID}** 인스턴스로 이동합니다.
+1. Event Hub 권한 부여 규칙 연결 문자열을 환경 변수로 제공하려면 Azure Portal에서 **func-az220-hub2adt-training-{your-id}** 인스턴스로 이동합니다.
 
 1. 왼쪽 탐색 영역의 **설정**에서 **구성**을 클릭합니다.
 
@@ -3524,7 +3524,7 @@ Azure 함수가 Event Hub에 연결하려면 적절한 권한이 있는 정책�
 
 #### 작업 8 - 원격 분석 Azure 함수 추가
 
-이 작업에서는 **func-az220-hub2adt-training-{사용자 ID}** 함수 앱에 다른 Azure 함수를 추가합니다. 이 함수는 TSI용 대체 형식에 디바이스 원격 분석 메시지를 매핑합니다. 이 방식을 사용하는 경우 TSI 솔루션을 변경하지 않고도 디바이스 원격 분석 형식의 변경을 처리할 수 있습니다.
+이 작업에서는 **func-az220-hub2adt-training-{your-id}** 함수 앱에 다른 Azure 함수를 추가합니다. 이 함수는 TSI용 대체 형식에 디바이스 원격 분석 메시지를 매핑합니다. 이 방식을 사용하는 경우 TSI 솔루션을 변경하지 않고도 디바이스 원격 분석 형식의 변경을 처리할 수 있습니다.
 
 1. Visual Studio Code에서 **Contoso.AdtFunctions** 프로젝트를 엽니다.
 
@@ -3539,7 +3539,7 @@ Azure 함수가 Event Hub에 연결하려면 적절한 권한이 있는 정책�
    * **네임스페이스 제공**: **HContoso.AdtFunctions**를 입력합니다.
    * **local.settings.json에서 설정 선택**: Enter 키를 누릅니다.
    * **구독 선택**: 사용 중인 구독을 선택합니다.
-   * **이벤트 허브 네임스페이스 선택**: **evhns-az220-training-{사용자 ID}**를 선택합니다.
+   * **이벤트 허브 네임스페이스 선택**: **evhns-az220-training-{your-id}**를 선택합니다.
    * **이벤트 허브 선택**: **evh-az220-adt2func**를 선택합니다.
    * **이벤트 허브 정책 선택**: **ADTHubPolicy**를 선택합니다.
    * **스토리지 계정에 대한 메시지가 표시되는 경우**: 지금은 건너뛰기를 선택합니다.
@@ -3637,7 +3637,7 @@ Azure 함수가 Event Hub에 연결하려면 적절한 권한이 있는 정책�
     string messageBody = Encoding.UTF8.GetString(eventData.Body.Array, eventData.Body.Offset, eventData.Body.Count);
     JObject message = (JObject)JsonConvert.DeserializeObject(messageBody);
 
-    var tsiUpdate = new Dictionary<문자열, 개체>();
+    var tsiUpdate = new Dictionary<string, object>();
     tsiUpdate.Add("$dtId", eventData.Properties["cloudEvents:source"]);
     tsiUpdate.Add("temperature", message["temperature"]);
     tsiUpdate.Add("humidity", message["humidity"]);
@@ -3670,7 +3670,7 @@ Azure 함수가 Event Hub에 연결하려면 적절한 권한이 있는 정책�
 1. 메시지가 표시되면 다음 항목을 선택합니다.
 
     * **구독 선택**: 이 과정에 사용 중인 구독을 선택합니다.
-    * **Azure에서 함수 앱 선택**: **func-az220-hub2adt-training-{사용자 ID}**를 선택합니다.
+    * **Azure에서 함수 앱 선택**: **func-az220-hub2adt-training-{your-id}**를 선택합니다.
 
     배포를 확인하라는 메시지가 표시되면 **배포**를 클릭합니다.
 
@@ -3690,7 +3690,7 @@ Azure 함수가 Event Hub에 연결하려면 적절한 권한이 있는 정책�
 
 #### 작업 10 - TSI 구성
 
-1. 브라우저에서 Azure Portal에 연결한 후 **tsi-az220-training-{사용자 ID}** 리소스를 찾습니다.
+1. 브라우저에서 Azure Portal에 연결한 후 **tsi-az220-training-{your-id}** 리소스를 찾습니다.
 
     > **참고**: 이 리소스는 설정 스크립트에 의해 작성된 것입니다. 설정 스크립트를 실행하지 않았다면 지금 실행하세요. 기존 리소스에는 아무런 영향이 없습니다.
 
@@ -3712,7 +3712,7 @@ Azure 함수가 Event Hub에 연결하려면 적절한 권한이 있는 정책�
 
 1. **구독 ID**에서 이 과정에 사용 중인 구독을 선택합니다.
 
-1. **Event Hub 네임스페이스**에서 **echns-az220-training-{사용자 ID}**를 선택합니다.
+1. **Event Hub 네임스페이스**에서 **echns-az220-training-{your-id}**를 선택합니다.
 
 1. **Event Hub 이름**에서 **evh-az220-func2tsi**를 선택합니다.
 
@@ -3736,7 +3736,7 @@ Azure 함수가 Event Hub에 연결하려면 적절한 권한이 있는 정책�
 
 이제 데이터가 Time Series Insights 인스턴스로 전송되므로 분석이 가능합니다. 다음 단계에 따라 들어오는 데이터를 탐색합니다.
 
-1. 브라우저에서 **tsi-az220-training-{사용자 ID}** 리소스의 **개요** 창으로 돌아옵니다.
+1. 브라우저에서 **tsi-az220-training-{your-id}** 리소스의 **개요** 창으로 돌아옵니다.
 
 1. **TSI 탐색기**로 이동하려면 **TSI 탐색기로 이동**을 클릭합니다.
 

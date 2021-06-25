@@ -46,7 +46,7 @@ IoT Edge 디바이스를 게이트웨이로 사용하는 데는 투명, 프로�
 | 리소스 유형 | 리소스 이름 |
 | :-- | :-- |
 | 리소스 그룹 | rg-az220 |
-| IoT Hub | iot-az220-training-{사용자 ID} |
+| IoT Hub | iot-az220-training-{your-id} |
 
 이러한 리소스를 사용할 수 없는 경우 연습 2로 이동하기 전에 아래 설명에 따라 **lab12-setup.azcli** 스크립트를 실행해야 합니다. 스크립트 파일은 개발자 환경 구성(랩 3)의 일부로 로컬로 복제한 GitHub 리포지토리에 포함됩니다.
 
@@ -109,9 +109,9 @@ IoT Edge 디바이스를 게이트웨이로 사용하는 데는 투명, 프로�
 
     이제 편집기에서 **lab12-setup.azcli** 파일의 내용을 표시합니다.
 
-1. 편집기에서 `{사용자 ID}` 및 `{사용자 위치}` 변수의 값을 업데이트합니다.
+1. 편집기에서 `{your-id}` 및 `{your-location}` 변수의 값을 업데이트합니다.
 
-    아래 샘플을 예로 들면 `{사용자 ID}`는 이 과정을 시작할 때 만든 고유 ID(**cah191211**)로 설정해야 하며 `{사용자 위치}`는 리소스 그룹과 일치하는 위치로 설정해야 합니다.
+    아래 샘플을 예로 들면 `{your-id}`는 이 과정을 시작할 때 만든 고유 ID(**cah191211**)로 설정해야 하며 `{your-location}`는 리소스 그룹과 일치하는 위치로 설정해야 합니다.
 
     ```bash
     #!/bin/bash
@@ -176,7 +176,7 @@ IoT Edge 디바이스를 게이트웨이로 사용하는 데는 투명, 프로�
 
     > **참고**: 각 VM용으로 별도의 리소스 그룹을 만들라는 지침이 나올 수도 있습니다. 프로덕션 환경에서는 각 VM용으로 개별 리소스 그룹을 만들면 VM에 추가하는 리소스를 쉽게 관리할 수 있습니다. 하지만 이 과정에서는 VM을 단순한 방식으로 사용하므로 각 VM용으로 개별 리소스 그룹을 만들 필요도 없고 만들 수도 없습니다.
 
-1. **인스턴스 세부 정보**의 **가상 머신 이름** 텍스트 상자에 **vm-az220-training-gw0001-{사용자 ID}**를 입력합니다.
+1. **인스턴스 세부 정보**의 **가상 머신 이름** 텍스트 상자에 **vm-az220-training-gw0001-{your-id}**를 입력합니다.
 
 1. **지역** 드롭다운에서 Azure IoT Hub가 프로비전된 지역을 선택합니다.
 
@@ -212,7 +212,7 @@ IoT Edge 디바이스를 게이트웨이로 사용하는 데는 투명, 프로�
 
 ### 연습 3: IoT Edge 디바이스 CA 인증서 생성 및 구성
 
-이 연습에서는 Linux를 사용하여 테스트 인증서를 생성합니다. 여기서는 방금 만든 **vm-az220-training-gw0001-{사용자 ID}** 가상 머신과 이 랩의 "Starter" 폴더 내에 있는 도우미 스크립트를 사용합니다.
+이 연습에서는 Linux를 사용하여 테스트 인증서를 생성합니다. 여기서는 방금 만든 **vm-az220-training-gw0001-{your-id}** 가상 머신과 이 랩의 "Starter" 폴더 내에 있는 도우미 스크립트를 사용합니다.
 
 #### 작업 1: VM에 연결
 
@@ -240,15 +240,15 @@ IoT Edge 디바이스를 게이트웨이로 사용하는 데는 투명, 프로�
 
     만약 리소스에 쉽게 액세스 하는데 도움이 된다면 대시보드를 **편집**하여 타일을 다시 정렬해도 됩니다.
 
-1. **rg-az220vm** 리소스 그룹 타일에서 Edge Gateway 가상 머신을 열려면 **vm-az220-training-gw0001-{사용자 ID}**를 클릭합니다.
+1. **rg-az220vm** 리소스 그룹 타일에서 Edge Gateway 가상 머신을 열려면 **vm-az220-training-gw0001-{your-id}**를 클릭합니다.
 
     > **참고**: 리소스 이름이 길고 일부는 유사하므로 디스크, 공용 IP 주소 또는 네트워크 보안 그룹이 아닌 VM을 선택해야 합니다.
 
-1. **vm-az220-training-gw0001-{사용자 ID}** 블레이드 상단에서 **연결**을 클릭한 다음 **SSH**를 클릭합니다.
+1. **vm-az220-training-gw0001-{your-id}** 블레이드 상단에서 **연결**을 클릭한 다음 **SSH**를 클릭합니다.
 
 1. **연결** 창에서 **4. 아래의 예제 명령을 실행하여 VM에 연결**의 예제 명령을 복사합니다.
 
-    이 명령은 VM 및 관리자 사용자 이름의 IP 주소가 포함된 가상 머신에 연결하는 데 사용할 수 있는 샘플 SSH 명령입니다. 명령의 서식은 'ssh username@52.170.205.79'와 유사하게 지정되어야 합니다.
+    이 명령은 VM 및 관리자 사용자 이름의 IP 주소가 포함된 가상 머신에 연결하는 데 사용할 수 있는 샘플 SSH 명령입니다. 명령의 서식은 `ssh username@52.170.205.79`와 유사하게 지정되어야 합니다.
 
     > **참고**: 샘플 명령에 **i \<프라이빗 키 경로\>**가 포함된 경우 텍스트 편집기를 사용하여 명령의 해당 부분을 삭제한 다음 업데이트된 명령을 클립보드에 복사합니다.
 
@@ -265,7 +265,7 @@ IoT Edge 디바이스를 게이트웨이로 사용하는 데는 투명, 프로�
 1. 연결되면 터미널은 다음과 같이 Linux VM의 이름을 표시하도록 변경됩니다. 이는 어떤 VM에 연결되었는지 알려줍니다.
 
     ``` bash
-    username@vm-az220-training-gw0001-{사용자 ID}:~$
+    username@vm-az220-training-gw0001-{your-id}:~$
     ```
 
     > **중요**: VM에 연결되면 Edge VM용 미설치 OS 업데이트가 있다는 메시지가 표시될 수 있습니다. 이 랩 작업에서는 업데이트를 생략해도 되지만 프로덕션 환경에서는 Edge 디바이스를 항상 최신 상태로 유지해야 합니다.
@@ -458,7 +458,7 @@ IoT Edge 보안 디먼은 IoT Edge 디바이스에서 보안 표준을 제공하
 1. **certificates** 코드 줄을 업데이트하려면 맨 앞의 **'# '**(우물정자와 공백) 문자를 제거하고 아래에 나와 있는 인증서 경로를 입력합니다.
 
     ```yaml
-    인증서:
+    certificates:
       device_ca_cert: "/home/<username>/lab12/certs/iot-edge-device-ca-MyEdgeDeviceCA-full-chain.cert.pem"
       device_ca_pk: "/home/<username>/lab12/private/iot-edge-device-ca-MyEdgeDeviceCA.key.pem"
       trusted_ca_certs: "/home/<username>/lab12/certs/azure-iot-test-only.root.ca.cert.pem"
@@ -486,13 +486,13 @@ IoT Edge 보안 디먼은 IoT Edge 디바이스에서 보안 표준을 제공하
     exit
     ```
 
-    다음으로 Azure IoT Hub Device Provisioning Service 내에서 IoT Edge 디바이스 등록을 구성하는 데 사용할 수 있도록 **vm-az220-training-gw0001-{사용자 ID}** 가상 머신에서 **MyEdgeDeviceCA** 인증서를 "다운로드"해야 합니다.
+    다음으로 Azure IoT Hub Device Provisioning Service 내에서 IoT Edge 디바이스 등록을 구성하는 데 사용할 수 있도록 **vm-az220-training-gw0001-{your-id}** 가상 머신에서 **MyEdgeDeviceCA** 인증서를 "다운로드"해야 합니다.
 
-1. **vm-az220-training-gw0001-{사용자 ID}** 가상 머신에서 **Cloud Shell** 스토리지로 **~/lab12** 디렉터리를 다운로드하려면 Cloud Shell 명령 프롬프트에서 다음 명령을 입력합니다.
+1. **vm-az220-training-gw0001-{your-id}** 가상 머신에서 **Cloud Shell** 스토리지로 **~/lab12** 디렉터리를 다운로드하려면 Cloud Shell 명령 프롬프트에서 다음 명령을 입력합니다.
 
     ```bash
     mkdir lab12
-    scp -r -p <사용자 이름>@<IP 주소>:~/lab12 .
+    scp -r -p <username>@<ipaddress>:~/lab12 .
     ```
 
     > **참고**: 여기서 **<사용자 이름>** 자리 표시자는 VM 관리 사용자의 사용자 이름으로 바꾸고, **<IP 주소>** 자리 표시자는 VM의 IP 주소로 바꿉니다. 필요한 경우 SSH 세션을 여는 데 사용한 명령을 참조하세요.
@@ -515,7 +515,7 @@ IoT Edge 보안 디먼은 IoT Edge 디바이스에서 보안 표준을 제공하
     certs       index.txt  index.txt.attr.old  newcerts       private              serial.old
     ```
 
-    **vm-az220-training-gw0001-{사용자 ID}** 가상 머신에서 파일을 Cloud Shell 스토리지로 복사하면 필요에 따라 IoT Edge 디바이스 인증서 및 키 파일을 로컬 컴퓨터에 쉽게 다운로드할 수 있습니다. `download <filename>` 명령을 사용하여 Cloud Shell에서 파일을 다운로드할 수 있습니다. 이 파일은 랩 뒷부분에서 다운로드합니다.
+    **vm-az220-training-gw0001-{your-id}** 가상 머신에서 파일을 Cloud Shell 스토리지로 복사하면 필요에 따라 IoT Edge 디바이스 인증서 및 키 파일을 로컬 컴퓨터에 쉽게 다운로드할 수 있습니다. `download <filename>` 명령을 사용하여 Cloud Shell에서 파일을 다운로드할 수 있습니다. 이 파일은 랩 뒷부분에서 다운로드합니다.
 
 ### 연습 4: Azure Portal을 사용하여 IoT Hub에서 IoT Edge 디바이스 ID 만들기
 
@@ -523,17 +523,17 @@ IoT Edge 보안 디먼은 IoT Edge 디바이스에서 보안 표준을 제공하
 
 1. 필요한 경우 Azure 계정 자격 증명을 사용하여 Azure Portal에 로그인한 다음 Azure 대시보드로 이동합니다.
 
-1. **rg-az220** 리소스 그룹 타일에서 IoT Hub를 열려면 **iot-az220-training-{사용자 ID}**를 클릭합니다.
+1. **rg-az220** 리소스 그룹 타일에서 IoT Hub를 열려면 **iot-az220-training-{your-id}**를 클릭합니다.
 
-1. **iot-az220-training-{사용자 ID}** 블레이드 왼쪽 메뉴의 **자동 디바이스 관리** 아래에서 **IoT Edge**를 클릭합니다.
+1. **iot-az220-training-{your-id}** 블레이드 왼쪽 메뉴의 **자동 디바이스 관리** 아래에서 **IoT Edge**를 클릭합니다.
 
     IoT Edge 창을 사용하면 IoT Hub에 연결된 IoT Edge 디바이스를 관리할 수 있습니다.
 
 1. 창 상단에서 **IoT Edge 디바이스 추가**를 클릭합니다.
 
-1. **디바이스 만들기** 블레이드의 **디바이스 ID** 필드에 **vm-az220-training-gw0001-{사용자 ID}**를 입력합니다.
+1. **디바이스 만들기** 블레이드의 **디바이스 ID** 필드에 **vm-az220-training-gw0001-{your-id}**를 입력합니다.
 
-    {사용자 ID}는 과정 시작 부분에서 만든 값으로 바꿉니다. 인증 및 액세스 제어에 사용되는 디바이스 ID입니다.
+    {your-id}는 과정 시작 부분에서 만든 값으로 바꿉니다. 인증 및 액세스 제어에 사용되는 디바이스 ID입니다.
 
 1. **인증 형식**에서 **대칭 키**가 선택되어 있는지 확인하고 **키 자동 생성** 확인란을 선택된 상태로 둡니다.
 
@@ -543,15 +543,15 @@ IoT Edge 보안 디먼은 IoT Edge 디바이스에서 보안 표준을 제공하
 
     잠시 후 새로운 IoT Edge 디바이스가 IoT Edge 디바이스 목록에 추가됩니다.
 
-1. **디바이스 ID**에서 **vm-az220-training-gw0001-{사용자 ID}**를 클릭합니다.
+1. **디바이스 ID**에서 **vm-az220-training-gw0001-{your-id}**를 클릭합니다.
 
-1. **vm-az220-training-gw0001-{사용자 ID}** 블레이드에서 **기본 연결 문자열**을 복사합니다.
+1. **vm-az220-training-gw0001-{your-id}** 블레이드에서 **기본 연결 문자열**을 복사합니다.
 
     복사 단추가 값 오른쪽에 표시됩니다.
 
 1. **기본 연결 문자열**의 값을 파일에 저장하여 연결된 디바이스에 대한 메모를 작성합니다.
 
-1. **vm-az220-training-gw0001-{사용자 ID}** 블레이드에서 **모듈** 목록에는 **\$edgeAgent**와 **\$edgeHub**만 표시됩니다.
+1. **vm-az220-training-gw0001-{your-id}** 블레이드에서 **모듈** 목록에는 **\$edgeAgent**와 **\$edgeHub**만 표시됩니다.
 
     IoT Edge 에이전트(**\$edgeAgent**) 및 IoT Edge 허브(**\$edgeHub**) 모듈은 IoT Edge 런타임의 일부입니다. Edge 허브는 통신을 담당하며 Edge 에이전트는 디바이스에서 모듈을 배포하고 모니터링합니다.
 
@@ -580,19 +580,19 @@ IoT Edge 보안 디먼은 IoT Edge 디바이스에서 보안 표준을 제공하
 
 ### 연습 5: IoT Edge 게이트웨이 호스트 이름 설정
 
-이 연습에서는 **vm-az220-training-gw0001-{사용자 ID}** 시뮬레이션 된 Edge 디바이스의 공용 IP 주소에 대한 DNS 이름을 구성하고 해당 DNS 이름을 IoT Edge 게이트웨이 디바이스의 `hostname`으로 구성합니다.
+이 연습에서는 **vm-az220-training-gw0001-{your-id}** 시뮬레이션 된 Edge 디바이스의 공용 IP 주소에 대한 DNS 이름을 구성하고 해당 DNS 이름을 IoT Edge 게이트웨이 디바이스의 `hostname`으로 구성합니다.
 
 1. 필요한 경우 Azure 계정 자격 증명을 사용하여 Azure Portal에 로그인한 다음 대시보드로 이동합니다.
 
-1. **rg-az220vm** 리소스 그룹 타일에서 IoT Edge 가상 머신을 열려면 **vm-az220-training-gw0001-{사용자 ID}**를 클릭합니다.
+1. **rg-az220vm** 리소스 그룹 타일에서 IoT Edge 가상 머신을 열려면 **vm-az220-training-gw0001-{your-id}**를 클릭합니다.
 
-1. **vm-az220-training-gw0001-{사용자 ID}** 블레이드의 위쪽 섹션에서 **DNS 이름** 필드를 찾습니다.
+1. **vm-az220-training-gw0001-{your-id}** 블레이드의 위쪽 섹션에서 **DNS 이름** 필드를 찾습니다.
 
     개요 블레이드 상단의 "필수" 섹션이 축소된 경우 확장하려면 **필수**를 클릭합니다.
 
 1. **DNS 이름** 필드의 오른쪽에서 **구성**을 클릭합니다.
 
-1. **vm-az220-training-gw0001-{사용자 ID}-ip - 구성** 창의 **DNS 이름 레이블** 필드에 **vm-az220-training-gw0001-{사용자 ID}**를 입력합니다.
+1. **vm-az220-training-gw0001-{your-id}-ip - 구성** 창의 **DNS 이름 레이블** 필드에 **vm-az220-training-gw0001-{your-id}**를 입력합니다.
 
     이 레이블은 전역적으로 고유해야 하며 소문자, 숫자, 하이픈만 사용해야 합니다.
 
@@ -602,7 +602,7 @@ IoT Edge 보안 디먼은 IoT Edge 디바이스에서 보안 표준을 제공하
 
     **westus2.cloudapp.azure.com**과 같은 텍스트가 표시되어야 합니다. 실제로는 다른 지역이 표시될 수도 있습니다.
 
-    전체 DNS 이름은 **vm-az220-training-gw0001-{사용자 ID}**에 **DNS 이름 레이블** 필드 아래의 이 텍스트가 접미사로 추가된 형식입니다.
+    전체 DNS 이름은 **vm-az220-training-gw0001-{your-id}**에 **DNS 이름 레이블** 필드 아래의 이 텍스트가 접미사로 추가된 형식입니다.
 
     예를 들어 전체 DNS 이름은 다음과 같을 수 있습니다.
 
@@ -612,11 +612,11 @@ IoT Edge 보안 디먼은 IoT Edge 디바이스에서 보안 표준을 제공하
 
     표준 Azure 상용 클라우드의 모든 공용 IP 주소 DNS 이름은 **cloudapp.azure.com** 도메인 이름에 있습니다. 이 예제는 **westus2** Azure 지역에서 호스팅되는 VM에 대한 예제입니다. DNS 이름의 이 부분은 VM이 호스팅되는 Azure 지역에 따라 달라집니다.
 
-    **vm-az220-training-gw0001-{사용자 ID}** 가상 머신의 공용 IP 주소에 대한 DNS 이름을 설정하면 다운스트림 디바이스가 이 가상 머신에 연결하기 위해 **GatewayHostName**으로 사용하는 FQDN(정규화된 도메인 이름)이 제공됩니다. 이 경우 VM은 인터넷을 통해 액세스할 수 있으므로 인터넷 DNS 이름이 필요합니다. Azure IoT Edge 게이트웨이가 개인 또는 하이브리드 네트워크에서 호스팅된 경우 컴퓨터 이름은 온-프레미스 다운스트림 디바이스를 연결하기 위한 **GatewayHostName** 요구 사항을 충족합니다.
+    **vm-az220-training-gw0001-{your-id}** 가상 머신의 공용 IP 주소에 대한 DNS 이름을 설정하면 다운스트림 디바이스가 이 가상 머신에 연결하기 위해 **GatewayHostName**으로 사용하는 FQDN(정규화된 도메인 이름)이 제공됩니다. 이 경우 VM은 인터넷을 통해 액세스할 수 있으므로 인터넷 DNS 이름이 필요합니다. Azure IoT Edge 게이트웨이가 개인 또는 하이브리드 네트워크에서 호스팅된 경우 컴퓨터 이름은 온-프레미스 다운스트림 디바이스를 연결하기 위한 **GatewayHostName** 요구 사항을 충족합니다.
 
-1. **vm-az220-training-gw0001-{사용자 ID}** 가상 머신의 전체 DNS 이름을 기록하여 나중에 참조할 수 있도록 저장합니다.
+1. **vm-az220-training-gw0001-{your-id}** 가상 머신의 전체 DNS 이름을 기록하여 나중에 참조할 수 있도록 저장합니다.
 
-1. 다시 **vm-az220-training-gw0001-{사용자 ID}** 블레이드로 이동한 다음 **새로 고침**을 클릭합니다.
+1. 다시 **vm-az220-training-gw0001-{your-id}** 블레이드로 이동한 다음 **새로 고침**을 클릭합니다.
 
     > **참고**: IP 구성 블레이드에 남아 있는 경우 페이지 상단의 이동 경로 추적을 사용하여 VM으로 빠르게 돌아갈 수 있습니다.  이 경우 **개요** 창 상단의 새로 고침 단추를 사용하여 디스플레이에서 DNS 이름을 업데이트합니다.
 
@@ -628,9 +628,9 @@ IoT Edge 보안 디먼은 IoT Edge 디바이스에서 보안 표준을 제공하
 
 1. **4. 아래 예제 명령을 실행하여 VM에 연결하세요.**에서 명령을 복사하려면 **클립보드에 복사**를 클릭합니다.
 
-    이 샘플 SSH 명령을 사용하여 VM 및 관리자 사용자 이름에 대한 IP 주소가 포함된 가상 머신에 연결할 수 있습니다. 이제 DNS 이름 레이블이 구성되었으므로 명령이 다음과 같이 표시됩니다. **ssh demouser@vm-az220-training-gw0001-{사용자 ID}.eastus.cloudapp.azure.com**
+    이 샘플 SSH 명령을 사용하여 VM 및 관리자 사용자 이름에 대한 IP 주소가 포함된 가상 머신에 연결할 수 있습니다. 이제 DNS 이름 레이블이 구성되었으므로 명령이 다음과 같이 표시됩니다. **ssh demouser@vm-az220-training-gw0001-{your-id}.eastus.cloudapp.azure.com**
 
-    > **참고**: 샘플 명령에 **i \<프라이빗 키 경로\>**가 포함된 경우 텍스트 편집기를 사용하여 명령의 해당 부분을 삭제한 다음 업데이트된 명령을 클립보드에 복사합니다.
+    > **참고**: 샘플 명령에 **-i \<private key path\>** 가 포함된 경우 텍스트 편집기를 사용하여 명령의 해당 부분을 삭제한 다음 업데이트된 명령을 클립보드에 복사합니다.
 
 1. Azure Portal 도구 모음에서 **Cloud Shell**을 클릭합니다.
 
@@ -663,14 +663,14 @@ IoT Edge 보안 디먼은 IoT Edge 디바이스에서 보안 표준을 제공하
 
 1. **호스트 이름** 값을 이전에 저장한 **전체 DNS 이름** 값으로 설정합니다.
 
-    이 값은 **vm-az220-training-gw0001-{사용자 ID}** 가상 머신의 **전체 DNS 이름**입니다.
+    이 값은 **vm-az220-training-gw0001-{your-id}** 가상 머신의 **전체 DNS 이름**입니다.
 
     > **참고**: 이름을 저장하지 않은 경우 가상 머신의 **개요** 창에서 이름을 찾을 수 있습니다.  거기에서 복사하여 Cloud Shell 창에 붙여넣을 수도 있습니다.
 
     결과 값은 다음과 비슷한 모습이 됩니다.
 
     ```yaml
-    hostname: "vm-az220-training-gw0001-{사용자 ID}.eastus.cloudapp.azure.com"
+    hostname: "vm-az220-training-gw0001-{your-id}.eastus.cloudapp.azure.com"
     ```
 
     `hostname` 설정은 Edge Hub 서버 호스트 이름을 구성합니다. 이 설정에 사용되는 대/소문자에 관계없이 Edge 허브 서버를 구성하는 데에는 소문자 값이 사용됩니다. 이는 암호화된 통신이 제대로 작동할 수 있도록 IoT Edge 게이트웨이에 연결할 때 다운스트림 IoT 디바이스가 사용해야 하는 호스트 이름이기도 합니다.
@@ -683,13 +683,13 @@ IoT Edge 보안 디먼은 IoT Edge 디바이스에서 보안 표준을 제공하
 
 1. vi/vm에 열려 있는 **config.yaml** 문서로 돌아옵니다.
 
-1. 이 파일의 **연결 문자열을 사용하는 수동 프로비전 구성**을 찾은 다음 수동 프로비전 구성의 주석 처리가 제거되어 있지 않으면 맨 앞의 ['# '](우물정자와 공백) 문자를 제거하여 주석 처리를 제거합니다. 그런 다음 `<여기에 디바이스 연결 문자열 추가>`를 앞에서 복사한 IoT Edge 디바이스용 연결 문자열로 바꿉니다.
+1. 이 파일의 **연결 문자열을 사용하는 수동 프로비전 구성**을 찾은 다음 수동 프로비전 구성의 주석 처리가 제거되어 있지 않으면 맨 앞의 ['# '](우물정자와 공백) 문자를 제거하여 주석 처리를 제거합니다. 그런 다음 `<ADD DEVICE CONNECTION STRING HERE>`를 앞에서 복사한 IoT Edge 디바이스용 연결 문자열로 바꿉니다.
 
     ```yaml
     # 연결 문자열을 사용하는 수동 프로비전 구성
     provisioning:
-      source: "manual":
-      device_connection_string: "<여기에 디바이스 연결 문자열 추가>"
+      source: "manual"
+      device_connection_string: "<ADD DEVICE CONNECTION STRING HERE>"
       dynamic_reprovisioning: false
     ```
 
@@ -752,7 +752,7 @@ IoT Edge 보안 디먼은 IoT Edge 디바이스에서 보안 표준을 제공하
     잠시 후 이 명령은 `edgeAgent` 및 `edgeHub` 모듈이 실행 중인 것을 나타냅니다. 출력은 다음과 유사합니다.
 
     ```text
-    root@vm-az220-training-gw0001-{사용자 ID}:~# iotedge list
+    root@vm-az220-training-gw0001-{your-id}:~# iotedge list
     NAME             STATUS           DESCRIPTION      CONFIG
     edgeHub          running          Up 15 seconds    mcr.microsoft.com/azureiotedge-hub:1.0
     edgeAgent        running          Up 18 seconds    mcr.microsoft.com/azureiotedge-agent:1.0
@@ -772,7 +772,7 @@ Azure IoT Edge에서 지원하는 IoT 통신 프로토콜은 다음과 같은 �
 | --- | --- |
 | MQTT | 8883 |
 | AMQP | 5671 |
-| HTTPS<br/>MQTT + WS(Websocket)<br/>AMQP + WS(Websocket) | 443 |
+| HTTPS<br/>MQTT + WS (Websocket)<br/>AMQP + WS (Websocket) | 443 |
 
 디바이스에 대해 선택한 IoT 통신 프로토콜에는 IoT Edge 게이트웨이 디바이스를 보호하는 방화벽에 대해 열린 해당 포트가 있어야 합니다. 이 랩의 경우 Azure NSG(네트워크 보안 그룹)이 IoT Edge 게이트웨이를 보호하는 데 사용되므로 이러한 포트에서 NSG에 대한 인바운드 보안 규칙이 열립니다.
 
@@ -786,7 +786,7 @@ Azure IoT Edge에서 지원하는 IoT 통신 프로토콜은 다음과 같은 �
 
     리소스 그룹 타일에는 연결된 네트워크 보안 그룹으로 이동할 수 있는 링크가 포함되어 있습니다.
 
-1. **rg-az220vm** 리소스 그룹 타일에서 **vm-az220-training-gw0001-{사용자 ID}-nsg**를 클릭합니다.
+1. **rg-az220vm** 리소스 그룹 타일에서 **vm-az220-training-gw0001-{your-id}-nsg**를 클릭합니다.
 
 1. **네트워크 보안 그룹** 블레이드 왼쪽 메뉴의 **설정**에서 **인바운드 보안 규칙**을 클릭합니다.
 
@@ -819,9 +819,9 @@ Azure IoT Edge에서 지원하는 IoT 통신 프로토콜은 다음과 같은 �
 
 1. 필요한 경우 Azure 계정 자격 증명을 사용하여 Azure Portal에 로그인합니다.
 
-1. IoT Hub를 열려면 Azure 대시보드에서 **iot-az220-training-{사용자 ID}**를 클릭합니다.
+1. IoT Hub를 열려면 Azure 대시보드에서 **iot-az220-training-{your-id}**를 클릭합니다.
 
-1. **iot-az220-training-{사용자 ID}** 블레이드 왼쪽 메뉴의 **탐색기** 아래에서 **IoT 디바이스**를 클릭합니다.
+1. **iot-az220-training-{your-id}** 블레이드 왼쪽 메뉴의 **탐색기** 아래에서 **IoT 디바이스**를 클릭합니다.
 
     이 IoT Hub 블레이드 창을 사용하면 IoT Hub에 연결된 IoT 디바이스를 관리할 수 있습니다.
 
@@ -841,7 +841,7 @@ Azure IoT Edge에서 지원하는 IoT 통신 프로토콜은 다음과 같은 �
 
     이 랩의 앞에서 만든 IoT Edge 게이트웨이 디바이스를 통해 IoT Hub와 통신하도록 이 다운스트림 디바이스를 구성합니다.
 
-1. **Edge 디바이스를 상위 디바이스로 설정** 블레이드의 **디바이스 ID**에서 **vm-az220-training-gw0001-{사용자 ID}**를 클릭한 다음 **확인**을 클릭합니다.
+1. **Edge 디바이스를 상위 디바이스로 설정** 블레이드의 **디바이스 ID**에서 **vm-az220-training-gw0001-{your-id}**를 클릭한 다음 **확인**을 클릭합니다.
 
 1. **디바이스 만들기** 블레이드에서 다운스트림 디바이스에 대한 IoT 디바이스 ID를 만들려면 **저장**을 클릭합니다.
 
@@ -901,7 +901,7 @@ Azure IoT Edge에서 지원하는 IoT 통신 프로토콜은 다음과 같은 �
 
 1. 할당된 **connectionString** 값에 **GatewayHostName** 속성을 추가하고 GatewayHostName의 값을 IoT Edge 게이트웨이 디바이스의 전체 DNS 이름으로 설정합니다.
 
-    Edge 게이트웨이 디바이스의 전체 DNS 이름은 디바이스 ID인 **vm-az220-training-gw0001-{사용자 ID}**에 지정한 지역 및 Azure 상업용 클라우드 도메인 이름(예: **westus2.cloudapp.azure.com**)이 추가된 형식입니다.
+    Edge 게이트웨이 디바이스의 전체 DNS 이름은 디바이스 ID인 **vm-az220-training-gw0001-{your-id}**에 지정한 지역 및 Azure 상업용 클라우드 도메인 이름(예: **westus2.cloudapp.azure.com**)이 추가된 형식입니다.
 
     완성된 연결 문자열 값은 다음 형식과 일치해야 합니다.
 
@@ -913,12 +913,12 @@ Azure IoT Edge에서 지원하는 IoT 통신 프로토콜은 다음과 같은 �
 
     * **\<IoT Hub 이름\>**: Azure IoT Hub 이름입니다.
     * **\<IoT 디바이스용 기본 키\>**: Azure IoT Hub의 **sensor-th-0072** IoT 디바이스용 기본 키입니다.
-    * **\<IoT Edge 디바이스의 DNS 이름\>**: **vm-az220-training-gw0001-{사용자 ID}** Edge 디바이스의 DNS 이름입니다.
+    * **\<IoT Edge 디바이스의 DNS 이름\>**: **vm-az220-training-gw0001-{your-id}** Edge 디바이스의 DNS 이름입니다.
 
     연결 문자열 값이 조합된 **connectionString** 변수는 다음과 같습니다.
 
     ```csharp
-    private readonly static string connectionString = "HostName=iot-az220-training-abc201119.azure-devices.net;DeviceId=sensor-th-0072;SharedAccessKey=ygNT/WqWs2d8AbVD9NAlxcoSS2rr628fI7YLPzmBdgE=;GatewayHostName=vm-az220-training-gw0001-{사용자 ID}.westus2.cloudapp.azure.com";
+    private readonly static string connectionString = "HostName=iot-az220-training-abc201119.azure-devices.net;DeviceId=sensor-th-0072;SharedAccessKey=ygNT/WqWs2d8AbVD9NAlxcoSS2rr628fI7YLPzmBdgE=;GatewayHostName=vm-az220-training-gw0001-{your-id}.westus2.cloudapp.azure.com";
     ```
 
 1. **파일** 메뉴에서 **저장**을 클릭합니다.
@@ -1001,10 +1001,10 @@ Azure IoT Edge에서 지원하는 IoT 통신 프로토콜은 다음과 같은 �
 1. Azure IoT Hub로 이동하는 이벤트 스트림을 모니터링하려면 Cloud Shell 명령 프롬프트에서 다음 명령을 실행합니다.
 
     ```bash
-    az iot hub monitor-events -n iot-az220-training-{사용자 ID}
+    az iot hub monitor-events -n iot-az220-training-{your-id}
     ```
 
-    `-n` 매개 변수의 `{사용자 ID}` 자리 표시자는 Azure IoT Hub의 이름으로 바꿔야 합니다.
+    `-n` 매개 변수의 `{your-id}` 자리 표시자는 Azure IoT Hub의 이름으로 바꿔야 합니다.
 
     `az iot hub monitor-events` 명령을 사용하면 Azure IoT Hub로 전송된 디바이스 원격 분석 및 메시지를 모니터링할 수 있습니다. 이렇게 하면 IoT Edge 게이트웨이로 전송되는 시뮬레이션된 디바이스의 이벤트가 Azure IoT Hub에서 수신되는지 확인합니다.
 

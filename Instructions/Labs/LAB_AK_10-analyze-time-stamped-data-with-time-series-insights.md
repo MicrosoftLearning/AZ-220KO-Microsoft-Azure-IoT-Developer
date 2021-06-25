@@ -44,7 +44,7 @@ Azure IoT 솔루션에 Time Series Insights를 추가하는 것을 제안합니�
 | 리소스 유형 | 리소스 이름 |
 | :-- | :-- |
 | 리소스 그룹 | `rg-az220` |
-| IoT Hub | `iot-az220-training-{사용자 ID}` |
+| IoT Hub | `iot-az220-training-{your-id}` |
 | 디바이스 ID | `sensor-th-truck0001` |
 | 디바이스 ID | `sensor-th-airplane0001` |
 | 디바이스 ID | `sensor-th-container0001` |
@@ -108,9 +108,9 @@ Azure IoT 솔루션에 Time Series Insights를 추가하는 것을 제안합니�
 
     이제 편집기에서 **lab10-setup.azcli** 파일의 내용을 표시합니다.
 
-1. 편집기에서 `{사용자 ID}` 및 `{사용자 위치}`에 할당된 값을 업데이트합니다.
+1. 편집기에서 `{your-id}` 및 `{your-location}`에 할당된 값을 업데이트합니다.
 
-    아래 샘플을 예로 들어 보면, `{사용자 ID}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{사용자 위치}`는 리소스에 적합한 위치로 설정해야 합니다.
+    아래 샘플을 예로 들어 보면, `{your-id}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{your-location}`는 리소스에 적합한 위치로 설정해야 합니다.
 
     ```bash
     #!/bin/bash
@@ -148,7 +148,7 @@ Azure IoT 솔루션에 Time Series Insights를 추가하는 것을 제안합니�
 
     이 스크립트를 실행하는 데 몇 분이 걸릴 수 있습니다. 각 단계가 완료될 때 출력이 표시됩니다.
 
-    이 스크립트는 먼저 **rg-az220** 리소스 그룹과 **iot-az220-training-{사용자 ID}** IoT Hub를 만듭니다. 이미 있는 경우 해당 메시지가 표시됩니다. 그런 다음 스크립트는 IoT Hub에 세 개의 디바이스를 추가하고 디바이스 연결 문자열을 표시합니다. 디바이스 ID는 **sensor-th-truck0001**, **sensor-th-airplane0001** 및 **sensor-th-container0001**입니다.
+    이 스크립트는 먼저 **rg-az220** 리소스 그룹과 **iot-az220-training-{your-id}** IoT Hub를 만듭니다. 이미 있는 경우 해당 메시지가 표시됩니다. 그런 다음 스크립트는 IoT Hub에 세 개의 디바이스를 추가하고 디바이스 연결 문자열을 표시합니다. 디바이스 ID는 **sensor-th-truck0001**, **sensor-th-airplane0001** 및 **sensor-th-container0001**입니다.
 
 1. 스크립트가 완료되면 각 디바이스의 연결 문자열이 표시됩니다.
 
@@ -190,7 +190,7 @@ Azure TSI(Time Series Insights)는 IoT 솔루션에서 규모에 맞게 데이�
 
 1. **이벤트 원본 세부 정보** 섹션에서 **이벤트 소스를 만드시겠습니까?**가 **예**로 설정되어 있는지 확인합니다.
 
-1. **이름** 필드에 **iot-az220-training-{사용자 ID}**를 입력하여 이 이벤트 원본의 고유한 이름을 지정합니다.
+1. **이름** 필드에 **iot-az220-training-{your-id}**를 입력하여 이 이벤트 원본의 고유한 이름을 지정합니다.
 
 1. **소스 유형** 드롭다운에서 **IoT Hub**가 선택되어 있는지 확인합니다.
 
@@ -200,7 +200,7 @@ Azure TSI(Time Series Insights)는 IoT 솔루션에서 규모에 맞게 데이�
 
 1. **구독** 드롭다운에서 이 과정에서 사용할 구독을 선택합니다.
 
-1. **IoT Hub 이름** 드롭다운에서 이미 프로비전된 **iot-az220-training-{사용자 ID}** Azure IoT Hub 서비스를 선택합니다.
+1. **IoT Hub 이름** 드롭다운에서 이미 프로비전된 **iot-az220-training-{your-id}** Azure IoT Hub 서비스를 선택합니다.
 
 1. **IoT Hub 액세스 정책 이름** 드롭다운에서 **iothubowner**를 클릭합니다.
 
@@ -232,11 +232,11 @@ Azure TSI(Time Series Insights)는 IoT 솔루션에서 규모에 맞게 데이�
  
 1. **Time Series Insights 환경** 블레이드의 왼쪽 메뉴에서 **설정** 아래에 있는 **이벤트 원본**을 클릭합니다.
 
-1. **이벤트 원본** 창의 목록에서 **iot-az220-training-{사용자 ID}** 이벤트 원본을 확인합니다.
+1. **이벤트 원본** 창의 목록에서 **iot-az220-training-{your-id}** 이벤트 원본을 확인합니다.
 
     이 항목이 TSI 리소스를 만들 때 구성한 이벤트 원본입니다.
 
-1. 이벤트 원본 세부 정보를 보려면 **iot-az220-training-{사용자 ID}**를 클릭합니다.
+1. 이벤트 원본 세부 정보를 보려면 **iot-az220-training-{your-id}**를 클릭합니다.
 
     이벤트 원본의 구성은 Time Series Insights 리소스가 생성될 때 설정된 구성과 일치합니다.
 
@@ -266,9 +266,9 @@ Azure TSI(Time Series Insights)는 IoT 솔루션에서 규모에 맞게 데이�
 1. 연결 문자열을 할당할 때 사용한 변수를 찾습니다.
 
     ```csharp
-    private readonly static string connectionStringTruck = "{Truck 디바이스 연결 문자열}";
-    private readonly static string connectionStringAirplane = "{Airplane 디바이스 연결 문자열}";
-    private readonly static string connectionStringContainer = "{Container 디바이스 연결 문자열}";
+    private readonly static string connectionStringTruck = "{Your Truck device connection string here}";
+    private readonly static string connectionStringAirplane = "{Your Airplane device connection string here}";
+    private readonly static string connectionStringContainer = "{Your Container device connection string here}";
     ```
 
 1. 랩의 앞부분에서 저장한 연결 문자열로 변수 할당을 업데이트합니다. 
@@ -297,9 +297,9 @@ Azure TSI(Time Series Insights)는 IoT 솔루션에서 규모에 맞게 데이�
     12/27/2019 8:51:30 PM > Sending TRUCK message: {"temperature":35.15660452608195,"humidity":48.422323938240865}
     12/27/2019 8:51:31 PM > Sending AIRPLANE message: {"temperature":17.126545186374237,"humidity":36.46941012936869}
     12/27/2019 8:51:31 PM > Sending CONTAINER message: {"temperature":21.986403302500637,"humidity":47.847680384455096}
-    12/27/2019 8:51:30 PM > Sending TRUCK message: {"temperature":36.10474464823629,"humidity":48.82029906486022}
-    12/27/2019 8:51:31 PM > Sending AIRPLANE message: {"temperature":16.55005930170971,"humidity":36.49988437459935}
-    12/27/2019 8:51:31 PM > Sending CONTAINER message: {"temperature":21.811727088543286,"humidity":50.0}
+    12/27/2019 8:51:32 PM > Sending TRUCK message: {"temperature":36.10474464823629,"humidity":48.82029906486022}
+    12/27/2019 8:51:32 PM > Sending AIRPLANE message: {"temperature":16.55005930170971,"humidity":36.49988437459935}
+    12/27/2019 8:51:32 PM > Sending CONTAINER message: {"temperature":21.811727088543286,"humidity":50.0}
     ```
 
 1. 이 랩의 뒷부분을 진행하는 동안 **ContainerSimulation** 앱을 실행 상태로 유지합니다.
@@ -368,7 +368,7 @@ Azure TSI(Time Series Insights)는 IoT 솔루션에서 규모에 맞게 데이�
 
 1. 마우스 포인터를 그래프 선 중 하나에 놓습니다.
 
-    마우스 커서를 그래프 위에 두면 그래프 요소에 대한 세부 정보가 팝업으로 나타납니다. 팝업에는 그래프에서 해당 데이터 요소의 최소치(**min****), 평균치(**avg**), 최대치(**max**) 값이 표시됩니다(해당 요소가 나타나는 짧은 시간 동안). 선택한 데이터 요소와 연결된 시간 범위가 디스플레이 하단의 시간 축을 따라 표시됩니다.
+    마우스 커서를 그래프 위에 두면 그래프 요소에 대한 세부 정보가 팝업으로 나타납니다. 팝업에는 그래프에서 해당 데이터 요소의 최소치(**min**), 평균치(**avg**), 최대치(**max**) 값이 표시됩니다(해당 요소가 나타나는 짧은 시간 동안). 선택한 데이터 요소와 연결된 시간 범위가 디스플레이 하단의 시간 축을 따라 표시됩니다.
 
 1. 세로 축 선 위에 있는 그래프 설정 제어용 옵션을 확인합니다.
 

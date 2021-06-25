@@ -39,7 +39,7 @@ Contoso는 IoT 디바이스를 사용하여 온도와 습도를 모니터링하�
 | 리소스 유형  | 리소스 이름                |
 | :------------- | :--------------------------- |
 | 리소스 그룹 | rg-az220                     |
-| IoT Hub        | iot-az220-training-{사용자 ID} |
+| IoT Hub        | iot-az220-training-{your-id} |
 
 이러한 리소스를 사용할 수 없는 경우 연습 2로 이동하기 전에 아래 설명에 따라 **lab04-setup.azcli** 스크립트를 실행해야 합니다. 스크립트 파일은 개발자 환경 구성(랩 3)의 일부로 로컬로 복제한 GitHub 리포지토리에 포함됩니다.
 
@@ -102,9 +102,9 @@ Contoso는 IoT 디바이스를 사용하여 온도와 습도를 모니터링하�
 
     이제 편집기에서 **lab04-setup.azcli** 파일의 내용을 표시합니다.
 
-1. 편집기에서 `{사용자 ID}` 및 `{사용자 위치}` 변수의 값을 업데이트합니다.
+1. 편집기에서 `{your-id}` 및 `{your-location}` 변수의 값을 업데이트합니다.
 
-    아래 샘플을 예로 들어 보면, `{사용자 ID}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{사용자 위치}`는 리소스 그룹용으로 사용한 위치로 설정해야 합니다(아래 설명과 예제 참조).
+    아래 샘플을 예로 들어 보면, `{your-id}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{your-location}`는 리소스 그룹용으로 사용한 위치로 설정해야 합니다(아래 설명과 예제 참조).
 
     ```bash
     #!/bin/bash
@@ -158,7 +158,7 @@ Contoso는 IoT 디바이스를 사용하여 온도와 습도를 모니터링하�
 
 1. AZ-220 대시보드가 표시되는지 확인합니다.
 
-1. **rg-az220** 리소스 그룹 타일에서 **iot-az220-training-{사용자 ID}**를 클릭합니다.
+1. **rg-az220** 리소스 그룹 타일에서 **iot-az220-training-{your-id}**를 클릭합니다.
 
 1. IoT Hub 블레이드의 왼쪽 메뉴에서 **탐색기** 아래의 **IoT 디바이스**를 클릭합니다.
 
@@ -219,7 +219,7 @@ IoT Hub에 연결하려는 디바이스는 IoT Hub에 대한 연결을 설정해
     연결 문자열의 형식은 다음과 같습니다.
 
     ```text
-    HostName={IoT Hub 이름}.azure-devices.net;DeviceId=sensor-th-0001;SharedAccessKey={공유 액세스 키}
+    HostName={IoTHubName}.azure-devices.net;DeviceId=sensor-th-0001;SharedAccessKey={SharedAccessKey}
     ```
 
 ### 연습 3: 시뮬레이션된 디바이스 만들기 및 테스트(C#)
@@ -483,7 +483,7 @@ Azure IoT 디바이스 SDK에서는 디바이스 클라이언트를 사용하여
     private readonly static string connectionString = "HostName=iot-az220-training-dm200420.azure-devices.net;DeviceId=sensor-th-0001;SharedAccessKey=hfavUmFgoCPA9feWjyfTx23SUHr+dqG9X193ctdEd90=";
     ```
 
-1. `// INSERT 이 주석 아래에 Main 메서드를 삽입합니다.` 주석을 찾습니다.
+1. `// INSERT Main method below here` 주석을 찾습니다.
 
 1. 시뮬레이션된 디바이스 애플리케이션의 **Main** 메서드를 생성하려면 다음 코드를 입력합니다.
 
@@ -611,7 +611,7 @@ Azure IoT 디바이스 SDK에서는 디바이스 클라이언트를 사용하여
 
     그러면 **telemetryDataPoint**의 값이 **JsonConvert** 클래스를 통해 JSON 문자열로 변환됩니다. 이 클래스는 앞에서 추가한 **Newtonsoft.Json** 패키지에 포함되어 있습니다. 그리고 나면 메시지에서 페이로드로 사용할 JSON 문자열 값이 반환됩니다.
 
-1. `// INSERT 이 주석 아래에 EnvironmentSensor 클래스를 삽입합니다.` 주석을 찾습니다.
+1. `// INSERT EnvironmentSensor class below here` 주석을 찾습니다.
 
 1. **EnvironmentSensor** 클래스를 생성하려면 다음 코드를 입력합니다.
 
@@ -626,7 +626,7 @@ Azure IoT 디바이스 SDK에서는 디바이스 클라이언트를 사용하여
     {
         // 초기 원격 분석 값
         double minTemperature = 20;
-        이중 최소 습도 = 60;
+        double minHumidity = 60;
         Random rand = new Random();
 
         internal EnvironmentSensor()
@@ -712,7 +712,7 @@ Azure IoT 디바이스 SDK에서는 디바이스 클라이언트를 사용하여
 1. IoT Hub에서 수신 중인 이벤트 메시지를 모니터링하려면 Azure Cloud Shell에서 다음 명령을 입력합니다.
 
     ```cmd/sh
-    az iot hub monitor-events --hub-name {IoT Hub 이름} --device-id sensor-th-0001
+    az iot hub monitor-events --hub-name {IoTHubName} --device-id sensor-th-0001
     ```
 
     _**{IoTHubName}** 자리 표시자를 Azure IoT Hub의 이름으로 바꿔야 합니다._

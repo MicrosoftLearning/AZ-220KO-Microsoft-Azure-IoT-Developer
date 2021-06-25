@@ -62,7 +62,7 @@ IT 부서는 운영자를 위해 개발한 백 엔드 포털을 유지 관리하
 | 리소스 유형 | 리소스 이름 |
 | :-- | :-- |
 | 리소스 그룹 | rg-az220 |
-| IoT Hub | iot-az220-training-{사용자 ID} |
+| IoT Hub | iot-az220-training-{your-id} |
 | IoT 디바이스 | sensor-th-0155 |
 
 > **중요**: 설정 스크립트를 실행하여 필요한 디바이스를 만드세요.
@@ -72,7 +72,7 @@ IT 부서는 운영자를 위해 개발한 백 엔드 포털을 유지 관리하
 >**참고:** **sensor-th-0155** 디바이스용 연결 문자열이 필요합니다. 이 디바이스가 Azure IoT Hub에 이미 등록된 경우, Azure Cloud Shell에서 다음 명령을 실행하여 연결 문자열을 가져올 수 있습니다."
 >
 > ```bash
-> az iot hub device-identity connection-string show --hub-name iot-az220-training-{사용자 ID} --device-id sensor-th-0050 -o tsv
+> az iot hub device-identity connection-string show --hub-name iot-az220-training-{your-id} --device-id sensor-th-0050 -o tsv
 > ```
 
 **lab16-setup.azcli** 스크립트는 **bash** 셸 환경에서 실행되도록 작성됩니다. 이는 Azure Cloud Shell에서 실행할 수 있는 가장 쉬운 방법입니다.
@@ -132,9 +132,9 @@ IT 부서는 운영자를 위해 개발한 백 엔드 포털을 유지 관리하
 
     이제 편집기에서 **lab16-setup.azcli** 파일의 내용을 표시합니다.
 
-1. 편집기에서 `{사용자 ID}` 및 `{사용자 위치}`에 할당된 값을 업데이트합니다.
+1. 편집기에서 `{your-id}` 및 `{your-location}`에 할당된 값을 업데이트합니다.
 
-    아래 참조 샘플의 경우 `{사용자 ID}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{사용자 위치}`는 리소스에 적합한 위치로 설정해야 합니다.
+    아래 참조 샘플의 경우 `{your-id}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{your-location}`는 리소스에 적합한 위치로 설정해야 합니다.
 
     ```bash
     #!/bin/bash
@@ -172,7 +172,7 @@ IT 부서는 운영자를 위해 개발한 백 엔드 포털을 유지 관리하
 
     이 스크립트를 실행하는 데 몇 분이 걸릴 수 있습니다. 각 단계가 완료될 때 출력이 표시됩니다.
 
-    이 스크립트는 먼저 **rg-az220** 리소스 그룹과 **iot-az220-training-{사용자 ID}** IoT Hub를 만듭니다. 이미 있는 경우 해당 메시지가 표시됩니다. 그런 다음 스크립트는 ID가 **sensor-th-0155**인 디바이스를 IoT Hub에 추가하고 디바이스 연결 문자열을 표시합니다.
+    이 스크립트는 먼저 **rg-az220** 리소스 그룹과 **iot-az220-training-{your-id}** IoT Hub를 만듭니다. 이미 있는 경우 해당 메시지가 표시됩니다. 그런 다음 스크립트는 ID가 **sensor-th-0155**인 디바이스를 IoT Hub에 추가하고 디바이스 연결 문자열을 표시합니다.
 
 1. 스크립트가 완료되면 디바이스의 연결 문자열이 표시됩니다.
 
@@ -213,7 +213,7 @@ IT 부서는 운영자를 위해 개발한 백 엔드 포털을 유지 관리하
     dotnet new console
     ```
 
-    > **참고**: 새 .NET 콘솔 앱이 만들어지면 'dotnet restore'이 사후 생성 프로세스로 실행되었어야 합니다. 터미널 창에 이 문제가 발생했음을 나타내는 메시지가 표시되지 않으면 앱에서 필수 .NET 패키지에 액세스하지 못할 수도 있습니다. 이를 처리하려면 다음 명령을 입력합니다. `dotnet restore`
+    > **참고**: 새 .NET 콘솔 앱이 만들어지면 `dotnet restore`이 사후 생성 프로세스로 실행되었어야 합니다. 터미널 창에 이 문제가 발생했음을 나타내는 메시지가 표시되지 않으면 앱에서 필수 .NET 패키지에 액세스하지 못할 수도 있습니다. 이를 처리하려면 다음 명령을 입력합니다. `dotnet restore`
 
 1. 앱에 필요한 라이브러리를 설치하려면 다음 명령을 입력합니다.
 
@@ -229,7 +229,7 @@ IT 부서는 운영자를 위해 개발한 백 엔드 포털을 유지 관리하
 
 1. **폴더 열기** 대화 상자에서 터미널 창에 지정된 폴더 위치로 이동한 다음 **fwupdatedevice**를 클릭한 후 **폴더 선택**을 클릭합니다.
 
-    EXPLORER 창은 Visual Studio Code에서 열리고 'Program.cs' 및 'fwupdatedevice.csproj' 파일이 나열되어 있어야 합니다.
+    EXPLORER 창은 Visual Studio Code에서 열리고 `Program.cs` 및 `fwupdatedevice.csproj` 파일이 나열되어 있어야 합니다.
 
 1. **탐색기** 창에서 **Program.cs**를 클릭합니다.
 
@@ -271,7 +271,7 @@ IT 부서는 운영자를 위해 개발한 백 엔드 포털을 유지 관리하
             static void LogToConsole(string text)
             {
                 // 디바이스 ID로 로그를 접두사화합니다.
-                Console.WriteLine(header.Key + ": " + text);
+                Console.WriteLine(DeviceID + ": " + text);
             }
 
             // OS/HW에서 펌웨어 버전을 검색하는 기능
@@ -301,8 +301,8 @@ IT 부서는 운영자를 위해 개발한 백 엔드 포털을 유지 관리하
             //  fwUpdateSubstatus: fwUpdateStatus에 대한 추가 세부 정보. 다음을 포함할 수 있습니다.
             //                     오류 또는 롤백 상태에 대한 이유 또는 다운로드 %.
             //
-            // 보고: {
-            //       펌웨어: {
+            // reported: {
+            //       firmware: {
             //         currentFwVersion: '1.0.0',
             //         pendingFwVersion: '',
             //         fwUpdateStatus: 'current',
@@ -468,9 +468,9 @@ IT 부서는 운영자를 위해 개발한 백 엔드 포털을 유지 관리하
 
 1. 터미널 창을 열어야 합니다.
 
-    명령 프롬프트의 폴더 위치는 'fwupdatedevice' 폴더입니다.
+    명령 프롬프트의 폴더 위치는 `fwupdatedevice` 폴더입니다.
 
-1. 'fwupdatedevice' 앱을 실행하려면 다음 명령을 입력합니다.
+1. `fwupdatedevice` 앱을 실행하려면 다음 명령을 입력합니다.
 
     ``` bash
     dotnet run "<device connection string>"
@@ -478,15 +478,15 @@ IT 부서는 운영자를 위해 개발한 백 엔드 포털을 유지 관리하
 
     > **참고**: 자리 표시자를 실제 디바이스 연결 문자열로 바꾸고 연결 문자열 주위에 "" 기호를 포함해야 합니다. 
     > 
-    > 예를 들어 다음과 같이 입력할 수 있습니다. `"HostName=iot-az220-training-{사용자 ID}.azure-devices.net;DeviceId=sensor-th-0155;SharedAccessKey={}="`
+    > 예를 들어 다음과 같이 입력할 수 있습니다. `"HostName=iot-az220-training-{your-id}.azure-devices.net;DeviceId=sensor-th-0155;SharedAccessKey={}="`
 
 1. 터미널 창의 내용을 검토합니다.
 
     터미널에 다음과 같은 출력이 표시됩니다(여기서 “mydevice”는 디바이스 ID를 만들 때 사용한 디바이스 ID입니다).
 
     ``` bash
-        mydevice: 부팅된 디바이스
-        mydevice: 현재 펌웨어 버전: 1.0.0
+        mydevice: Device booted
+        mydevice: Current firmware version: 1.0.0
     ```
 
 #### 작업 2: 디바이스 관리 구성 만들기
@@ -495,7 +495,7 @@ IT 부서는 운영자를 위해 개발한 백 엔드 포털을 유지 관리하
 
     Azure 계정이 두 개 이상인 경우 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. Azure Portal 대시보드에서 **iot-az220-training-{사용자 ID}**를 클릭합니다.
+1. Azure Portal 대시보드에서 **iot-az220-training-{your-id}**를 클릭합니다.
 
     이제 IoT Hub 블레이드가 표시되어야 합니다.
  
@@ -505,7 +505,7 @@ IT 부서는 운영자를 위해 개발한 백 엔드 포털을 유지 관리하
 
 1. **디바이스 쌍 구성 만들기** 블레이드에서 **이름**에 **firmwareupdate**를 입력합니다.
 
-    **레이블** 아래가 아니라 구성의 필수 **이름** 필드에 'firmwareupdate를 입력해야 합니다. 
+    **레이블** 아래가 아니라 구성의 필수 **이름** 필드에 `firmwareupdate`를 입력해야 합니다. 
 
 1. 블레이드 하단에서 **다음: 쌍 설정 >**을 클릭합니다.
 

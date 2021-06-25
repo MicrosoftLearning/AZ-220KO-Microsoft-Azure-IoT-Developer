@@ -104,7 +104,7 @@ Contoso의 자산 모니터링 및 추적 솔루션은 훌륭하게 작동하고
 
 1. 편집기에서 `{your-id}` 및 `{your-location}` 변수의 값을 업데이트합니다.
 
-    아래 샘플을 예로 들어 보면, `{your-id}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{사용자 위치}`는 리소스에 적합한 위치로 설정해야 합니다.
+    아래 샘플을 예로 들어 보면, `{your-id}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{your-location}`는 리소스에 적합한 위치로 설정해야 합니다.
 
     ```bash
     #!/bin/bash
@@ -441,7 +441,7 @@ Azure Resource 로그는 내부 작업을 설명하는 Azure 리소스에서 내
 
     이름은 경고를 식별할 수 있도록 묘사하는 형식이어야 합니다.
 
-1. **설명** 필드에 **이 경고는 iot-az220-training-{사용자 ID} 허브에 연결된 디바이스가 5개 이상일 때 발생합니다.**를 입력합니다.
+1. **설명** 필드에 **이 경고는 iot-az220-training-{your-id} 허브에 연결된 디바이스가 5개 이상일 때 발생합니다.**를 입력합니다.
 
     설명 필드는 선택 사항이지만 권장됩니다.
 
@@ -560,9 +560,9 @@ Contoso의 자산 추적 시스템을 시뮬레이션하려면 배송 컨테이�
     ./certGen.sh create_root_and_intermediate
     ```
 
-    이 명령은 'azure-iot-test-only.root.ca.cert.pem'라는 CA 루트 인증서를 생성하고 './certs' 디렉터리에 배치합니다.
+    이 명령은 `azure-iot-test-only.root.ca.cert.pem`라는 CA 루트 인증서를 생성하고 `./certs` 디렉터리에 배치합니다.
 
-1. Cloud Shell 명령 프롬프트에서 'azure-iot-test-only.root.ca.cert.pem' 인증서를 로컬 컴퓨터에 다운로드하려면(DPS에 업로드할 수 있음) 다음 명령을 입력합니다.
+1. Cloud Shell 명령 프롬프트에서 `azure-iot-test-only.root.ca.cert.pem` 인증서를 로컬 컴퓨터에 다운로드하려면(DPS에 업로드할 수 있음) 다음 명령을 입력합니다.
 
     ```sh
     download ~/certificates/certs/azure-iot-test-only.root.ca.cert.pem
@@ -640,7 +640,7 @@ Contoso의 자산 추적 시스템을 시뮬레이션하려면 배송 컨테이�
 
 #### 작업 5: 등록 그룹 만들기
 
-1. Azure Portal에서 **dps-az220-training-{사용자 ID}** Device Provisioning Service 블레이드가 열려 있는지 확인합니다.
+1. Azure Portal에서 **dps-az220-training-{your-id}** Device Provisioning Service 블레이드가 열려 있는지 확인합니다.
 
 1. 왼쪽 메뉴의 **설정**에서 **등록 관리**를 클릭합니다.
 
@@ -656,9 +656,9 @@ Contoso의 자산 추적 시스템을 시뮬레이션하려면 배송 컨테이�
 
 1. **기본 인증서** 드롭다운에서 **root-ca-cert**를 클릭합니다.
 
-    **이 그룹에 할당할 수 있는 IoT Hub 선택** 드롭다운에 **iot-az220-training-{사용자 ID}** IoT Hub가 포함되어 있음을 확인합니다. 이렇게 하면 디바이스가 프로비전될 때 이 IoT Hub에 추가됩니다.
+    **이 그룹에 할당할 수 있는 IoT Hub 선택** 드롭다운에 **iot-az220-training-{your-id}** IoT Hub가 포함되어 있음을 확인합니다. 이렇게 하면 디바이스가 프로비전될 때 이 IoT Hub에 추가됩니다.
 
-1. 초기 디바이스 쌍 상태 필드에서 'property.desired' JSON 개체에 값이 '"1"'인 'telemetryDelay'라는 속성이 포함되도록 수정합니다. 이는 디바이스가 센서 원격 분석을 읽고 이벤트를 IoT Hub로 보내는 시간 지연을 설정하는 데 사용됩니다.
+1. 초기 디바이스 쌍 상태 필드에서 `properties.desired` JSON 개체에 값이 `"1"`인 `telemetryDelay`라는 속성이 포함되도록 수정합니다. 이는 디바이스가 센서 원격 분석을 읽고 이벤트를 IoT Hub로 보내는 시간 지연을 설정하는 데 사용됩니다.
 
     최종 JSON은 다음과 같습니다.
 
@@ -725,7 +725,7 @@ Contoso의 자산 추적 시스템을 시뮬레이션하려면 배송 컨테이�
         sleep 5
         cp ./certs/new-device.cert.pfx ./certs/sensor-thl-200$i.cert.pfx
         download ./certs/sensor-thl-200$i.cert.pfx
-    완료
+    done
     popd
     ```
 
@@ -799,31 +799,31 @@ Contoso의 자산 추적 시스템을 시뮬레이션하려면 배송 컨테이�
 
     인증서 파일도 나열되어 있어야 합니다.
 
-1. 코드 편집기에서 'GlobalDeviceEndpoint' 변수를 찾습니다.
+1. 코드 편집기에서 `GlobalDeviceEndpoint` 변수를 찾습니다.
 
-    값이 'global.azure-devices-provisioning.net'로 설정되어 있습니다. 공용 Azure Cloud 내 DPS(Device Provisioning Service)의 **전역 디바이스 엔드포인트**입니다. Azure DPS에 연결하는 모든 디바이스는 이 글로벌 디바이스 엔드포인트 DNS 이름으로 구성됩니다.
+    값이 `global.azure-devices-provisioning.net`로 설정되어 있습니다. 공용 Azure Cloud 내 DPS(Device Provisioning Service)의 **전역 디바이스 엔드포인트**입니다. Azure DPS에 연결하는 모든 디바이스는 이 글로벌 디바이스 엔드포인트 DNS 이름으로 구성됩니다.
 
     ```csharp
     private const string GlobalDeviceEndpoint = "global.azure-devices-provisioning.net";
     ```
 
-1. 'dpsIdScope' 변수를 찾습니다.
+1. `dpsIdScope` 변수를 찾습니다.
 
     ```csharp
     private static string dpsIdScope = "<DPS-ID-Scope>";
     ```
 
-    '<DPS-ID-Scope>'의 값을 자리 표시자에서 실제 값으로 바꿔야 합니다.
+    `<DPS-ID-Scope>`의 값을 자리 표시자에서 실제 값으로 바꿔야 합니다.
 
 1. Azure Cloud Shell을 포함하는 브라우저 창으로 돌아갑니다.
 
 1. Cloud Shell 명령 프롬프트에서 DPS 서비스의 ID 범위를 표시하려면 다음 명령을 입력합니다.
 
     ```bash
-    az iot dps show --name dps-az220-training-{사용자 ID} --query properties.idScope
+    az iot dps show --name dps-az220-training-{your-id} --query properties.idScope
     ```
 
-    > **참고**: {사용자 ID}는 이 강의를 시작할 때 만든 ID로 바꿔야 합니다.
+    > **참고**: {your-id}는 이 강의를 시작할 때 만든 ID로 바꿔야 합니다.
 
 1. 위의 명령에서 생성된 출력을 복사합니다.
 
@@ -831,7 +831,7 @@ Contoso의 자산 추적 시스템을 시뮬레이션하려면 배송 컨테이�
 
 1. Visual Studio Code로 돌아갑니다.
 
-1. '<DPS-ID-Scope>' 값을 Azure Cloud Shell에서 복사한 값으로 바꿉니다.
+1. `<DPS-ID-Scope>` 값을 Azure Cloud Shell에서 복사한 값으로 바꿉니다.
 
     코드는 다음과 유사합니다.
 
@@ -864,7 +864,7 @@ Contoso의 자산 추적 시스템을 시뮬레이션하려면 배송 컨테이�
     이제 디바이스가 연결되어 원격 분석을 전송하므로 5분 동안 5개 이상의 디바이스가 연결되면 경고 트리거링을 기다려 볼 수 있습니다. 다음과 유사한 SMS 메시지를 받게 됩니다.
 
     ```text
-    AZ220EmailAG:Fired:Sev3 Azure Monitor 경고 5개 이상의 디바이스가 <귀하의 IoT Hub>에 연결되었습니다.
+    AZ220EmailAG:Fired:Sev3 Azure Monitor Alert Connected Devices Greater or Equal to 5 on <your IoT Hub>
     ```
 
 1. 경고 알림이 도착하면 애플리케이션을 종료할 수 있습니다.
@@ -909,7 +909,7 @@ Azure Portal을 사용하여 경고를 검토하려면 다음 단계를 완료�
 
 1. **리소스 그룹** 드롭다운에서 **rg-az220**을 클릭합니다.
 
-1. **리소스 ** 드롭다운에서 **iot-az220-training-{사용자 ID}**를 클릭합니다.
+1. **리소스 ** 드롭다운에서 **iot-az220-training-{your-id}**를 클릭합니다.
 
 1. **시간 범위** 드롭다운에서 **지난 시간**을 클릭합니다.
 
@@ -937,7 +937,7 @@ Azure Portal을 사용하여 경고를 검토하려면 다음 단계를 완료�
 
 1. 대시보드로 이동한 다음 "rg-az220" 리소스 그룹 타일을 찾습니다.
 
-1. 리소스 목록에서 이전에 만든 스토리지 계정 **staz220training{your-id})**를 선택합니다.
+1. 리소스 목록에서 이전에 만든 스토리지 계정 **staz220training{your-id}**를 선택합니다.
 
     스토리지 계정에 대한 **개요**가 표시됩니다.
 

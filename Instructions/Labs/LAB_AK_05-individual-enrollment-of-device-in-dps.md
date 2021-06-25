@@ -39,8 +39,8 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
 | 리소스 유형 | 리소스 이름 |
 | :-- | :-- |
 | 리소스 그룹 | rg-az220 |
-| IoT Hub | iot-az220-training-{사용자 ID} |
-| Device Provisioning Service | dps-az220-training-{사용자 ID} |
+| IoT Hub | iot-az220-training-{your-id} |
+| Device Provisioning Service | dps-az220-training-{your-id} |
 
 이러한 리소스를 사용할 수 없는 경우 연습 2로 이동하기 전에 아래 설명에 따라 **lab05-setup.azcli** 스크립트를 실행해야 합니다. 스크립트 파일은 개발자 환경 구성(랩 3)의 일부로 로컬로 복제한 GitHub 리포지토리에 포함됩니다.
 
@@ -103,9 +103,9 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
 
     이제 편집기에서 **lab05-setup.azcli** 파일의 내용을 표시합니다.
 
-1. 편집기에서 `{사용자 ID}` 및 `{사용자 위치}` 변수의 값을 업데이트합니다.
+1. 편집기에서 `{your-id}` 및 `{your-location}` 변수의 값을 업데이트합니다.
 
-    아래 샘플을 예로 들어 보면, `{사용자 ID}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{사용자 위치}`는 리소스에 적합한 위치로 설정해야 합니다.
+    아래 샘플을 예로 들어 보면, `{your-id}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{your-location}`는 리소스에 적합한 위치로 설정해야 합니다.
 
     ```bash
     #!/bin/bash
@@ -159,7 +159,7 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
 
     IoT Hub 및 DPS 리소스가 모두 나열되어 있습니다.
 
-1. **rg-az220** 리소스 그룹 타일에서 **dps-az220-training-{사용자 ID}**를 클릭합니다.
+1. **rg-az220** 리소스 그룹 타일에서 **dps-az220-training-{your-id}**를 클릭합니다.
 
 1. 왼쪽 메뉴의 **설정**에서 **등록 관리**를 클릭합니다.
 
@@ -196,7 +196,7 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
     * **등록 목록을 통한 정적 구성**: 등록 목록에 지정된 원하는 IoT Hub는 Device Provisioning Service 수준 할당 정책보다 우선 순위가 높습니다.
     * **사용자 지정(Azure Function 사용)**: Device Provisioning Service가 Azure Function 코드를 호출하여 디바이스 및 등록에 대한 모든 관련 정보를 제공합니다. 실행된 함수 코드는 디바이스를 프로비전하는 데 사용된 IoT Hub 정보를 반환합니다.
 
-1. **이 디바이스를 할당할 수 있는 IoT 허브 선택** 드롭다운에는 앞에서 만든 **iot-az220-training-{사용자 ID}** IoT 허브가 지정되어 있습니다.
+1. **이 디바이스를 할당할 수 있는 IoT 허브 선택** 드롭다운에는 앞에서 만든 **iot-az220-training-{your-id}** IoT 허브가 지정되어 있습니다.
 
     이 필드는 디바이스를 할당할 수 있는 IoT Hub를 지정하는 데 사용됩니다.
 
@@ -263,7 +263,7 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
 
 #### 작업 1: 시뮬레이션된 디바이스 만들기
 
-1. **dps-az220-training-{사용자 ID}** 블레이드의 왼쪽 메뉴에서 **개요**를 클릭합니다.
+1. **dps-az220-training-{your-id}** 블레이드의 왼쪽 메뉴에서 **개요**를 클릭합니다.
 
 1. 블레이드의 오른쪽 상단 영역에서** ID 범위**에 할당된 값을 마우스 포인터로 가리키고 **클립보드에 복사**를 클릭합니다.
 
@@ -329,7 +329,7 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
       * Program 클래스 - Azure IoT에 연결하여 원격 분석을 전송합니다.
       * EnvironmentSensor 클래스 - 센서 데이터를 생성합니다.
 
-1. 코드 편집기에서 `// INSERT 이 주석 아래에 Main 메서드를 삽입합니다.` 주석을 찾습니다.
+1. 코드 편집기에서 `// INSERT Main method below here` 주석을 찾습니다.
 
 1. 시뮬레이션된 디바이스 애플리케이션용 **Main** 메서드를 만들려면 다음 코드를 입력합니다.
 
@@ -381,7 +381,7 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
 
     > **정보**: [여기](https://docs.microsoft.com/ko-kr/dotnet/api/microsoft.azure.devices.provisioning.client.provisioningdeviceclient?view=azure-dotnet)서 제공되는 **ProvisioningDeviceClient** 설명서에서 기타 관련 클래스를 쉽게 확인할 수 있습니다.
 
-1. `// INSERT 이 주석 아래에 ProvisionDevice 메서드를 삽입합니다.` 주석을 찾습니다.
+1. `// INSERT ProvisionDevice method below here` 주석을 찾습니다.
 
 1. **ProvisionDevice** 메서드를 만들려면 다음 코드를 입력합니다.
 
@@ -433,7 +433,7 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
 
     이렇게 하려면 `DeviceClient.SetDesiredPropertyUpdateCallbackAsync` 메서드를 사용하고, `OnDesiredPropertyChanged` 메서드를 만들어 이벤트 처리기를 설정합니다.
 
-1. `// INSERT 이 주석 아래에서 OnDesiredPropertyChanged 이벤트 처리를 설정합니다.` 주석을 찾습니다.
+1. `// INSERT Setup OnDesiredPropertyChanged Event Handling below here` 주석을 찾습니다.
 
 1. OnDesiredPropertyChanged 이벤트용 DeviceClient를 설정하려면 다음 코드를 입력합니다.
 
@@ -445,7 +445,7 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
 
     이벤트 처리기를 설정하는 **SetDesiredPropertyUpdateCallbackAsync** 메서드를 포함했으므로, 이제 해당 메서드가 호출하는 **OnDesiredPropertyChanged** 메서드를 만들어야 합니다.
 
-1. `// INSERT 이 주석 아래에 OnDesiredPropertyChanged 메서드를 삽입합니다.` 주석을 찾습니다.
+1. `// INSERT OnDesiredPropertyChanged method below here` 주석을 찾습니다.
 
 1. **OnDesiredPropertyChanged** 메서드를 만들려면 다음 코드를 입력합니다.
 
@@ -483,7 +483,7 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
 
     이제 디바이스가 Azure IoT Hub에서 디바이스 쌍이 원하는 속성에 대한 업데이트를 받을 수 있으므로 디바이스가 시작될 때 초기 설정을 구성하도록 코딩해야 합니다. 이를 위해 디바이스가 Azure IoT Hub에서 현재 디바이스 쌍이 원하는 속성을 로드하고 그에 따라 자체적으로 구성해야 합니다.
 
-1. **Main** 메서드에서 `// INSERT 이 주석 아래에서 디바이스 트윈 속성을 로드합니다.` 주석을 찾습니다.
+1. **Main** 메서드에서 `// INSERT Load Device Twin Properties below here` 주석을 찾습니다.
 
 1. 디바이스 트윈의 원하는 속성을 읽고 디바이스 시작 시에 해당 속성과 일치하도록 디바이스를 구성하려면 다음 코드를 입력합니다.
 
@@ -492,7 +492,7 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
     await OnDesiredPropertyChanged(twin.Properties.Desired, null);
     ```
 
-    이 코드는 시뮬레이션된 디바이스에 대한 디바이스 쌍을 검색하는 'DeviceTwin.GetTwinAsync' 메서드를 호출합니다. 그런 다음 `Properties.Desired` 속성 개체에 액세스하여 디바이스의 현재 필요한 상태를 검색한 후 **OnDesiredPropertyChanged** 메서드에 전달합니다. 그러면 이 메서드가 시뮬레이션된 디바이스의 **telemetryDelay** 변수를 구성합니다.
+    이 코드는 시뮬레이션된 디바이스에 대한 디바이스 쌍을 검색하는 `DeviceTwin.GetTwinAsync` 메서드를 호출합니다. 그런 다음 `Properties.Desired` 속성 개체에 액세스하여 디바이스의 현재 필요한 상태를 검색한 후 **OnDesiredPropertyChanged** 메서드에 전달합니다. 그러면 이 메서드가 시뮬레이션된 디바이스의 **telemetryDelay** 변수를 구성합니다.
 
     이 코드는 _OnDesiredPropertyChanged_ 이벤트를 처리하기 위해 이미 만든 **OnDesiredPropertyChanged** 메서드를 재사용합니다. 이렇게 하면 디바이스 쌍의 필요한 상태 속성을 읽고 한 곳에서 시작 시 디바이스를 구성하는 코드를 유지하는 데 도움이 됩니다. 결과 코드는 더 간단하고 유지 관리가 더 쉽습니다.
 
@@ -510,7 +510,7 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
 
 1. **보기** 메뉴에서 **터미널**을 클릭합니다.
 
-1. 터미널 창에서 명령 프롬프트에 'Program.cs' 파일의 디렉터리 경로가 표시되는지 확인합니다.
+1. 터미널 창에서 명령 프롬프트에 `Program.cs` 파일의 디렉터리 경로가 표시되는지 확인합니다.
 
 1. 명령 프롬프트에서 시뮬레이션된 디바이스 애플리케이션을 빌드하고 실행하려면 다음 명령을 입력합니다.
 
@@ -520,7 +520,7 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
 
     > **참고**: 시뮬레이션된 디바이스 애플리케이션은 실행되면 먼저 콘솔(터미널 창)에 상태에 대한 몇 가지 세부 정보를 작성합니다.
 
-1. '필요한 쌍 속성 변경됨:' 줄 뒤에 있는 JSON 출력에 디바이스의 'telemetryDelay' 필요한 값이 있습니다.
+1. `Desired Twin Property Changed:` 줄 뒤에 있는 JSON 출력에 디바이스의 `telemetryDelay` 필요한 값이 있습니다.
 
     터미널 창에서 위로 스크롤하여 출력을 확인할 수 있습니다. 다음과 유사하게 나타납니다.
 
@@ -535,16 +535,16 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
 
 1. 시뮬레이션된 디바이스 애플리케이션은 Azure IoT Hub로 원격 분석 이벤트를 보내기 시작합니다.
 
-    원격 분석 이벤트에는 '온도', '습도', '압력', '위도' 및 '경도' 값이 포함되어 있으며 다음과 유사해야 합니다.
+    원격 분석 이벤트에는 `temperature`, `humidity`, `pressure`, `latitude`, 및 `longitude` 값이 포함되어 있으며 다음과 유사해야 합니다.
 
     ```text
-    2019-11-06 오후 6:38:55 > 메시지 전송: {"temperature":25.59094770373355,"humidity":71.17629229611545,"pressure":1019.9274696347665,"latitude":39.82133964767944,"longitude":-98.18181981142438}
-    2019-11-06 오후 6:38:57 > 메시지 전송: {"temperature":24.68789062681044,"humidity":71.52098010830628,"pressure":1022.6521258267584,"latitude":40.05846882452387,"longitude":-98.08765031156229}
-    2019-11-06 오후 6:38:59 > 메시지 전송: {"temperature":28.087463226675737,"humidity":74.76071353757787,"pressure":1017.614206096327,"latitude":40.269273772972454,"longitude":-98.28354453319591}
-    2019-11-06 오후 6:39:01 > 메시지 전송: {"temperature":23.575667940813894,"humidity":77.66409506912534,"pressure":1017.0118147748344,"latitude":40.21020096551372,"longitude":-98.48636739129239}
+    11/6/2019 6:38:55 PM > Sending message: {"temperature":25.59094770373355,"humidity":71.17629229611545,"pressure":1019.9274696347665,"latitude":39.82133964767944,"longitude":-98.18181981142438}
+    11/6/2019 6:38:57 PM > Sending message: {"temperature":24.68789062681044,"humidity":71.52098010830628,"pressure":1022.6521258267584,"latitude":40.05846882452387,"longitude":-98.08765031156229}
+    11/6/2019 6:38:59 PM > Sending message: {"temperature":28.087463226675737,"humidity":74.76071353757787,"pressure":1017.614206096327,"latitude":40.269273772972454,"longitude":-98.28354453319591}
+    11/6/2019 6:39:01 PM > Sending message: {"temperature":23.575667940813894,"humidity":77.66409506912534,"pressure":1017.0118147748344,"latitude":40.21020096551372,"longitude":-98.48636739129239}
     ```
 
-    원격 분석 판독값 간의 타임스탬프 차이점을 확인합니다. 원격 분석 메시지 간의 지연은 소스 코드에서는 기본값이 '1'초인 것과 달리 디바이스 쌍으로 구성된 것처럼 '2'초여야 합니다. .
+    원격 분석 판독값 간의 타임스탬프 차이점을 확인합니다. 원격 분석 메시지 간의 지연은 소스 코드에서는 기본값이 `1`초인 것과 달리 디바이스 쌍으로 구성된 것처럼 `2`초여야 합니다. .
 
 1. 시뮬레이션된 디바이스 앱을 실행 상태로 둡니다.
 
@@ -584,9 +584,9 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
 
     **디바이스 쌍** 블레이드는 편집기에 디바이스 쌍에 대한 전체 JSON을 제공합니다. 이렇게 하면 Azure Portal에서 디바이스 쌍 상태를 직접 보거나 편집할 수 있습니다.
 
-1. 'properties.desired' 개체의 JSON을 찾습니다.
+1. `properties.desired` 개체의 JSON을 찾습니다.
 
-    여기에는 디바이스의 필요한 상태가 포함됩니다. DPS의 개별 등록에 따라 디바이스가 프로비저닝될 때 구성된 'telemetryDelay' 속성이 이미 있고 `"2"`로 설정되어 있습니다.
+    여기에는 디바이스의 필요한 상태가 포함됩니다. DPS의 개별 등록에 따라 디바이스가 프로비저닝될 때 구성된 `telemetryDelay` 속성이 이미 있고 `"2"`로 설정되어 있습니다.
 
 1. `telemetryDelay` 원하는 속성에 할당된 값을 업데이트하려면 값을 `"5"`로 변경합니다.
 
@@ -602,24 +602,24 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
 
 1. 디바이스가 디바이스 쌍 속성의 변경 사항을 인식합니다.
 
-    출력에는 새로운 필요한 'telemetryDelay' 속성 값에의 JSON과 함께 '필요한 쌍 속성 변경됨'이라는 메시지가 표시됩니다. 디바이스가 디바이스 쌍의 필요한 상태의 새로운 구성을 선택하면, 자동으로 현재 구성된 대로 5초마다 센서 원격 분석을 보내도록 업데이트합니다.
+    출력에는 새로운 필요한 `telemetryDelay` 속성 값에의 JSON과 함께 `Desired Twin Property Changed`이라는 메시지가 표시됩니다. 디바이스가 디바이스 쌍의 필요한 상태의 새로운 구성을 선택하면, 자동으로 현재 구성된 대로 5초마다 센서 원격 분석을 보내도록 업데이트합니다.
 
     ```text
     Desired Twin Property Changed:
     {"telemetryDelay":"5","$version":2}
     Reported Twin Properties:
     {"telemetryDelay":"5"}
-    2020-04-21 오후 1:20:16 > 메시지 전송: {"temperature":34.417625961088405,"humidity":74.12403526442313,"pressure":1023.7792049974805,"latitude":40.172799921919186,"longitude":-98.28591913777421}
-    2020-04-21 오후 1:20:22 > 메시지 전송: {"temperature":20.963297521678403,"humidity":68.36916032636965,"pressure":1023.7596862048422,"latitude":39.83252821949164,"longitude":-98.31669969393461}
+    4/21/2020 1:20:16 PM > Sending message: {"temperature":34.417625961088405,"humidity":74.12403526442313,"pressure":1023.7792049974805,"latitude":40.172799921919186,"longitude":-98.28591913777421}
+    4/21/2020 1:20:22 PM > Sending message: {"temperature":20.963297521678403,"humidity":68.36916032636965,"pressure":1023.7596862048422,"latitude":39.83252821949164,"longitude":-98.31669969393461}
     ```
 
 1. Azure Cloud Shell에서 Azure CLI 명령을 실행하는 브라우저 페이지로 전환합니다.
 
-    'az iot hub monitor-events' 명령을 계속 실행 중인지 확인합니다. 실행 중이 아닌 경우 명령을 다시 시작합니다.
+    `az iot hub monitor-events` 명령을 계속 실행 중인지 확인합니다. 실행 중이 아닌 경우 명령을 다시 시작합니다.
 
 1. Azure IoT Hub로 전송된 원격 분석 이벤트는 5초의 새 간격으로 수신됩니다.
 
-1. **Ctrl-C**를 사용하여 'az' 명령과 시뮬레이션된 디바이스 애플리케이션을 모두 중지합니다.
+1. **Ctrl-C**를 사용하여 `az` 명령과 시뮬레이션된 디바이스 애플리케이션을 모두 중지합니다.
 
 1. Azure Portal이 표시된 브라우저 창으로 전환합니다.
 
@@ -629,7 +629,7 @@ DPS를 사용하여 디바이스 프로비저닝 및 프로비전 해제 프로�
 
 1. `properties.reported` 개체의 JSON을 찾습니다.
 
-    JSON의 이 부분에는 디바이스에서 보고한 상태가 포함됩니다. 'telemetryDelay' 속성도 여기에 있으며 '5'로 설정되어 있습니다.  또한 보고된 데이터 값이 마지막으로 업데이트된 시점과 특정 보고된 값이 마지막으로 업데이트된 시기를 표시하는 '$metadata' 값도 있습니다.
+    JSON의 이 부분에는 디바이스에서 보고한 상태가 포함됩니다. `telemetryDelay` 속성도 여기에 있으며 `5`로 설정되어 있습니다.  또한 보고된 데이터 값이 마지막으로 업데이트된 시점과 특정 보고된 값이 마지막으로 업데이트된 시기를 표시하는 `$metadata` 값도 있습니다.
 
 1. **디바이스 트윈** 블레이드를 닫습니다.
 
@@ -647,7 +647,7 @@ Contoso 시나리오에서는 배송 컨테이너가 최종 목적지에 도착�
 
     Azure 계정이 두 개 이상인 경우 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. 리소스 그룹 타일에서 Device Provisioning Service를 열려면 **dps-az220-training-{사용자 ID}**를 클릭합니다.
+1. 리소스 그룹 타일에서 Device Provisioning Service를 열려면 **dps-az220-training-{your-id}**를 클릭합니다.
 
 1. 왼쪽 메뉴의 **설정**에서 **등록 관리**를 클릭합니다.
 
@@ -669,7 +669,7 @@ Contoso 시나리오에서는 배송 컨테이너가 최종 목적지에 도착�
 
 1. Azure Portal에서 대시보드로 다시 이동합니다.
 
-1. 리소스 그룹 타일에서 Azure IoT Hub 블레이드를 열려면 **dps-az220-training-{사용자 ID}**를 클릭합니다.
+1. 리소스 그룹 타일에서 Azure IoT Hub 블레이드를 열려면 **dps-az220-training-{your-id}**를 클릭합니다.
 
 1. 왼쪽 메뉴의 **탐색기** 아래에서 **IoT 디바이스**를 클릭합니다.
 

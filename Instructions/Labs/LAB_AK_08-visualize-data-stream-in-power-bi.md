@@ -24,7 +24,7 @@ Azure IoT Hub와 Azure Event Hubs의 주요 차이점은, Event Hubs는 빅 데�
 
 ### 기본 제공 기계 학습 모델에 호출하기
 
-이 랩에서는 기본 제공 ML(기계 학습) 함수 `AnomalyDetection_SpikeAndDip`을 호출합니다. 'AnomalyDetection_SpikeAndDip' 함수는 슬라이딩 윈도우를 사용하여 데이터에서 변칙을 분석합니다. 슬라이딩 윈도우는 원격 분석 데이터의 최근 2분 등일 수 있습니다. 이 윈도우는 원격 분석 흐름에 따라 실시간에 가깝게 진행됩니다. 일반적으로는 슬라이딩 윈도우가 커져서 데이터가 더 많이 포함되면 변칙 검색 정확도도 높아집니다(그러나 대기 시간도 길어지므로 정확도와 대기 시간의 적절한 균형을 유지해야 함).
+이 랩에서는 기본 제공 ML(기계 학습) 함수 `AnomalyDetection_SpikeAndDip`을 호출합니다. `AnomalyDetection_SpikeAndDip` 함수는 슬라이딩 윈도우를 사용하여 데이터에서 변칙을 분석합니다. 슬라이딩 윈도우는 원격 분석 데이터의 최근 2분 등일 수 있습니다. 이 윈도우는 원격 분석 흐름에 따라 실시간에 가깝게 진행됩니다. 일반적으로는 슬라이딩 윈도우가 커져서 데이터가 더 많이 포함되면 변칙 검색 정확도도 높아집니다(그러나 대기 시간도 길어지므로 정확도와 대기 시간의 적절한 균형을 유지해야 함).
 
 이 함수는 데이터의 "정상" 범위를 설정한 후 해당 범위를 사용해 변칙을 식별하고 등급을 할당합니다. 구체적으로 설명하자면, 함수가 데이터 흐름을 계속 모니터링하는 과정에서 알고리즘이 정상 값 범위를 설정한 후 해당 값 범위의 규칙에 새 값을 비교합니다. 그러면 각 값의 점수가 생성됩니다. 이 점수는 지정된 값이 변칙을 가능성을 나타내는 신뢰도를 결정하는 백분율로 표시됩니다. 당연히 낮은 신뢰도는 무시해도 됩니다. 단, 적절한 것으로 간주되는 신뢰도 값 백분율을 파악해야 합니다. 이 랩의 쿼리에서는 적절한 백분율을 95%로 설정합니다.
 
@@ -74,11 +74,11 @@ Event Hub를 만들고, 두 번째 경로를 만들고, SQL 쿼리를 업데이�
 | 리소스 유형 | 리소스 이름 |
 | :-- | :-- |
 | 리소스 그룹 | rg-az220 |
-| IoT Hub | iot-az220-training-{사용자 ID} |
+| IoT Hub | iot-az220-training-{your-id} |
 | 디바이스 ID | sensor-v-3000 |
-| 스토리지 계정 이름 | vibrationstore{사용자 ID} |
+| 스토리지 계정 이름 | vibrationstore{your-id} |
 | 스토리지 컨테이너 | vibrationcontainer |
-| 이벤트 허브 네임스페이스 | vibrationNamespace{사용자 ID} |
+| 이벤트 허브 네임스페이스 | vibrationNamespace{your-id} |
 | 이벤트 허브 이름 | vibrationeventhubinstance |
 | 스트리밍 작업 | vibrationJob |
 | 스트리밍 작업 입력 | vibrationInput |
@@ -145,9 +145,9 @@ Event Hub를 만들고, 두 번째 경로를 만들고, SQL 쿼리를 업데이�
 
     이제 편집기에서 **lab08-setup.azcli** 파일의 내용을 표시합니다.
 
-1. 편집기에서 `{사용자 ID}` 및 `{사용자 위치}`에 할당된 값을 업데이트합니다.
+1. 편집기에서 `{your-id}` 및 `{your-location}`에 할당된 값을 업데이트합니다.
 
-    아래 샘플을 예로 들어 보면, `{사용자 ID}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{사용자 위치}`는 리소스에 적합한 위치로 설정해야 합니다.
+    아래 샘플을 예로 들어 보면, `{your-id}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{your-location}`는 리소스에 적합한 위치로 설정해야 합니다.
 
     ```bash
     #!/bin/bash
@@ -355,7 +355,7 @@ Power BI 대시보드의 IoT Hub에서 라이브 스트리밍 데이터를 시�
 
     IoT Hub 및 기타 리소스에 사용했던 것과 같은 리소스 그룹인 **rg-az220**을 사용해야 합니다.
 
-1. **네임스페이스 이름** 필드에 **vibrationNamespace**를 입력하고 고유 식별자인 {사용자 ID}를 입력합니다.
+1. **네임스페이스 이름** 필드에 **vibrationNamespace**를 입력하고 고유 식별자인 {your-id}를 입력합니다.
 
     예를 들어 **vibrationNamespacecah191212**과 같이 입력할 수 있습니다.
 
@@ -395,7 +395,7 @@ Power BI 대시보드의 IoT Hub에서 라이브 스트리밍 데이터를 시�
 
 1. Azure Portal 대시보드 페이지로 다시 이동합니다.
 
-1. 리소스 타일에서 **vibrationNamespace{사용자 ID}**를 클릭합니다.
+1. 리소스 타일에서 **vibrationNamespace{your-id}**를 클릭합니다.
 
     이벤트 허브 네임스페이스가 나열되지 않은 경우 타일을 새로 고칩니다.
 
@@ -431,7 +431,7 @@ Event Hubs 네임스페이스와 Event Hubs 서비스를 만들었으므로, IoT
 
 1. Azure Portal 대시보드로 이동합니다.
 
-1. 리소스 타일에서 IoT Hub를 열려면 **iot-az220-training-{사용자 ID}**를 클릭합니다.
+1. 리소스 타일에서 IoT Hub를 열려면 **iot-az220-training-{your-id}**를 클릭합니다.
 
     IoT Hub에 대한 **개요** 창이 표시됩니다.
 
@@ -504,7 +504,7 @@ Event Hubs 네임스페이스와 Event Hubs 서비스를 만들었으므로, IoT
 
 1. **구독**에서 이 과정에 사용 중인 구독이 선택되어 있는지 확인합니다.
 
-1. **이벤트 허브 네임스페이스**에서 이전 섹션에서 입력한 **vibrationNamespace[사용자 ID}** 네임스페이스가 선택되어 있는지 확인합니다.
+1. **이벤트 허브 네임스페이스**에서 이전 섹션에서 입력한 **vibrationNamespace[your-id}** 네임스페이스가 선택되어 있는지 확인합니다.
 
 1. **이벤트 허브 이름**에서 **기존 사용**을 선택하고 이전 섹션에서 만든 이벤트 허브 인스턴스가 선택되었는지 확인합니다.
 
@@ -563,14 +563,14 @@ Event Hubs 네임스페이스와 Event Hubs 서비스를 만들었으므로, IoT
     ```sql
     WITH AnomalyDetectionStep AS
     (
-        SELECT:
+        SELECT
             EVENTENQUEUEDUTCTIME AS time,
             CAST(vibration AS float) AS vibe,
             AnomalyDetection_SpikeAndDip(CAST(vibration AS float), 95, 120, 'spikesanddips')
                 OVER(LIMIT DURATION(second, 120)) AS SpikeAndDipScores
         FROM vibrationEventInput
     )
-    SELECT:
+    SELECT
         time,
         vibe,
         CAST(GetRecordPropertyValue(SpikeAndDipScores, 'Score') AS float) AS
@@ -581,16 +581,16 @@ Event Hubs 네임스페이스와 Event Hubs 서비스를 만들었으므로, IoT
     FROM AnomalyDetectionStep
     ```
 
-    > **참고**:  이 쿼리의 첫 번째 섹션은 진동 데이터를 가져와서 이전 120초 분량을 검사합니다. 'AnomalyDetection_SpikeAndDip' 함수는 '점수' 매개 변수와 'IsAnomaly' 매개 변수를 반환합니다. 점수는 ML 모델이 특정 값의 변칙 여부를 얼마나 확신하는지를 백분율로 나타낸 것입니다. 점수가 95%를 초과하면 'IsAnomaly' 매개 변수 값이 1이며 그러지 않으면 'IsAnomaly' 값이 0입니다. 쿼리의 첫 번째 섹션에서는 매개 변수가 120 및 95입니다. 쿼리의 두 번째 섹션에서는 시간, 진동 및 변칙 매개 변수를 'vibrationBI'로 보냅니다.
+    > **참고**:  이 쿼리의 첫 번째 섹션은 진동 데이터를 가져와서 이전 120초 분량을 검사합니다. `AnomalyDetection_SpikeAndDip` 함수는 `Score` 매개 변수와 `IsAnomaly` 매개 변수를 반환합니다. 점수는 ML 모델이 특정 값의 변칙 여부를 얼마나 확신하는지를 백분율로 나타낸 것입니다. 점수가 95%를 초과하면 `IsAnomaly` 매개 변수 값이 1이며 그러지 않으면 `IsAnomaly` 값이 0입니다. 쿼리의 첫 번째 섹션에서는 매개 변수가 120 및 95입니다. 쿼리의 두 번째 섹션에서는 시간, 진동 및 변칙 매개 변수를 `vibrationBI`로 보냅니다.
 
 1. 쿼리 편집기에서 이제 2개의 입력 및 출력이 나열되는지 확인합니다.
 
-    * 'Inputs'
-      * 'vibrationEventInput'
-      * 'vibrationInput'
-    * 'Outputs'
-      * 'vibrationBI'
-      * 'vibrationOutput'
+    * `Inputs`
+      * `vibrationEventInput`
+      * `vibrationInput`
+    * `Outputs`
+      * `vibrationBI`
+      * `vibrationOutput`
 
     각각 2개 이상이 표시되면 쿼리 또는 입력 또는 출력에 사용한 이름으로 오타가 있을 가능성이 높습니다. 이동하기 전에 그 문제를 수정합니다.
 

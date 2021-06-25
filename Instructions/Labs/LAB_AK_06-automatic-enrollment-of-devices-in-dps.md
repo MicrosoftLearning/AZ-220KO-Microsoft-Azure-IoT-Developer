@@ -35,8 +35,8 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 | 리소스 유형 | 리소스 이름 |
 | :-- | :-- |
 | 리소스 그룹 | rg-az220 |
-| IoT Hub | iot-az220-training-{사용자 ID} |
-| Device Provisioning Service | dps-az220-training-{사용자 ID} |
+| IoT Hub | iot-az220-training-{your-id} |
+| Device Provisioning Service | dps-az220-training-{your-id} |
 
 이러한 리소스를 사용할 수 없는 경우 연습 2로 이동하기 전에 아래 설명에 따라 **lab06-setup.azcli** 스크립트를 실행해야 합니다. 스크립트 파일은 개발자 환경 구성(랩 3)의 일부로 로컬로 복제한 GitHub 리포지토리에 포함됩니다.
 
@@ -97,9 +97,9 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
     이제 편집기에서 **lab06-setup.azcli** 파일의 내용을 표시합니다.
 
-1. 편집기에서 `{사용자 ID}` 및 `{사용자 위치}` 변수의 값을 업데이트합니다.
+1. 편집기에서 `{your-id}` 및 `{your-location}` 변수의 값을 업데이트합니다.
 
-    아래 샘플을 예로 들어 보면, `{사용자 ID}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{사용자 위치}`는 리소스에 적합한 위치로 설정해야 합니다.
+    아래 샘플을 예로 들어 보면, `{your-id}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{your-location}`는 리소스에 적합한 위치로 설정해야 합니다.
 
     ```bash
     #!/bin/bash
@@ -192,10 +192,10 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
     관심이 있다면 Cloud Shell에 내장된 편집기를 사용하여 다운로드한 스크립트 파일의 콘텐츠를 빠르게 검사할 수 있습니다.
 
-    * Cloud Shell에서 편집기를 열려면 **'{}'**를 클릭합니다.
+    * Cloud Shell에서 편집기를 열려면 **`{}`**를 클릭합니다.
     * 파일 목록에서 **인증서**를 클릭한 다음 **certGen.sh**를 클릭합니다
 
-    > **참고**: Bash 환경에서 'more' 또는 'vi' 명령과 같은 다른 텍스트 파일 보기 도구가 있는 경우 해당 도구를 사용할 수도 있습니다.
+    > **참고**: Bash 환경에서 `more` 또는 `vi` 명령과 같은 다른 텍스트 파일 보기 도구가 있는 경우 해당 도구를 사용할 수도 있습니다.
 
     다음으로는 스크립트를 사용하여 루트 및 중간 인증서를 만듭니다.
 
@@ -205,9 +205,9 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
     ./certGen.sh create_root_and_intermediate
     ```
 
-    'create_root_and_intermediate' 옵션을 사용하여 스크립트를 실행했습니다. 이 명령은`~/certificates` 디렉터리 내에서 스크립트를 실행하는 것으로 가정합니다.
+    `create_root_and_intermediate` 옵션을 사용하여 스크립트를 실행했습니다. 이 명령은`~/certificates` 디렉터리 내에서 스크립트를 실행하는 것으로 가정합니다.
 
-    이 명령은 'azure-iot-test-only.root.ca.cert.pem'이라는 루트 CA 인증서를 생성하고 './certs' 디렉터리(만든 인증서 디렉터리 아래)에 배치했습니다.
+    이 명령은 `azure-iot-test-only.root.ca.cert.pem`이라는 루트 CA 인증서를 생성하고 `./certs` 디렉터리(만든 인증서 디렉터리 아래)에 배치했습니다.
 
 1. 루트 인증서를 (DPS에 업로드할 수 있도록) 로컬 컴퓨터에 다운로드하려면 다음 명령을 입력합니다
 
@@ -221,9 +221,9 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
 1. Azure Portal에서 Device Provisioning Service를 엽니다.
 
-    대시보드의 리소스 타일에서 `dps-az220-training-{사용자 ID}`를 클릭하면 Device Provisioning Service에 액세스할 수 있습니다.
+    대시보드의 리소스 타일에서 `dps-az220-training-{your-id}`를 클릭하면 Device Provisioning Service에 액세스할 수 있습니다.
 
-1. **dps-az220-training-{사용자 ID}** 블레이드의 왼쪽 메뉴에서 **설정** 아래의 **인증서**를 클릭합니다.
+1. **dps-az220-training-{your-id}** 블레이드의 왼쪽 메뉴에서 **설정** 아래의 **인증서**를 클릭합니다.
 
 1. **인증서** 창 위쪽에서 **+ 추가**를 클릭합니다.
 
@@ -237,7 +237,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
 1. **인증서 .pem 또는 .cer 파일** 아래 텍스트 상자 오른쪽에서 **열기**를 클릭합니다.
 
-    텍스트 필드 오른쪽의 **열기** 단추를 클릭하면 이전에 다운로드한 'azure-iot-test-only.root.ca.cert.pem' CA 인증서로 이동할 수 있는 OPen 파일 대화 상자가 열립니다.
+    텍스트 필드 오른쪽의 **열기** 단추를 클릭하면 이전에 다운로드한 `azure-iot-test-only.root.ca.cert.pem` CA 인증서로 이동할 수 있는 OPen 파일 대화 상자가 열립니다.
 
 1. 루트 CA 인증서 파일을 다운로드한 폴더 위치로 이동하여 **azure-iot-test-only.root.ca.cert.pem**을 클릭하고 **열기**를 클릭합니다.
 
@@ -305,7 +305,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
 이 작업에서는 DPS(Device Provisioning Service) 내에서 X.509 인증서 증명을 사용하는 새 등록 그룹을 만듭니다.
 
-1. **dps-az220-training-{사용자 ID}** 블레이드의 왼쪽 메뉴에서 **설정** 아래의 **등록 관리**를 클릭합니다.
+1. **dps-az220-training-{your-id}** 블레이드의 왼쪽 메뉴에서 **설정** 아래의 **등록 관리**를 클릭합니다.
 
 1. **등록 관리** 창 상단에서 **등록 그룹 추가**를 클릭합니다.
 
@@ -327,7 +327,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
     여러 분산 허브가 있는 대규모 환경에서는 이 설정에서 이 디바이스 등록계약을 받을 IoT Hub를 선택하는 방법을 제어합니다. 이 랩의 등록과 연관된 단일 IoT Hub가 있으므로 IoT Hub에 디바이스를 할당하는 방법은 이 랩 시나리오에는 실제로 적용되지 않습니다.
 
-1. **이 그룹에 할당할 수 있는 IoT Hub 선택** 드롭다운에서는 **iot-az220-training-{사용자 ID}** IoT Hub가 선택되어 있습니다.
+1. **이 그룹에 할당할 수 있는 IoT Hub 선택** 드롭다운에서는 **iot-az220-training-{your-id}** IoT Hub가 선택되어 있습니다.
 
     이 필드는 프로비전하는 디바이스가 올바른 IoT Hub에 추가되는지를 확인하는 데 사용됩니다.
 
@@ -350,7 +350,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
     이 JSON 데이터는 이 등록 그룹에 참여하는 모든 디바이스의 디바이스 쌍에 대한 원하는 속성의 초기 구성을 나타냅니다.
 
-    디바이스는 'properties.desired.telemetryDelay' 속성을 사용하여 원격 분석을 읽고 IoT Hub로 보내는 시간 지연을 설정합니다.
+    디바이스는 `properties.desired.telemetryDelay` 속성을 사용하여 원격 분석을 읽고 IoT Hub로 보내는 시간 지연을 설정합니다.
 
 1. **항목 사용**을 **사용**으로 설정한 상태로 둡니다.
 
@@ -382,7 +382,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
     cd ~/certificates
     ```
 
-    `~/certificates` 디렉터리는 'certGen.sh' 도우미 스크립트가 다운로드된 위치입니다. 이 랩 앞부분에서 해당 스크립트를 사용하여 DPS용 CA 인증서를 생성했습니다. 이 도우미 스크립트는 CA 인증서 체인 내에서 디바이스 인증서를 생성하는 데에도 사용됩니다.
+    `~/certificates` 디렉터리는 `certGen.sh` 도우미 스크립트가 다운로드된 위치입니다. 이 랩 앞부분에서 해당 스크립트를 사용하여 DPS용 CA 인증서를 생성했습니다. 이 도우미 스크립트는 CA 인증서 체인 내에서 디바이스 인증서를 생성하는 데에도 사용됩니다.
 
 1. CA 인증서 체인 내에서 X.509 디바이스 인증서를 생성하려면 다음 명령을 입력합니다.
 
@@ -390,11 +390,11 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
     ./certGen.sh create_device_certificate sensor-thl-2000
     ```
 
-    이 명령은 이전에 생성된 CA 인증서에 의해 서명된 새 X.509 인증서를 만듭니다. 디바이스 ID(`sensor-thl-2000`)가 `certGen.sh` 스크립트의 `create_device_certificate` 명령으로 전달됩니다. 이 디바이스 ID는 디바이스 인증서의 _공통 이름_ 또는 'CN=' 값 내에서 설정됩니다. 이 인증서는 시뮬레이션된 디바이스에 대한 리프 디바이스 X.509 인증서를 만들며 DPS(Device Provisioning Service)를 사용하여 디바이스를 인증하는 데 사용됩니다.
+    이 명령은 이전에 생성된 CA 인증서에 의해 서명된 새 X.509 인증서를 만듭니다. 디바이스 ID(`sensor-thl-2000`)가 `certGen.sh` 스크립트의 `create_device_certificate` 명령으로 전달됩니다. 이 디바이스 ID는 디바이스 인증서의 _공통 이름_ 또는 `CN=` 값 내에서 설정됩니다. 이 인증서는 시뮬레이션된 디바이스에 대한 리프 디바이스 X.509 인증서를 만들며 DPS(Device Provisioning Service)를 사용하여 디바이스를 인증하는 데 사용됩니다.
 
-    'create_device_certificate' 명령이 완료되면 만들어진 X.509 디바이스 인증서의 이름이 'new-device.cert.pfx'가 되며 '/certs' 하위 디렉터리 내에 있습니다.
+    `create_device_certificate` 명령이 완료되면 만들어진 X.509 디바이스 인증서의 이름이 `new-device.cert.pfx`가 되며 `/certs` 하위 디렉터리 내에 있습니다.
 
-    > **참고**: 이 명령은 '/certs' 하위 디렉터리의 기존 디바이스 인증서를 덮어씁니다. 여러 디바이스에 대한 인증서를 만들려면 명령을 실행할 때마다 'new-device.cert.pfx'의 복사본을 저장해야 합니다.
+    > **참고**: 이 명령은 `/certs` 하위 디렉터리의 기존 디바이스 인증서를 덮어씁니다. 여러 디바이스에 대한 인증서를 만들려면 명령을 실행할 때마다 `new-device.cert.pfx`의 복사본을 저장해야 합니다.
 
 1. 방금 만든 디바이스 인증서의 이름을 바꾸려면 다음 명령을 입력합니다.
 
@@ -549,7 +549,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
 이 작업에서는 Main 메서드, 디바이스 프로비저닝 및 디바이스 트윈 속성과 연관된 구현을 완료하는 코드를 입력합니다.
 
-1. Program.cs 파일의 코드 편집기 창에서 `// INSERT 이 주석 아래에 Main 메서드를 삽입합니다.` 주석을 찾습니다.
+1. Program.cs 파일의 코드 편집기 창에서 `// INSERT Main method below here` 주석을 찾습니다.
 
 1. Main 메서드를 구현하려면 다음 코드를 입력합니다.
 
@@ -584,7 +584,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
     Main 메서드는 이전 랩에서 사용했던 메서드와 매우 비슷합니다. 이전 랩의 메서드에서 변경된 두 가지 주요 사항은, X.509 인증서를 로드한 후 보안 공급자로 **SecurityProviderX509Certificate**를 사용하도록 변경해야 한다는 점입니다. 나머지 코드는 이전 랩의 메서드와 동일합니다. 이전 랩에서와 마찬가지로 디바이스 트윈 속성 변경 코드도 포함되어 있습니다.
 
-1. `// INSERT 이 주석 아래에 LoadProvisioningCertificate 메서드를 삽입합니다.` 주석을 찾습니다.
+1. `// INSERT LoadProvisioningCertificate method below here` 주석을 찾습니다.
 
 1. LoadProvisioningCertificate 메서드를 구현하려면 다음 코드를 삽입합니다.
 
@@ -627,7 +627,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
     그런 다음 이 메서드는 가져온 인증서(여기서는 인증서가 하나뿐임)에서 반복 실행되어 인증서에 프라이빗 키가 있는지를 확인합니다. 가져온 인증서가 이 기준과 일치하지 않으면 예외가 throw되고, 그렇지 않으면 메서드가 가져온 인증서를 반환합니다.
 
-1. `// INSERT 이 주석 아래에 ProvisionDevice 메서드를 삽입합니다.` 주석을 찾습니다.
+1. `// INSERT ProvisionDevice method below here` 주석을 찾습니다.
 
 1. ProvisionDevice 메서드를 구현하려면 다음 코드를 입력합니다.
 
@@ -657,7 +657,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
 1. Visual Studio Code 편집기에서 **Main** 메서드를 찾습니다.
 
-1. 코드를 잠시 검토한 후 `// INSERT 이 주석 아래에서 OnDesiredPropertyChanged 이벤트 처리를 설정합니다.` 주석을 찾습니다.
+1. 코드를 잠시 검토한 후 `// INSERT Setup OnDesiredPropertyChanged Event Handling below here` 주석을 찾습니다.
 
     디바이스 트윈 속성 통합을 시작하려면 디바이스 트윈 속성이 업데이트될 때 시뮬레이션된 디바이스에 알림을 받을 수 있는 코드가 필요합니다.
 
@@ -673,7 +673,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
     이벤트 처리기를 설정하는 **SetDesiredPropertyUpdateCallbackAsync** 메서드를 포함했으므로, 이제 해당 메서드가 호출하는 **OnDesiredPropertyChanged** 메서드를 만들어야 합니다.
 
-1. `// INSERT 이 주석 아래에 OnDesiredPropertyChanged 메서드를 삽입합니다.` 주석을 찾습니다.
+1. `// INSERT OnDesiredPropertyChanged method below here` 주석을 찾습니다.
 
 1. 이벤트 처리기의 설정을 완료하려면 다음 코드를 입력합니다.
 
@@ -711,7 +711,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
     이제 디바이스가 Azure IoT Hub에서 디바이스 쌍이 원하는 속성에 대한 업데이트를 받을 수 있으므로 디바이스가 시작될 때 초기 설정을 구성하도록 코딩해야 합니다. 이를 위해 디바이스가 Azure IoT Hub에서 현재 디바이스 쌍이 원하는 속성을 로드하고 그에 따라 자체적으로 구성해야 합니다.
 
-1. **Main** 메서드에서 `// INSERT 이 주석 아래에서 디바이스 트윈 속성을 로드합니다.` 주석을 찾습니다.
+1. **Main** 메서드에서 `// INSERT Load Device Twin Properties below here` 주석을 찾습니다.
 
 1. 디바이스 트윈의 원하는 속성을 읽고 디바이스 시작 시에 해당 속성과 일치하도록 디바이스를 구성하려면 다음 코드를 입력합니다.
 
@@ -829,7 +829,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
     이렇게 하면 Visual Studio Code 창 하단에 통합 터미널이 열립니다.
 
-1. 터미널 명령 프롬프트에서 현재 디렉터리 경로가 `/ContainerDevice` 폴더로 설정되어 있는지 확인합니다.
+1. 터미널 명령 프롬프트에서 현재 디렉터리 경로가 `\ContainerDevice` 폴더로 설정되어 있는지 확인합니다.
 
     다음과 유사한 내용이 표시됩니다.
 
@@ -863,7 +863,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
     터미널 창에 표시된 정보의 위쪽까지 스크롤합니다.
 
-    X.509 인증서가 로드되었고 디바이스가 Device Provisioning Service에 등록되었으며 **iot-az220-training-{사용자 ID}** IoT Hub에 연결하도록 할당되었습니다. 그리고 디바이스 트윈의 원하는 속성이 로드되었습니다.
+    X.509 인증서가 로드되었고 디바이스가 Device Provisioning Service에 등록되었으며 **iot-az220-training-{your-id}** IoT Hub에 연결하도록 할당되었습니다. 그리고 디바이스 트윈의 원하는 속성이 로드되었습니다.
 
     ```text
     localmachine:LabFiles User$ dotnet run
@@ -884,7 +884,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
     Start reading and sending device telemetry...
     ```
 
-    시뮬레이션된 디바이스의 소스 코드를 검토하려면 'Program.cs' 소스 코드 파일을 엽니다. 콘솔에 표시된 메시지를 출력하는 데 사용되는 여러 'Console.WriteLine' 문을 찾습니다.
+    시뮬레이션된 디바이스의 소스 코드를 검토하려면 `Program.cs` 소스 코드 파일을 엽니다. 콘솔에 표시된 메시지를 출력하는 데 사용되는 여러 `Console.WriteLine` 문을 찾습니다.
 
 1. JSON 형식의 원격 분석 메시지가 Azure IoT Hub로 전송되고 있습니다.
 
@@ -896,7 +896,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
     시뮬레이션된 디바이스가 초기 시작을 통과하면 Azure IoT Hub로 시뮬레이션된 센서 원격 분석 메시지를 보내기 시작합니다.
 
-    IoT Hub로 전송되는 각 메시지 간의 'telemetryDelay' 디바이스 쌍 속성에 정의된 지연이 현재 센서 원격 분석 메시지를 보내는 사이에 **1초** 지연되고 있습니다.
+    IoT Hub로 전송되는 각 메시지 간의 `telemetryDelay` 디바이스 쌍 속성에 정의된 지연이 현재 센서 원격 분석 메시지를 보내는 사이에 **1초** 지연되고 있습니다.
 
 1. 시뮬레이션된 디바이스를 실행 상태로 둡니다.
 
@@ -916,7 +916,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
     이렇게 하면 Visual Studio Code 창 하단에 통합 터미널이 열립니다.
 
-1. 터미널 명령 프롬프트에서 현재 디렉터리 경로가 `/ContainerDevice2001` 폴더로 설정되어 있는지 확인합니다.
+1. 터미널 명령 프롬프트에서 현재 디렉터리 경로가 `\ContainerDevice2001` 폴더로 설정되어 있는지 확인합니다.
 
     다음과 유사한 내용이 표시됩니다.
 
@@ -952,9 +952,9 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
     **디바이스 트윈** 블레이드의 편집기에 디바이스 트윈의 전체 JSON이 표시됩니다. 이렇게 하면 Azure Portal에서 디바이스 쌍 상태를 직접 보거나 편집할 수 있습니다.
 
-1. 디바이스 쌍 JSON 내에서 'properties.desired' 노드를 찾습니다.
+1. 디바이스 쌍 JSON 내에서 `properties.desired` 노드를 찾습니다.
 
-1. 'telemetryDelay' 속성을 `"2"`의 값으로 업데이트합니다.
+1. `telemetryDelay` 속성을 `"2"`의 값으로 업데이트합니다.
 
     시뮬레이션된 디바이스의 `telemetryDelay`가 업데이트되어 **2초**마다 센서 원격 분석을 전송합니다.
 
@@ -976,7 +976,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
         },
     ```
 
-    JSON 내에서 `properties.desired` 노드의 '$metadata' 및 '$version' 값을 그대로 둡니다. 'telemetryDelay' 값을 업데이트하여 새 디바이스 쌍이 원하는 속성 값을 설정해야 합니다.
+    JSON 내에서 `properties.desired` 노드의 `$metadata` 및 `$version` 값을 그대로 둡니다. `telemetryDelay` 값을 업데이트하여 새 디바이스 쌍이 원하는 속성 값을 설정해야 합니다.
 
 1. 블레이드 상단에서 디바이스의 디바이스 트윈 원하는 속성을 적용하려면 **저장**을 클릭합니다.
 
@@ -999,8 +999,8 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
     ```text
     12/9/2019 5:48:07 PM > Sending message: {"temperature":33.89822140284731,"humidity":78.34939097908763,"pressure":1024.9467544610131,"latitude":40.020042418755764,"longitude":-98.41923808825841}
-    12/9/2019 5:48:07 PM > Sending message: {"temperature":27.475786026323114,"humidity":64.4175510594703,"pressure":1020.6866468579678,"latitude":40.2089999240047,"longitude":-98.26223221770334}
-    12/9/2019 5:48:07 PM > Sending message: {"temperature":34.63600901637041,"humidity":60.95207713588703,"pressure":1013.6262313688063,"latitude":40.25499096898331,"longitude":-98.51199886959347}
+    12/9/2019 5:48:09 PM > Sending message: {"temperature":27.475786026323114,"humidity":64.4175510594703,"pressure":1020.6866468579678,"latitude":40.2089999240047,"longitude":-98.26223221770334}
+    12/9/2019 5:48:11 PM > Sending message: {"temperature":34.63600901637041,"humidity":60.95207713588703,"pressure":1013.6262313688063,"latitude":40.25499096898331,"longitude":-98.51199886959347}
     ```
 
 1. **터미널** 창 내에서 시뮬레이션된 디바이스 앱을 종료하려면 **Ctrl+C**를 누릅니다.
@@ -1013,7 +1013,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
 1. **sensor-thl-2000** 블레이드에서 **디바이스 트윈**을 클릭합니다.
 
-1. 아래로 스크롤하여 'properties.reported' 개체에 대한 JSON을 찾습니다.
+1. 아래로 스크롤하여 `properties.reported` 개체에 대한 JSON을 찾습니다.
 
     여기에는 디바이스에서 보고한 상태가 포함됩니다.
 
@@ -1071,7 +1071,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
 1. Azure 대시보드로 전환합니다.
 
-1. 리소스 타일에서 **dps-az220-training-{사용자 ID}**를 클릭합니다.
+1. 리소스 타일에서 **dps-az220-training-{your-id}**를 클릭합니다.
 
 1. DPS 블레이드 왼쪽 메뉴의 **설정**에서 **등록 관리**를 클릭합니다.
 
@@ -1095,7 +1095,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
 #### 작업 2: IoT Hub에서 디바이스 등록 취소
 
-1. 리소스 타일에서 **iot-az220-training-{사용자 ID}**를 클릭합니다.
+1. 리소스 타일에서 **iot-az220-training-{your-id}**를 클릭합니다.
 
 1. IoT Hub 블레이드의 왼쪽 메뉴에서 **탐색기** 아래의 **IoT 디바이스**를 클릭합니다.
 
@@ -1128,7 +1128,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
     애플리케이션이 구성된 X.509 인증서를 사용하여 DPS에 연결하려고 하면 DPS는 DeviceRegistrationResult.Status is NOT 'Assigned'를 반환합니다.
 
     ```txt
-    Found certificate: 13F32448E03F451E897B681758BAC593A60BFBFA CN=sensor-thl-2004; PrivateKey: 
+    Found certificate: 13F32448E03F451E897B681758BAC593A60BFBFA CN=sensor-thl-2004; PrivateKey: True
     Using certificate 13F32448E03F451E897B681758BAC593A60BFBFA CN=sensor-thl-2004
     ProvisioningClient AssignedHub: ; DeviceID:
     Unhandled exception. System.Exception: DeviceRegistrationResult.Status is NOT 'Assigned'
@@ -1151,7 +1151,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
 1. Azure 대시보드로 이동합니다.
 
-1. 리소스 타일에서 **dps-az220-training-{사용자 ID}**를 클릭합니다.
+1. 리소스 타일에서 **dps-az220-training-{your-id}**를 클릭합니다.
 
 1. DPS 블레이드 왼쪽 메뉴의 **설정**에서 **등록 관리**를 클릭합니다.
 
@@ -1185,7 +1185,7 @@ Contoso의 자산 모니터링 및 추적 솔루션에 대한 최신 작업을 �
 
 등록 그룹이 DPS(Device Provisioning Service)에서 제거된 후에도 디바이스 등록은 Azure IoT Hub 내에 계속 존재합니다. 디바이스를 완전히 프로비전 해제하려면 해당 등록도 제거해야 합니다.
 
-1. 리소스 타일에서 **iot-az220-training-{사용자 ID}**를 클릭합니다.
+1. 리소스 타일에서 **iot-az220-training-{your-id}**를 클릭합니다.
 
 1. IoT Hub 블레이드의 왼쪽 메뉴에서 **탐색기** 아래의 **IoT 디바이스**를 클릭합니다.
 

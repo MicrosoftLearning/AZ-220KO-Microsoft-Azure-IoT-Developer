@@ -47,7 +47,7 @@ Contoso의 IoT 솔루션을 개발하는 데 사용할 Azure 및 Azure IoT 서�
     dm200911
     ```
 
-    랩 지침 내에서는 고유 ID를 입력해야 할 때마다 제안 리소스 이름의 일부분으로 `{사용자 ID}`가 표시됩니다. 제안 리소스 이름의 `{사용자 ID}` 부분은 자리 표시자입니다. 전체 자리 표시자 문자열('{}' 포함)을 고유한 값으로 바꿉니다.
+    랩 지침 내에서는 고유 ID를 입력해야 할 때마다 제안 리소스 이름의 일부분으로 `{your-id}`가 표시됩니다. 제안 리소스 이름의 `{your-id}` 부분은 자리 표시자입니다. 전체 자리 표시자 문자열(`{}` 포함)을 고유한 값으로 바꿉니다.
 
 1. 지금 고유한 ID를 적어 두고 **전체 과정에서 동일한 값을 사용**하세요.
 
@@ -57,7 +57,7 @@ Contoso의 IoT 솔루션을 개발하는 데 사용할 Azure 및 Azure IoT 서�
 
 이 과정의 랩을 진행하면서 만드는 대부분의 리소스에는 공개적으로 주소를 지정할 수 있는 엔드포인트(보안 엔드포인트)가 포함됩니다. 따라서 리소스 이름을 전역적으로 고유하게 지정해야 합니다. 전역적으로 고유한 이름을 지정해야 하는 리소스의 예로는 IoT Hubs, Device Provisioning Services, Azure Storage 계정 등이 있습니다.
 
-앞에서 설명한 것처럼, 이러한 종류의 리소스를 만들 때는 제안 지침을 준수하는 리소스 이름, 그리고 리소스 이름의 일부분으로 고유 ID를 포함하라는 지침이 제공됩니다. 그리고 고유 ID를 입력해야 하는 경우를 명확하게 파악할 수 있도록 제안되는 리소스 이름에는 고유 ID에 해당하는 자리 표시자 값이 포함됩니다. 이러한 경우에는 자리 표시자 값인 `{사용자 ID}`를 고유 ID로 바꾸라는 지침이 제공됩니다.
+앞에서 설명한 것처럼, 이러한 종류의 리소스를 만들 때는 제안 지침을 준수하는 리소스 이름, 그리고 리소스 이름의 일부분으로 고유 ID를 포함하라는 지침이 제공됩니다. 그리고 고유 ID를 입력해야 하는 경우를 명확하게 파악할 수 있도록 제안되는 리소스 이름에는 고유 ID에 해당하는 자리 표시자 값이 포함됩니다. 이러한 경우에는 자리 표시자 값인 `{your-id}`를 고유 ID로 바꾸라는 지침이 제공됩니다.
 
 1. 다음의 리소스 명명 예제를 검토해 보세요.
 
@@ -65,8 +65,8 @@ Contoso의 IoT 솔루션을 개발하는 데 사용할 Azure 및 Azure IoT 서�
 
     | 리소스 유형 | 이름 템플릿 | 예제 |
     | :--- | :--- | :--- |
-    | IoT Hub | iot-az220-training-{사용자 ID} | iot-az220-training-cah191216 |
-    | Device Provisioning Service | dps-az220-training-{사용자 ID} | dps-az220-training-cah191216 |
+    | IoT Hub | iot-az220-training-{your-id} | iot-az220-training-cah191216 |
+    | Device Provisioning Service | dps-az220-training-{your-id} | dps-az220-training-cah191216 |
     | Azure 스토리지 계정<br/>(이름은 소문자여야 하고 하이픈은 사용할 수 없습니다) | az220storage{your-id} | az220storagecah191216 |
 
 1. Bash 스크립트 내에서 고유 ID를 적용하는 다음 예제를 검토해 보세요.
@@ -83,21 +83,21 @@ Contoso의 IoT 솔루션을 개발하는 데 사용할 Azure 및 Azure IoT 서�
 
     위의 코드에서 고유 ID 값이 `cah191216`이라면 `YourID="{your-id}"`가 포함된 줄을 `YourID="cah191216"`으로 업데이트해야 합니다.
 
-    > **참고**: 마지막 코드 줄의 `$YourID` 값은 변경하지 않습니다. 이 값이 `{사용자 ID}`가 아니면 바꾸지 마세요.
+    > **참고**: 마지막 코드 줄의 `$YourID` 값은 변경하지 않습니다. 이 값이 `{your-id}`가 아니면 바꾸지 마세요.
 
 1. C# 코드 내에서 고유 ID를 적용하는 다음 예제를 검토해 보세요.
 
     이 과정 뒷부분에서 진행할 일부 랩에서는 C# 소스 파일 내에서 고유 ID 값을 적용하라는 지침이 제공됩니다. 랩에서 제공되는 C# 소스 코드에는 다음과 같은 코드 섹션이 포함되어 있을 수 있습니다.
 
     ```csharp
-    private string _yourId = "{사용자 ID}";
+    private string _yourId = "{your-id}";
     private string _rgName = "rg-az220";
     private string _iotHubName = $"iot-az220-training-{_yourId}";
     ```
 
-    위의 코드에서 고유 ID 값이 `cah191216`이라면 `private string _yourId = "{사용자 ID}";`가 포함된 줄을 `private string _yourId = "cah191216";`으로 업데이트해야 합니다.
+    위의 코드에서 고유 ID 값이 `cah191216`이라면 `private string _yourId = "{your-id}";`가 포함된 줄을 `private string _yourId = "cah191216";`으로 업데이트해야 합니다.
 
-    > **참고**: 마지막 코드 줄의 `_yourId` 값은 변경하지 않습니다. Bash에서와 마찬가지로 이 값이 `{사용자 ID}`가 아니면 바꾸지 마세요.
+    > **참고**: 마지막 코드 줄의 `_yourId` 값은 변경하지 않습니다. Bash에서와 마찬가지로 이 값이 `{your-id}`가 아니면 바꾸지 마세요.
 
 1. 모든 리소스 이름에 고유 ID를 적용해야 하는 것은 아닙니다.
 
@@ -197,7 +197,7 @@ IoT Hub를 만드는 데 사용할 수 있는 몇 가지 방법이 있습니다.
 
 1. **IoT Hub 이름** 오른쪽에 전역에서 고유한 IoT Hub 이름을 다음과 같이 입력합니다.
 
-    전역적으로 고유한 이름을 제공하려면 **iot-az220-training-{사용자 ID}**를 입력합니다(**{사용자 ID}**는 연습 1에서 만든 고유 ID로 바꿔야 함).
+    전역적으로 고유한 이름을 제공하려면 **iot-az220-training-{your-id}**를 입력합니다(**{your-id}**는 연습 1에서 만든 고유 ID로 바꿔야 함).
 
     예를 들어 **iot-az220-training-cah191216**과 같이 입력할 수 있습니다.
 
@@ -282,7 +282,7 @@ IoT Hub의 기능을 사용하면 제조에 사용되는 산업용 장비의 관
 
 1. AZ-220 대시보드가 표시되는지 확인합니다.
 
-1. **rg-az220** 리소스 그룹 타일에서 **iot-az220-training-{사용자 ID}**를 클릭합니다.
+1. **rg-az220** 리소스 그룹 타일에서 **iot-az220-training-{your-id}**를 클릭합니다.
 
     IoT Hub 블레이드를 처음 열면 **개요** 정보가 표시됩니다. 보시다시피 이 블레이드 상단의 영역은 데이터 센터 위치 및 구독과 같은 IoT Hub 서비스에 대한 몇 가지 필수 정보를 제공합니다. 그러나 이 블레이드에는 허브 사용 방법 및 최근 활동에 대한 정보를 제공하는 타일도 포함되어 있습니다. 이러한 타일이 더 어떻게 나타나는지 살펴보겠습니다.
 
@@ -378,7 +378,7 @@ IoT Hub Device Provisioning Service의 인스턴스를 만드는 방법에는 �
 
 1. **이름** 아래에 IoT Hub Device Provisioning Service의 전역에서 고유한 이름을 다음과 같이 입력합니다.
 
-    전역적으로 고유한 이름을 제공하려면 **dps-az220-training-{사용자 ID}**를 입력합니다(**{사용자 ID}**는 연습 1에서 만든 고유 ID로 바꿔야 함).
+    전역적으로 고유한 이름을 제공하려면 **dps-az220-training-{your-id}**를 입력합니다(**{your-id}**는 연습 1에서 만든 고유 ID로 바꿔야 함).
 
     예를 들어 **dps-az220-training-cah191216**과 같이 입력할 수 있습니다.
 
@@ -408,7 +408,7 @@ IoT Hub Device Provisioning Service의 인스턴스를 만드는 방법에는 �
 
     IoT Hub 및 DPS 리소스가 모두 나열되어 있습니다. 리소스가 최근에 만들어진 경우 **새로 고침**을 눌러야 할 수 있습니다.
 
-1. **rg-az220** 리소스 그룹 타일에서 **dps-az220-training-{사용자 ID}**를 클릭합니다.
+1. **rg-az220** 리소스 그룹 타일에서 **dps-az220-training-{your-id}**를 클릭합니다.
 
 1. **디바이스 프로비저닝 서비스** 블레이드의 **설정**에서 **연결된 IoT Hub**를 클릭합니다.
 
@@ -420,7 +420,7 @@ IoT Hub Device Provisioning Service의 인스턴스를 만드는 방법에는 �
 
     구독은 사용 가능한 IoT Hub 목록을 제공하는 데 사용됩니다.
 
-1. IoT Hub 드롭다운을 연 다음 **iot-az220-training-{사용자 ID}**를 클릭합니다.
+1. IoT Hub 드롭다운을 연 다음 **iot-az220-training-{your-id}**를 클릭합니다.
 
     이전 연습에서 만든 IoT ub입니다.
 
@@ -446,7 +446,7 @@ IoT Hub Device Provisioning Service는 IoT Hub를 위한 도우미 서비스로,
 
 1. AZ-220 대시보드가 표시되는지 확인합니다.
 
-1. **rg-az220** 리소스 그룹 타일에서 **dps-az220-training-{사용자 ID}**를 클릭합니다.
+1. **rg-az220** 리소스 그룹 타일에서 **dps-az220-training-{your-id}**를 클릭합니다.
 
     Device Provisioning Service 인스턴스를 처음 열면 개요 정보가 표시됩니다. 보시다시피 블레이드 상단의 영역은 상태, 데이터 센터 위치 및 구독과 같은 DPS 인스턴스에 대한 몇 가지 필수 정보를 제공합니다. 이 블레이드는 또한 다음에 대한 액세스를 제공하는 _빠른 링크_ 섹션을 제공합니다.
 

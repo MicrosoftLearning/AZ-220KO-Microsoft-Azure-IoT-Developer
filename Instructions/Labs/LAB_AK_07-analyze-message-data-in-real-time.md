@@ -54,7 +54,7 @@ Contoso Management는 DPS를 사용하여 자동 디바이스 등록을 구현�
 | 리소스 유형 | 리소스 이름 |
 | :-- | :-- |
 | 리소스 그룹 | rg-az220 |
-| IoT Hub | iot-az220-training-{사용자 ID} |
+| IoT Hub | iot-az220-training-{your-id} |
 | 디바이스 ID | sensor-v-3000 |
 
 > **중요**: 설정 스크립트를 실행하여 필요한 디바이스를 만드세요.
@@ -118,9 +118,9 @@ Contoso Management는 DPS를 사용하여 자동 디바이스 등록을 구현�
 
     이제 편집기에서 **lab07-setup.azcli** 파일의 내용을 표시합니다.
 
-1. 편집기에서 `{사용자 ID}` 및 `{사용자 위치}`에 할당된 값을 업데이트합니다.
+1. 편집기에서 `{your-id}` 및 `{your-location}`에 할당된 값을 업데이트합니다.
 
-    아래 샘플을 예로 들어 보면, `{사용자 ID}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{사용자 위치}`는 리소스에 적합한 위치로 설정해야 합니다.
+    아래 샘플을 예로 들어 보면, `{your-id}`는 이 과정을 시작할 때 만든 고유 ID(예: **cah191211**)로 설정하고 `{your-location}`는 리소스에 적합한 위치로 설정해야 합니다.
 
     ```bash
     #!/bin/bash
@@ -158,7 +158,7 @@ Contoso Management는 DPS를 사용하여 자동 디바이스 등록을 구현�
 
     이 스크립트를 실행하는 데 몇 분이 걸릴 수 있습니다. 각 단계가 완료될 때 출력이 표시됩니다.
 
-    이 스크립트는 먼저 **rg-az220** 리소스 그룹과 **iot-az220-training-{사용자 ID}** IoT Hub를 만듭니다. 이미 있는 경우 해당 메시지가 표시됩니다. 그런 다음 스크립트는 ID가 **sensor-v-3000**인 디바이스를 IoT Hub에 추가하고 디바이스 연결 문자열을 표시합니다.
+    이 스크립트는 먼저 **rg-az220** 리소스 그룹과 **iot-az220-training-{your-id}** IoT Hub를 만듭니다. 이미 있는 경우 해당 메시지가 표시됩니다. 그런 다음 스크립트는 ID가 **sensor-v-3000**인 디바이스를 IoT Hub에 추가하고 디바이스 연결 문자열을 표시합니다.
 
 1. 스크립트가 완료되면 디바이스의 연결 문자열이 표시됩니다.
 
@@ -250,10 +250,10 @@ Contoso의 컨베이어 벨트 시스템 모니터링을 자동화하고 예측 
 1. **Program** 클래스 위쪽의 `deviceConnectionString` 변수 선언을 찾습니다.
 
     ```csharp
-    private readonly static string deviceConnectionString = "<디바이스 연결 문자열>";
+    private readonly static string deviceConnectionString = "<your device connection string>";
     ```
 
-1. `<디바이스 연결 문자열>`은 앞에서 저장한 디바이스 연결 문자열로 바꿉니다.
+1. `<your device connection string>`은 앞에서 저장한 디바이스 연결 문자열로 바꿉니다.
 
     > **참고**: 이 코드에 필요한 변경 사항은 이것뿐입니다.
 
@@ -393,24 +393,24 @@ Contoso의 컨베이어 벨트 시스템 모니터링을 자동화하고 예측 
 1. 콘솔 출력은 다음과 유사하게 표시되어야 합니다.
 
     ```text
-    진동 센서 디바이스 앱.
+    Vibration sensor device app.
 
-    원격 분석 데이터: {"vibration":0.0}
-    오전 10:29에 원격 분석 전송
-    로그 데이터: {"vibration":0.0,"packages":0,"speed":"stopped","temp":60.22}
-    로그 데이터 전송함
+    Telemetry data: {"vibration":0.0}
+    Telemetry sent 10:29 AM
+    Log data: {"vibration":0.0,"packages":0,"speed":"stopped","temp":60.22}
+    Log data sent
 
-    원격 분석 데이터: {"vibration":0.0}
-    오전 10:29에 원격 분석 전송
-    로그 데이터: {"vibration":0.0,"packages":0,"speed":"stopped","temp":59.78}
-    로그 데이터 전송함
+    Telemetry data: {"vibration":0.0}
+    Telemetry sent 10:29 AM
+    Log data: {"vibration":0.0,"packages":0,"speed":"stopped","temp":59.78}
+    Log data sent
     ```
 
     > **참고**:  터미널 창에서 녹색 텍스트는 제대로 작동 중임을 표시하는 데 사용되며 빨간색 텍스트는 문제가 발생했음을 표시하는 데 사용됩니다. 오류 메시지를 수신하면 디바이스 연결 문자열을 확인하여 시작합니다.
 
 1. 다음 작업을 위해 이 앱이 실행되도록 둡니다.
 
-    다음 작업을 계속하지 않으면 터미널 창에 **Ctrl-C**를 입력하여 앱을 중지할 수 있습니다. 나중에 'dotnet run' 명령을 사용하여 다시 시작할 수 있습니다.
+    다음 작업을 계속하지 않으면 터미널 창에 **Ctrl-C**를 입력하여 앱을 중지할 수 있습니다. 나중에 `dotnet run` 명령을 사용하여 다시 시작할 수 있습니다.
 
 #### 작업 4: IoT Hub에서 원격 분석을 수신하고 있는지 확인
 
@@ -418,7 +418,7 @@ Contoso의 컨베이어 벨트 시스템 모니터링을 자동화하고 예측 
 
 1. [Azure Portal](https://portal.azure.com)을 엽니다.
 
-1. 리소스 타일에서 **iot-az220-training-{사용자 ID}**를 클릭합니다.
+1. 리소스 타일에서 **iot-az220-training-{your-id}**를 클릭합니다.
 
 1. **개요** 창에서 아래로 스크롤하여 메트릭 타일을 봅니다.
 
@@ -484,7 +484,7 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
     그러면 **스토리지 계정 만들기** 블레이드가 표시됩니다.
 
-1. **스토리지 계정 만들기** 블레이드에서 **이름** 아래에 **vibrationstore{사용자 ID}**를 입력합니다.
+1. **스토리지 계정 만들기** 블레이드에서 **이름** 아래에 **vibrationstore{your-id}**를 입력합니다.
 
     예를 들어 **vibrationstorecah191211**과 같이 입력할 수 있습니다.
 
@@ -512,7 +512,7 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
 #### 작업 2: 스토리지 계정 컨테이너 정의
 
-1. **스토리지 계정** 블레이드에서 **vibrationstore{사용자 ID}**를 클릭합니다.
+1. **스토리지 계정** 블레이드에서 **vibrationstore{your-id}**를 클릭합니다.
 
     **컨테이너** 블레이드가 표시되어야 합니다. 이 계정은 새 스토리지 계정이기 때문에 컨테이너는 표시되지 않습니다.
 
@@ -572,13 +572,13 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
 1. Visual Studio Code에서 만든 디바이스 앱이 계속 실행 중인지 확인합니다. 
 
-    그렇지 않은 경우 'dotnet run'을 사용하여 Visual Studio Code 터미널에서 실행합니다.
+    그렇지 않은 경우 `dotnet run`을 사용하여 Visual Studio Code 터미널에서 실행합니다.
 
-1. 스토리지 계정 블레이드를 열려면 리소스 타일에서 **vibrationstore{사용자 ID}**를 클릭합니다.
+1. 스토리지 계정 블레이드를 열려면 리소스 타일에서 **vibrationstore{your-id}**를 클릭합니다.
 
     리소스 타일에 스토리지 계정이 표시되지 않으면 리소스 그룹 타일 상단의 **새로 고침** 단추를 클릭한 후 위의 지침에 따라 스토리지 계정을 엽니다.
 
-1. **vibrationstore{사용자 ID}** 블레이드의 왼쪽 메뉴에서 **Storage Explorer(미리 보기)**를 클릭합니다.
+1. **vibrationstore{your-id}** 블레이드의 왼쪽 메뉴에서 **Storage Explorer(미리 보기)**를 클릭합니다.
 
     Storage Explorer를 사용하면 데이터가 스토리지 계정에 추가되고 있는지를 확인할 수 있습니다. 
 
@@ -588,7 +588,7 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
     데이터를 보려면 폴더 계층 구조를 탐색해야 합니다. 먼저 IoT Hub용으로 첫 번째 폴더의 이름을 지정합니다. 
 
-1. 오른쪽 창의 **이름** 아래에서 **iot-az220-training-{사용자 ID}**를 두 번 클릭한 다음 하위 폴더를 계속 두 번 클릭하여 계층 구조 아래쪽으로 이동합니다.
+1. 오른쪽 창의 **이름** 아래에서 **iot-az220-training-{your-id}**를 두 번 클릭한 다음 하위 폴더를 계속 두 번 클릭하여 계층 구조 아래쪽으로 이동합니다.
 
     IoT Hub 폴더에는 Partition 폴더, 그리고 연도, 월, 날짜의 숫자 값에 해당하는 Year, Month, Day 폴더가 있습니다. 마지막 폴더인 Hour는 UTC 시간 단위의 시간을 나타냅니다. Hour 폴더에 들어 있는 여러 블록 Blob에 로깅 메시지 데이터가 포함되어 있습니다. 
 
@@ -662,7 +662,7 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
 1. **구독**에서, 이전에 IoT Hub를 만드는 데 사용한 구독이 선택되어 있는지 확인합니다.
 
-1. **IoT Hub**에서 **iot-az220-training-{사용자 ID}** IoT Hub가 선택되어 있는지 확인합니다.
+1. **IoT Hub**에서 **iot-az220-training-{your-id}** IoT Hub가 선택되어 있는지 확인합니다.
 
 1. **엔드포인트**에서 **메시지**가 선택되어 있는지 확인합니다.
 
@@ -698,7 +698,7 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
 1. **구독**에서 이 랩에 사용 중인 구독을 선택합니다.
 
-1. **스토리지 계정**에서 **vibrationstore{사용자 ID}**를 클릭합니다.
+1. **스토리지 계정**에서 **vibrationstore{your-id}**를 클릭합니다.
 
     > **참고**:  **스토리지 계정 키**가 자동으로 채워졌으며 읽기 전용입니다.
 
@@ -731,7 +731,7 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 1. 쿼리 편집기 창에서 기존 쿼리를 아래의 쿼리로 바꿉니다.
 
     ```sql
-    SELECT:
+    SELECT
         *
     INTO
         vibrationOutput
@@ -749,7 +749,7 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
 1. Visual Studio Code에서 만든 디바이스 앱이 계속 실행 중인지 확인합니다. 
 
-    그렇지 않은 경우 'dotnet run'을 사용하여 Visual Studio Code 터미널에서 실행합니다.
+    그렇지 않은 경우 `dotnet run`을 사용하여 Visual Studio Code 터미널에서 실행합니다.
 
 1. Stream Analytics 작업의 **개요** 창에서 **시작**을 클릭합니다.
 
@@ -759,7 +759,7 @@ loggingMessage.Properties.Add("sensorID", "VSLog");
 
 1. Azure Portal 메뉴에서 **대시보드**를 클릭합니다.
 
-1. 리소스 타일에서 **vibrationstore{사용자 ID}**를 클릭합니다.
+1. 리소스 타일에서 **vibrationstore{your-id}**를 클릭합니다.
 
     스토리지 계정이 표시되지 않으면 리소스 그룹 타일 상단의 **새로 고침** 단추를 사용합니다.
 

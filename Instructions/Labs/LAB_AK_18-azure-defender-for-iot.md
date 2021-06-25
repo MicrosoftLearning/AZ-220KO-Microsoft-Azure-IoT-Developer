@@ -1,7 +1,7 @@
 ﻿---
-랩:
-    제목: '랩 18: Azure Defender for IoT를 사용하여 IoT 디바이스가 변조되었는지 검색'
-    모듈: '모듈 10: Azure Defender 및 IoT 보안'
+lab:
+    title: '랩 18: Azure Defender for IoT를 사용하여 IoT 디바이스가 변조되었는지 검색'
+    module: '모듈 10: Azure Defender 및 IoT 보안'
 ---
 
 # Azure Defender for IoT를 사용하여 디바이스 변조 검색
@@ -46,7 +46,7 @@ Contoso는 또한 다른 치즈 동굴에서 온도를 모니터링하고 제어
 | 리소스 유형 | 리소스 이름 |
 | :-- | :-- |
 | 리소스 그룹 | rg-az220 |
-| IoT Hub | iot-az220-training-{사용자 ID} |
+| IoT Hub | iot-az220-training-{your-id} |
 
 이러한 리소스를 사용할 수 없는 경우 연습 2로 이동하기 전에 아래 설명에 따라 **lab18-setup.azcli** 스크립트를 실행해야 합니다. 스크립트 파일은 개발자 환경 구성(랩 3)의 일부로 로컬로 복제한 GitHub 리포지토리에 포함됩니다.
 
@@ -109,9 +109,9 @@ Contoso는 또한 다른 치즈 동굴에서 온도를 모니터링하고 제어
 
     이제 편집기에서 **lab18-setup.azcli** 파일의 내용을 표시합니다.
 
-1. 편집기에서 `{사용자 ID}` 및 `{사용자 위치}` 변수의 값을 업데이트합니다.
+1. 편집기에서 `{your-id}` 및 `{your-location}` 변수의 값을 업데이트합니다.
 
-    아래 샘플을 예로 들면 `{사용자 ID}`는 이 과정을 시작할 때 만든 고유 ID(**cah191211**)로 설정해야 하며 `{사용자 위치}`는 리소스 그룹과 일치하는 위치로 설정해야 합니다.
+    아래 샘플을 예로 들면 `{your-id}`는 이 과정을 시작할 때 만든 고유 ID(**cah191211**)로 설정해야 하며 `{your-location}`는 리소스 그룹과 일치하는 위치로 설정해야 합니다.
 
     ```bash
     #!/bin/bash
@@ -168,7 +168,7 @@ Azure Defender for IoT는 다음과 같은 구성 요소로 구성됩니다.
 
     Azure 계정이 두 개 이상인 경우 이 과정에 사용할 구독에 연결된 계정으로 로그인해야 합니다.
 
-1. Azure 대시보드에서 **iot-az220-training-{사용자 ID}**를 클릭합니다.
+1. Azure 대시보드에서 **iot-az220-training-{your-id}**를 클릭합니다.
 
     대시보드의 rg-az220 리소스 그룹 타일에 IoT Hub로 이동하는 링크가 있습니다.
 
@@ -207,7 +207,7 @@ Azure Defender for IoT가 켜져 있으면 IoT 디바이스, IoT Edge 및 IoT Hu
 
 1. **작업 영역** 드롭다운 아래에서 **새 작업 영역 만들기**를 클릭합니다.
 
-1. **Log Analytics 작업 영역** 창의 **Log Analytics 작업 영역** 아래 **log-az220-training-{사용자 ID}**를 입력합니다.
+1. **Log Analytics 작업 영역** 창의 **Log Analytics 작업 영역** 아래 **log-az220-training-{your-id}**를 입력합니다.
 
 1. **구독**에서 이 과정에 사용 중인 구독이 선택되어 있는지 확인합니다.
 
@@ -221,7 +221,7 @@ Azure Defender for IoT가 켜져 있으면 IoT 디바이스, IoT Edge 및 IoT Hu
 
     잠시 후 작업 영역이 작성되고 창이 닫힙니다.
 
-1. **설정 | ****데이터 수집** 페이지로 돌아와 **작업 영역** 드롭다운에서 **iot-az220-training-{사용자 ID}**를 선택합니다.
+1. **설정 | 데이터 수집** 페이지로 돌아와 **작업 영역** 드롭다운에서 **log-az220-training-{your-id}**를 선택합니다.
 
 1. **원시 보안 데이터 액세스**가 선택되어 있는지 확인합니다.
 
@@ -258,7 +258,7 @@ Azure Defender for IoT가 켜져 있으면 IoT 디바이스, IoT Edge 및 IoT Hu
 
     > **참고**: 각 VM용으로 별도의 리소스 그룹을 만들라는 지침이 나올 수도 있습니다. 각 VM용으로 개별 리소스 그룹을 만들면 VM에 추가하는 리소스를 쉽게 관리할 수 있습니다. 하지만 이 과정에서는 VM을 단순한 방식으로 사용하므로 각 VM용으로 개별 리소스 그룹을 만들 필요도 없고 만들 수도 없습니다.
 
-1. **인스턴스 세부 정보**의 **가상 머신 이름** 텍스트 상자에 **vm-az220-training-edge0002-{사용자 ID}**를 입력합니다.
+1. **인스턴스 세부 정보**의 **가상 머신 이름** 텍스트 상자에 **vm-az220-training-edge0002-{your-id}**를 입력합니다.
 
 1. **지역** 드롭다운에서 가장 가까운 Azure 지역 또는 Azure IoT Hub가 프로비전된 지역을 선택하세요.
 
@@ -301,7 +301,7 @@ Azure Defender for IoT가 켜져 있으면 IoT 디바이스, IoT Edge 및 IoT Hu
 
 1. Azure Portal 메뉴에서 **대시보드**를 클릭합니다.
 
-1. rg-az220 리소스 그룹 타일에서 **iot-az220-training-{사용자 ID}**를 클릭합니다.
+1. rg-az220 리소스 그룹 타일에서 **iot-az220-training-{your-id}**를 클릭합니다.
 
     IoT Hub 블레이드를 열 수 있는 수많은 방법이 있습니다. 원하는 메서드를 사용하세요.
 
@@ -309,7 +309,7 @@ Azure Defender for IoT가 켜져 있으면 IoT 디바이스, IoT Edge 및 IoT Hu
 
 1. **IoT 디바이스** 창의 상단에서 **+ 새로 만들기**를 클릭합니다.
 
-1. **디바이스 ID** 아래에 **vm-az220-training-edge0002-{사용자 ID}**를 입력합니다.
+1. **디바이스 ID** 아래에 **vm-az220-training-edge0002-{your-id}**를 입력합니다.
 
     예. VM에 할당한 이름을 디바이스 ID로 사용하고 있습니다.
 
@@ -334,11 +334,11 @@ Azure Defender for IoT는 모듈 쌍 메커니즘을 사용하고 각 디바이�
 
     IoT Hub 블레이드에서 **IoT 디바이스** 창을 열려면 왼쪽 메뉴에서 **탐색기** 아래의 **IoT 디바이스**를 클릭합니다.
 
-1. **디바이스 ID**에서 **vm-az220-training-edge0002-{사용자 ID}**를 클릭합니다.
+1. **디바이스 ID**에서 **vm-az220-training-edge0002-{your-id}**를 클릭합니다.
 
     **추가 로드**를 클릭해야 디바이스가 표시될 수도 있습니다.
 
-1. **vm-az220-training-edge0002-{사용자 ID}** 블레이드 위쪽에서 **+ 모듈 ID 추가**를 클릭합니다.
+1. **vm-az220-training-edge0002-{your-id}** 블레이드 위쪽에서 **+ 모듈 ID 추가**를 클릭합니다.
 
 1. **모듈 ID 추가** 창에서 **모듈 ID 이름** 아래에 **azureiotsecurity**를 입력합니다.
 
@@ -346,7 +346,7 @@ Azure Defender for IoT는 모듈 쌍 메커니즘을 사용하고 각 디바이�
 
 1. 창 하단에서 **저장**을 클릭합니다.
 
-1. **vm-az220-training-edge0002-{사용자 ID}** 블레이드의 **모듈 ID** 아래에 **azureiotsecurity** 디바이스가 표시됩니다.
+1. **vm-az220-training-edge0002-{your-id}** 블레이드의 **모듈 ID** 아래에 **azureiotsecurity** 디바이스가 표시됩니다.
 
     연결 상태는 **연결 끊김**입니다.
 
@@ -354,7 +354,7 @@ Azure Defender for IoT는 모듈 쌍 메커니즘을 사용하고 각 디바이�
 
     ![Azure IoT 보안 모듈의 스크린샷](media/LAB_AK_18-module-identity.png)
 
-1. **vm-az220-training-edge0002-{사용자 ID}** 블레이드의 **기본 키** 오른쪽에서 **복사**를 클릭하고 나중에 확인할 수 있도록 값을 저장합니다.
+1. **vm-az220-training-edge0002-{your-id}** 블레이드의 **기본 키** 오른쪽에서 **복사**를 클릭하고 나중에 확인할 수 있도록 값을 저장합니다.
 
     > **참고**: 연결 문자열이 아닌 디바이스의 **기본 키**를 복사해야 합니다.
 
@@ -393,9 +393,9 @@ Azure Defender for IoT는 보안 데이터를 IoT Hub를 통해 로그, 처리, 
 
 1. **모든 리소스** 블레이드의 **이름으로 필터링** 텍스트 상자에 **vm-az220-training-edge0002**를 입력합니다
 
-1. **이름**에서 **vm-az220-training-edge0002-{사용자 ID}**를 클릭합니다.
+1. **이름**에서 **vm-az220-training-edge0002-{your-id}**를 클릭합니다.
 
-    새로 만든 가상 머신(**vm-az220-training-edge0002-{사용자 ID}**)의 개요 창이 열립니다.
+    새로 만든 가상 머신(**vm-az220-training-edge0002-{your-id}**)의 개요 창이 열립니다.
 
 1. 블레이드 상단에서 **연결**을 클릭한 다음 **SSH**를 클릭하세요.
 
@@ -411,13 +411,13 @@ Azure Defender for IoT는 보안 데이터를 IoT Hub를 통해 로그, 처리, 
     ssh <admin user>@<ip address>
     ```
 
-    여러분의 명령은 다음과 유사해야 합니다. 'ssh demouser@52.170.205.79'
+    여러분의 명령은 다음과 유사해야 합니다. `ssh demouser@52.170.205.79`
 
 1. Azure Portal 도구 모음에서 **Cloud Shell**을 클릭합니다.
 
     Cloud Shell 내에서 **Bash** 환경을 선택했는지 확인합니다.
 
-1. Cloud Shell 명령 프롬프트에서 위에서 만든 'ssh' 명령을 입력한 다음 **Enter 키**를 누릅니다.
+1. Cloud Shell 명령 프롬프트에서 위에서 만든 `ssh` 명령을 입력한 다음 **Enter 키**를 누릅니다.
 
 1. **계속 연결하시겠습니까?**라는 메시지가 나타나면 **네**라고 입력하고 **Enter 키**를 누르세요.
 
@@ -428,7 +428,7 @@ Azure Defender for IoT는 보안 데이터를 IoT Hub를 통해 로그, 처리, 
     연결되면 터미널 명령 프롬프트가 다음과 유사한 Linux VM의 이름을 표시하게 바뀝니다.
 
     ```cmd/sh
-    demouser@vm-az220-training-edge0002-{사용자 이름}:~$
+    demouser@vm-az220-training-edge0002-{your-id}:~$
     ```
 
     이렇게 해서 여러분이 연결된 VM과 현재 사용자를 추적할 수 있습니다.
@@ -439,16 +439,16 @@ Azure Defender for IoT는 보안 데이터를 IoT Hub를 통해 로그, 처리, 
 
 이 랩에서는 대칭 키를 인증으로 사용하고 디바이스의 임시 텍스트 문서에 저장해야 합니다.
 
-1. **vm-az220-training-edge0002-{사용자 ID}** 디바이스의 **기본 키** 값을 사용할 수 있는지 확인합니다.
+1. **vm-az220-training-edge0002-{your-id}** 디바이스의 **기본 키** 값을 사용할 수 있는지 확인합니다.
 
     기본 키 값은 이 랩의 앞부분에서 저장했습니다. 해당 값을 저장하지 않았다면 다음 단계를 완료합니다.
 
     1. 새 브라우저 탭을 열고 그 새 탭에서 Azure Portal로 이동하세요.
     1. Azure Portal 메뉴에서 **대시보드**를 클릭한 다음 IoT Hub를 엽니다.
     1. 왼쪽 메뉴의 **탐색기** 아래에서 **IoT 디바이스**를 클릭합니다.
-    1. **디바이스 ID**에서 **vm-az220-training-edge0002-{사용자 ID}**를 클릭합니다.
+    1. **디바이스 ID**에서 **vm-az220-training-edge0002-{your-id}**를 클릭합니다.
     1. 세부 정보 목록에서 **기본 키**를 복사하세요.
-    1. Azure Cloud Shell 브라우저 탭으로 돌아옵니다. **vm-az220-training-edge0002-{사용자 ID}** 가상 머신에 아직 연결되어 있어야 합니다.
+    1. Azure Cloud Shell 브라우저 탭으로 돌아옵니다. **vm-az220-training-edge0002-{your-id}** 가상 머신에 아직 연결되어 있어야 합니다.
 
 1. Cloud Shell 명령 프롬프트에서 다음 명령을 입력합니다.
 
@@ -456,9 +456,9 @@ Azure Defender for IoT는 보안 데이터를 IoT Hub를 통해 로그, 처리, 
     echo "<primary_key>" > s.key
     ```
 
-    이 명령은 **vm-az220-training-edge0002-{사용자 ID}** 디바이스의 **기본 키**가 포함된 디바이스 인증 유형 파일을 만듭니다.
+    이 명령은 **vm-az220-training-edge0002-{your-id}** 디바이스의 **기본 키**가 포함된 디바이스 인증 유형 파일을 만듭니다.
 
-    > **참고**: 파일에 올바른 기본 키를 추가했는지 확인하려면 `nano s.key` 명령을 실행하여 파일을 엽니다. 디바이스의 **기본 키**가 파일에 있는지 확인합니다. 나노 편집기를 종료하려면 'Ctrl 키' 및 'X 키'를 길게 누르세요. 'shift 키'와 'Y 키'를 길게 눌러 파일을 저장하세요. 그런 다음 enter 키를 누르세요.
+    > **참고**: 파일에 올바른 기본 키를 추가했는지 확인하려면 `nano s.key` 명령을 실행하여 파일을 엽니다. 디바이스의 **기본 키**가 파일에 있는지 확인합니다. 나노 편집기를 종료하려면 `Ctrl` 및 `X`를 길게 누르세요. `shift`와 `Y`를 길게 눌러 파일을 저장하세요. 그런 다음 enter 키를 누르세요.
 
 #### 작업 4: 보안 에이전트 설치
 
@@ -472,13 +472,13 @@ Azure Defender for IoT는 보안 데이터를 IoT Hub를 통해 로그, 처리, 
 
     > **참고**: 위의 명령은 Ubuntu Server 18.04 LTS를 대상으로 실행됩니다.
 
-1. Cloud Shell 명령 프롬프트에서 패키지의 내용을 추출하고 '/Install' 폴더로 이동하려면 다음 명령을 입력하세요.
+1. Cloud Shell 명령 프롬프트에서 패키지의 내용을 추출하고 `/Install` 폴더로 이동하려면 다음 명령을 입력하세요.
 
     ```bash
-    tar -xzvf ubuntu-18.04-x64.tar.gz && CD 설치하기
+    tar -xzvf ubuntu-18.04-x64.tar.gz && cd Install
     ```
 
-1. Cloud Shell 명령 프롬프트에서 'InstallSecurityAgent' 스크립트에 실행 권한을 추가하려면 다음 명령을 입력하세요.
+1. Cloud Shell 명령 프롬프트에서 `InstallSecurityAgent` 스크립트에 실행 권한을 추가하려면 다음 명령을 입력하세요.
 
     ```bash
     chmod +x InstallSecurityAgent.sh
@@ -489,12 +489,12 @@ Azure Defender for IoT는 보안 데이터를 IoT Hub를 통해 로그, 처리, 
     자리 표시자 값은 인증 매개 변수로 바꿔야 합니다.
 
     ```bash
-    sudo ./InstallSecurityAgent.sh -i -aui Device -aum SymmetricKey -f <s.key 파일 위치 삽입> -hn <전체 IoT Hub 호스트 이름 삽입> -di vm-az220-training-edge0002-{사용자 ID}
+    sudo ./InstallSecurityAgent.sh -i -aui Device -aum SymmetricKey -f <Insert file location of your s.key file> -hn <Insert your full IoT Hub host name> -di vm-az220-training-edge0002-{your-id}
     ```
 
     다음은 명령 형식의 예시입니다.
 
-    `sudo ./InstallSecurityAgent.sh -i -aui Device -aum SymmetricKey -f ../s.key -hn iot-az220-training-ab200213.azure-devices.net -di vm-az220-training-edge0002-{사용자 ID}`
+    `sudo ./InstallSecurityAgent.sh -i -aui Device -aum SymmetricKey -f ../s.key -hn iot-az220-training-ab200213.azure-devices.net -di vm-az220-training-edge0002-{your-id}`
 
     > **참고**: 나열된 호스트 이름 대신 IoT Hub 호스트 이름을 지정해야 합니다.
 
@@ -543,9 +543,9 @@ Azure Defender for IoT는 보안 데이터를 IoT Hub를 통해 로그, 처리, 
 
     > **참고**: Azure Defender for IoT가 실행되지 않거나 활성 상태가 아니면 [Linux용 Defender for IoT C# 기반 보안 에이전트 배포](https://docs.microsoft.com/en-us/azure/defender-for-iot/how-to-deploy-linux-css)의 내용을 확인하세요. 일반적인 문제는 서비스를 **활성 상태로 둘 수 있습니다. 활성화**는 부정확한 키 값이거나 IoT Hub 호스트 이름을 지정하지 않는 것입니다.
 
-1. Azure Portal에서 IoT Hub 블레이드로 다시 이동하여 **vm-az220-training-edge0002-{사용자 ID}** 디바이스 블레이드를 엽니다.
+1. Azure Portal에서 IoT Hub 블레이드로 다시 이동하여 **vm-az220-training-edge0002-{your-id}** 디바이스 블레이드를 엽니다.
 
-    IoT Hub 블레이드를 열고 탐색 메뉴의 **탐색기** 아래에서 **IoT 디바이스**를 클릭한 다음 **vm-az220-training-edge0002-{사용자 ID}**을 클릭합니다.
+    IoT Hub 블레이드를 열고 탐색 메뉴의 **탐색기** 아래에서 **IoT 디바이스**를 클릭한 다음 **vm-az220-training-edge0002-{your-id}**을 클릭합니다.
 
 1. **모듈 ID** 아래에서 **azureiotsecurity** 모듈이 이제 **연결된** 상태임을 확인하세요.
 
@@ -754,13 +754,13 @@ Azure Defender for IoT는 IoT Hub에서 사용하도록 설정되면 IoT Hub에 
         "properties": {
             "desired": {
                 "$metadata": {
-                    "$lastUpdated": "2020-06-11T13:오전 9:38.4712899Z"
+                    "$lastUpdated": "2020-06-11T13:09:38.4712899Z"
                 },
                 "$version": 1
             },
             "reported": {
                 "$metadata": {
-                    "$lastUpdated": "2020-06-11T13:오전 9:38.4712899Z"
+                    "$lastUpdated": "2020-06-11T13:09:38.4712899Z"
                 },
                 "$version": 1
             }
@@ -803,13 +803,13 @@ Azure Defender for IoT는 IoT Hub에서 사용하도록 설정되면 IoT Hub에 
         "properties": {
             "desired": {
                 "$metadata": {
-                    "$lastUpdated": "2020-06-11T13:오전 9:38.4712899Z"
+                    "$lastUpdated": "2020-06-11T13:09:38.4712899Z"
                 },
                 "$version": 1
             },
             "reported": {
                 "$metadata": {
-                    "$lastUpdated": "2020-06-11T13:오전 9:38.4712899Z"
+                    "$lastUpdated": "2020-06-11T13:09:38.4712899Z"
                 },
                 "$version": 1
             }
@@ -877,10 +877,10 @@ Azure Defender for IoT는 IoT Hub에서 사용하도록 설정되면 IoT Hub에 
 1. 코드 편집기 창에서 다음 코드 줄을 찾습니다.
 
     ```csharp
-    private readonly static string deviceConnectionString = "<디바이스 연결 문자열>";
+    private readonly static string deviceConnectionString = "<your device connection string>";
     ```
 
-1. `<디바이스 연결 문자열>`은 sensor-th-0070 디바이스의 기본 연결 문자열로 바꿉니다.
+1. `<your device connection string>`은 sensor-th-0070 디바이스의 기본 연결 문자열로 바꿉니다.
 
 1. **파일** 메뉴에서 **저장**을 클릭합니다.
 
@@ -895,14 +895,14 @@ Azure Defender for IoT는 IoT Hub에서 사용하도록 설정되면 IoT Hub에 
     다음과 같은 출력이 표시되어야 합니다.
 
     ```text
-    IoT Hub C# 시뮬레이션 자동 온도 조절 디바이스. CTRL+C를 눌러 나가세요.
+    IoT Hub C# Simulated Thermostat Device. CTRL+C to exit.
 
-    2020-02-28 오후 1:32:21 > 메시지 전송: {"temperature":25.7199231282435,"humidity":79.50078555359542}
-    2020-02-28 오후 1:32:31 > 메시지 전송: {"temperature":21.877205091005752,"humidity":61.30029373862794}
-    2020-02-28 오후 1:32:41 > 메시지 전송: {"temperature":21.245898961204055,"humidity":71.36471955634873}
-    2020-02-28 오후 1:32:51 > 메시지 전송: {"temperature":32.61750500072609,"humidity":66.07430422961447}
-    2020-02-28 오후 1:33:01 > 메시지 전송: {"temperature":31.100763578946125,"humidity":79.93955616836416}
-    2020-02-28 오후 1:33:11 > 메시지 전송: {"temperature":25.02041019034591,"humidity":70.50569472392355}
+    2/28/2020 1:32:21 PM > Sending message: {"temperature":25.7199231282435,"humidity":79.50078555359542}
+    2/28/2020 1:32:31 PM > Sending message: {"temperature":21.877205091005752,"humidity":61.30029373862794}
+    2/28/2020 1:32:41 PM > Sending message: {"temperature":21.245898961204055,"humidity":71.36471955634873}
+    2/28/2020 1:32:51 PM > Sending message: {"temperature":32.61750500072609,"humidity":66.07430422961447}
+    2/28/2020 1:33:01 PM > Sending message: {"temperature":31.100763578946125,"humidity":79.93955616836416}
+    2/28/2020 1:33:11 PM > Sending message: {"temperature":25.02041019034591,"humidity":70.50569472392355}
     ```
 
     이 랩의 나머지 부분에서 앱을 실행 상태로 두면 여러 알림이 생성될 수 있습니다.

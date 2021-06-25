@@ -349,13 +349,13 @@ Azure PowerShell은 PowerShell 명령줄에서 직접 Azure 리소스를 관리�
 1. 기본적으로 PowerShell 갤러리는 PowerShellGet의 신뢰할 수 있는 리포지토리로 구성되지 않습니다. PSGallery를 처음 사용할 때는 다음과 같은 메시지가 표시됩니다.
 
     ```output
-    신뢰할 수 없는 리포지토리
+    Untrusted repository
 
-    신뢰할 수 없는 리포지토리의 모듈을 설치합니다. 이 리포지토리를 신뢰하는 경우 변경합니다.
-    Set-PSRepository cmdlet를 실행하여 InstallationPolicy 값을 변경합니다.
+    You are installing the modules from an untrusted repository. If you trust this repository, change
+    its InstallationPolicy value by running the Set-PSRepository cmdlet.
 
-    정말 'PSGallery'에서 모듈을 설치하시겠습니까?
-    [Y] 예  [A] 모두 예  [N] 아니요  [L] 모두 아니요  [S] 일시 중단  [?] 도움말(기본값은 "N"):
+    Are you sure you want to install the modules from 'PSGallery'?
+    [Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "N"):
     ```
 
 1. 설치를 계속하려면 **예** 또는 **모두 예**라고 답변합니다.
