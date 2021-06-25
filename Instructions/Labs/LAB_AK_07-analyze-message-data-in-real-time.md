@@ -1,4 +1,4 @@
----
+﻿---
 lab:
     title: '랩 07: 디바이스 메시지 라우팅'
     module: '모듈 4: 메시지 처리 및 분석'
@@ -135,16 +135,16 @@ Contoso Management는 DPS를 사용하여 자동 디바이스 등록을 구현�
     ```bash
     az account list-locations -o Table
 
-    표시이름           위도    경도    이름
+    DisplayName           Latitude    Longitude    Name
     --------------------  ----------  -----------  ------------------
-    동아시아             22.267      114.188      eastasia
-    동남 아시아        1.283       103.833      southeastasia
-    미국 중부            41.5908     -93.6208     centralus
-    미국 동부               37.3719     -79.8164     eastus
-    미국 동부 2             36.6681     -78.3889     eastus2
+    East Asia             22.267      114.188      eastasia
+    Southeast Asia        1.283       103.833      southeastasia
+    Central US            41.5908     -93.6208     centralus
+    East US               37.3719     -79.8164     eastus
+    East US 2             36.6681     -78.3889     eastus2
     ```
 
-1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 **...**를 클릭한 다음 **편집기 닫기**를 클릭합니다.
+1. 파일의 변경 내용을 저장하고 편집기를 닫으려면 편집기 창 오른쪽 위의 **...** 를 클릭한 다음 **편집기 닫기**를 클릭합니다.
 
     저장하라는 메시지가 표시된 경우 **저장**을 클릭하면 편집기가 닫힙니다.
 
