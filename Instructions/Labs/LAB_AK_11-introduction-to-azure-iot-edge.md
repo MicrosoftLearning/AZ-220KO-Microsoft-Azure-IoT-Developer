@@ -1,4 +1,4 @@
-﻿---
+---
 lab:
     title: '랩 11: Azure IoT Edge 소개'
     module: '모듈 6: Azure IoT Edge 배포 프로세스'
