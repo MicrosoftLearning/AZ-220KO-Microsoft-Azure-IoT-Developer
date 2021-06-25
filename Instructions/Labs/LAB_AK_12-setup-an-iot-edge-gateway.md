@@ -1,4 +1,4 @@
-﻿---
+---
 lab:
     title: '랩 12: IoT Edge 게이트웨이 설정'
     module: '모듈 6: Azure IoT Edge 배포 프로세스'
